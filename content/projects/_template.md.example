@@ -1,0 +1,16 @@
+---
+# Salin file ini jadi content/projects/nama-project.md (hapus ".example")
+# Nama file = alamat halaman: /projects/nama-project
+title: Judul Project
+summary: Satu kalimat ringkasan yang tampil di kartu.
+date: 2026-01-31          # urutan: terbaru di atas
+tags: [Tag1, Tag2]
+cover: /projects/nama-project.png   # opsional, gambar di public/projects/
+demo: https://...                   # opsional
+repo: https://github.com/...        # opsional
+draft: false                        # true = disembunyikan
+---
+
+## Isi project
+
+Tulis bebas dengan Markdown: judul, daftar, tautan, gambar ![alt](/projects/gambar.png).

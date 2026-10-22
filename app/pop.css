@@ -1,0 +1,110 @@
+/* Tema "pop": krem + tinta hitam + warna solid ala poster retro-komik.
+   Semua warna di :root, tinggal diganti kalau mau palet lain. Dipakai di halaman depan. */
+:root {
+  --ink: #141414;
+  --cream: #f2e6d0;
+  --paper: #fff6e4;
+  --pink: #f68bc2;
+  --orange: #ff8a2a;
+  --teal: #55c2a8;
+  --blue: #7f98ea;
+  --yellow: #ffc82e;
+}
+
+.pop-page {
+  background-color: var(--cream);
+  background-image: radial-gradient(rgba(20, 20, 20, 0.13) 1.2px, transparent 1.2px);
+  background-size: 22px 22px;
+  color: var(--ink);
+}
+
+.pop-display {
+  font-family: var(--font-display), Impact, 'Arial Black', sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* Warna isi */
+.pop-pink { background-color: var(--pink); }
+.pop-orange { background-color: var(--orange); }
+.pop-teal { background-color: var(--teal); }
+.pop-blue { background-color: var(--blue); }
+.pop-yellow { background-color: var(--yellow); }
+.pop-paper { background-color: var(--paper); }
+
+/* Kartu bergaris tebal dengan bayangan keras */
+.pop-card {
+  border: 3px solid var(--ink);
+  border-radius: 28px;
+  box-shadow: 5px 5px 0 var(--ink);
+  background-color: var(--paper);
+}
+.pop-hover {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.pop-hover:hover {
+  transform: translate(-3px, -3px) rotate(-0.4deg);
+  box-shadow: 8px 8px 0 var(--ink);
+}
+
+/* Label kecil berbentuk pil */
+.pop-pill {
+  display: inline-block;
+  border: 2.5px solid var(--ink);
+  border-radius: 999px;
+  padding: 0.2rem 0.75rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.4;
+  color: var(--ink);
+  background-color: var(--paper);
+}
+
+/* Tombol */
+.pop-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  padding: 0.8rem 1.6rem;
+  font-weight: 800;
+  color: var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.pop-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+.pop-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+.pop-btn-ink { background-color: var(--ink); color: var(--paper); }
+
+/* Nama berwarna dengan garis tepi tinta */
+.pop-outline {
+  -webkit-text-stroke: 2px var(--ink);
+  paint-order: stroke fill;
+}
+
+/* Lingkaran bernomor */
+.pop-badge {
+  display: inline-flex;
+  height: 2.6rem;
+  min-width: 2.6rem;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  padding: 0 0.5rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pop-hover, .pop-btn { transition: none; }
+  .pop-hover:hover { transform: none; }
+}
