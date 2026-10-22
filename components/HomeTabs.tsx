@@ -45,7 +45,7 @@ export default function HomeTabs({ panels }: { panels: Panel[] }) {
 
   return (
     <div ref={wrap} className="relative z-10">
-      <div className="sticky top-0 z-30 border-y-[3px] border-[#141414] bg-[#fff6e4]">
+      <div className="sticky top-0 z-30 border-y-[1.5px] border-[#141414] bg-[#ffffff]">
         <div role="tablist" aria-label="Bagian halaman" className="mx-auto flex max-w-6xl gap-7 overflow-x-auto px-6">
           {panels.map((p) => {
             const on = p.id === active
@@ -62,7 +62,7 @@ export default function HomeTabs({ panels }: { panels: Panel[] }) {
                 }`}
               >
                 {p.title}
-                {on && <span className="absolute inset-x-0 bottom-0 h-1 bg-[color:var(--orange)]" />}
+                {on && <span className="absolute inset-x-0 bottom-0 h-1 bg-[color:var(--accent)]" />}
               </button>
             )
           })}

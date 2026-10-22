@@ -1,6 +1,7 @@
 import '@/app/fun.css'
 import '@/app/pop.css'
 import AdminButton from '@/components/AdminButton'
+import HomeTabs from '@/components/HomeTabs'
 import Link from 'next/link'
 import { ArrowRight, Mail } from 'lucide-react'
 import { getProfile } from '@/lib/profile'
@@ -13,8 +14,7 @@ import ContactForm from '@/components/ContactForm'
 import GlitchName from '@/components/GlitchName'
 import LanyardLayer from '@/components/LanyardLayer'
 import Reveal from '@/components/Reveal'
-import Sections, { pickSections } from '@/components/Sections'
-import { Flower } from '@/components/pop/Badges'
+import { pickSections, sectionPanels } from '@/components/Sections'
 
 export async function generateMetadata() {
   const site = await getProfile()
@@ -41,16 +41,67 @@ export default async function Home() {
   // Nama pertama = nama dari Admin → Profil; sisanya dari hero.config.ts
   const names = [{ greeting: hero.greeting, text: site.name }, ...hero.names]
 
+
+  const contact = (
+    <Reveal>
+      <div className="pop-card grid gap-10 !bg-[#141414] p-8 text-white md:grid-cols-2 md:p-14" style={{ borderRadius: 24 }}>
+            <div>
+              <span className="pop-pill pop-pink mb-5">Contact</span>
+              <h2 className="pop-display mb-8 text-3xl uppercase leading-tight md:text-4xl">
+                Punya masalah yang ingin dijadikan sistem?
+              </h2>
+              <div className="flex flex-wrap items-center gap-3">
+                <a
+                  href={`mailto:${site.email}`}
+                  className="inline-flex items-center gap-3 rounded-lg border border-white px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#fbe48c] hover:text-[#141414]"
+                >
+                  <Mail className="h-5 w-5" /> {site.email}
+                </a>
+                {site.links.map((l) => (
+                  <a
+                    key={l.label}
+                    href={l.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="rounded-lg border border-white px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#fbe48c] hover:text-[#141414]"
+                  >
+                    {l.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+            <ContactForm />
+          </div>
+    </Reveal>
+  )
+  const panels = [
+    ...sectionPanels(visible, projects, detail),
+    ...(visible.length === 0 && detail.admin
+      ? [
+          {
+            id: 'mulai',
+            title: 'Mulai',
+            node: (
+              <div className="pop-card p-8 text-center font-bold">
+                Belum ada section yang tampil. <Link href="/admin/sections" className="underline">Buat di Admin → Section</Link>
+              </div>
+            ),
+          },
+        ]
+      : []),
+    { id: 'contact', title: 'Kontak', node: contact },
+  ]
+
   return (
-    <main className={`pop-page ${display.variable} relative min-h-screen overflow-x-hidden`}>
+    <main className={`pop-page ${display.variable} relative min-h-screen overflow-x-clip`}>
       <LanyardLayer name={site.name} role={site.role} affiliation={site.affiliation} photo={site.photo} />
 
       {/* Navbar */}
       <header className="relative z-10 mx-auto max-w-6xl px-6 pt-6">
-        <div className="pop-card !rounded-full flex items-center justify-between !px-6 py-3 !shadow-none">
+        <div className="pop-card !rounded-xl flex items-center justify-between !px-6 py-3 ">
           <a href="#" className="text-sm font-extrabold tracking-tight">
             {site.name}
-            <span style={{ color: 'var(--orange)' }}>_</span>
+            <span style={{ color: 'var(--accent)' }}>_</span>
           </a>
           <nav className="flex items-center gap-5 text-xs font-extrabold uppercase tracking-widest sm:gap-7">
             {visible.find((v) => v.s.kind === 'projects') && (
@@ -63,20 +114,19 @@ export default async function Home() {
       </header>
 
       {/* Hero: sapaan + nama yang berganti aksara */}
-      <section className="relative z-10 mx-auto max-w-6xl px-6 pb-24 pt-14 lg:pt-20">
+      <section className="relative z-10 mx-auto max-w-6xl px-6 pb-16 pt-10 lg:pt-16">
         <div className="lg:max-w-[58%]">
           <div className="relative">
-            <h1 className="pop-display text-[2.6rem] uppercase leading-[1] sm:text-6xl lg:text-7xl">
+            <h1 className="pop-display text-5xl uppercase leading-[1] sm:text-7xl lg:text-8xl">
               <GlitchName
                 variants={names}
                 hold={hero.hold}
-                nameClassName="pop-outline text-[color:var(--orange)]"
+                nameClassName="pop-outline text-[color:var(--accent)]"
               />
             </h1>
           </div>
 
           <div className="pop-card relative mt-10 max-w-xl p-6">
-            <Flower className="absolute -right-6 -top-8 h-16 w-16 -rotate-12" />
             <div className="mb-4 flex flex-wrap gap-2">
               <span className="pop-pill pop-teal">{site.role}</span>
               <span className="pop-pill pop-yellow">{site.affiliation}</span>
@@ -104,45 +154,12 @@ export default async function Home() {
         </div>
       </section>
 
-      <Sections items={visible} projects={projects} detail={detail} />
+      {/* Navigasi tab di bawah hero. Urutan, judul, dan tampil/sembunyi section diatur di Admin → Section */}
+      <HomeTabs panels={panels} />
 
-
-      <section id="contact" className="relative z-10 mx-auto max-w-6xl scroll-mt-8 px-6 pb-16">
-        <Reveal>
-          <div className="pop-card grid gap-10 !bg-[#141414] p-8 text-white md:grid-cols-2 md:p-14" style={{ borderRadius: 40 }}>
-            <div>
-              <span className="pop-pill pop-pink mb-5">Contact</span>
-              <h2 className="pop-display mb-8 text-3xl uppercase leading-tight md:text-4xl">
-                Punya masalah yang ingin dijadikan sistem?
-              </h2>
-              <div className="flex flex-wrap items-center gap-3">
-                <a
-                  href={`mailto:${site.email}`}
-                  className="inline-flex items-center gap-3 rounded-full border-2 border-[#fff6e4] px-6 py-3 font-bold text-[#fff6e4] transition-colors hover:bg-[#ffc82e] hover:text-[#141414]"
-                >
-                  <Mail className="h-5 w-5" /> {site.email}
-                </a>
-                {site.links.map((l) => (
-                  <a
-                    key={l.label}
-                    href={l.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="rounded-full border-2 border-[#fff6e4] px-6 py-3 font-bold text-[#fff6e4] transition-colors hover:bg-[#ffc82e] hover:text-[#141414]"
-                  >
-                    {l.label}
-                  </a>
-                ))}
-              </div>
-            </div>
-            <ContactForm />
-          </div>
-        </Reveal>
-
-        <footer className="mt-10 text-xs font-bold uppercase tracking-widest">
-          © {new Date().getFullYear()} {site.name}
-        </footer>
-      </section>
+      <footer className="relative z-10 mx-auto max-w-6xl px-6 pb-10 text-xs font-bold uppercase tracking-widest">
+        © {new Date().getFullYear()} {site.name}
+      </footer>
       <AdminButton />
     </main>
   )

@@ -7,11 +7,11 @@ import ReadingProgress from '@/components/ReadingProgress'
 import { display } from '@/lib/fonts'
 
 /** Kelas judul halaman (h1) supaya seragam di semua halaman baca. */
-export const titleClass = 'pop-display text-4xl uppercase leading-[1.05] md:text-6xl'
+export const titleClass = 'pop-display text-5xl uppercase leading-[1.05] md:text-7xl'
 
 /**
  * Kerangka halaman baca (About, detail item, detail project) dengan tema yang sama seperti halaman depan:
- * latar krem bertitik, tombol kembali berbentuk pil, dan isi di dalam kartu bergaris tebal.
+ * latar putih, tombol kembali kecil, dan isi di dalam kartu bergaris tipis.
  */
 export default function PageShell({
   back,
@@ -28,7 +28,7 @@ export default function PageShell({
           href={back.href}
           className="pop-pill pop-paper mb-8"
           // style inline karena .pop-pill (display: inline-block) mengalahkan kelas Tailwind
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.4rem 1rem' }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.35rem 0.9rem' }}
         >
           <ArrowLeft className="h-3.5 w-3.5" /> {back.text}
         </Link>

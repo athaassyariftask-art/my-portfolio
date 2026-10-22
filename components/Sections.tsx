@@ -30,7 +30,7 @@ function SectionTitle({ n, label, calm, editHref }: { n: string; label: string; 
         <div className="mb-10 flex items-center gap-4">
           <span className="pop-badge pop-orange">{n}</span>
           <h2 className="pop-display text-3xl uppercase md:text-4xl">{label}</h2>
-          <span className="h-[3px] flex-1 bg-[#141414]" />
+          <span className="h-[1.5px] flex-1 bg-[#141414]" />
           {edit}
         </div>
       </Reveal>

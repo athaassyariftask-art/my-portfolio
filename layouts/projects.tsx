@@ -14,7 +14,7 @@ export default function ProjectsView({ projects }: ProjectsProps) {
       {projects.map((p, i) => (
         <Reveal key={p.id} delay={(i % 2) * 0.08}>
           <Link href={`/projects/${p.id}`} className="pop-card pop-hover group flex h-full flex-col overflow-hidden">
-            <div className={`aspect-[16/9] overflow-hidden border-b-[3px] border-[#141414] ${popColor(i)}`}>
+            <div className={`aspect-[16/9] overflow-hidden border-b-[1.5px] border-[#141414] ${popColor(i)}`}>
               {p.cover ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img

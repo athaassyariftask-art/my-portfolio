@@ -26,7 +26,7 @@ export default async function About() {
         <span className="pop-pill pop-yellow">{site.affiliation}</span>
       </div>
       <h1 className={`${titleClass} mb-10`}>
-        Tentang <span className="pop-outline text-[color:var(--orange)]">{site.name}</span>
+        Tentang <span className="pop-outline text-[color:var(--accent)]">{site.name}</span>
       </h1>
 
       <div className="mb-16">

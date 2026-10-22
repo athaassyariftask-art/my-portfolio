@@ -126,7 +126,7 @@ export default function SectionPage({
         {!visible && <span className="pop-pill pop-yellow">Disembunyikan</span>}
       </div>
 
-      <div className="sticky top-3 z-30 mb-8 flex flex-wrap items-center gap-3 rounded-2xl border-[3px] border-[#141414] bg-white px-4 py-3 text-sm text-slate-800 shadow-[4px_4px_0_#141414]">
+      <div className="sticky top-3 z-30 mb-8 flex flex-wrap items-center gap-3 rounded-2xl border-[1.5px] border-[#141414] bg-white px-4 py-3 text-sm text-slate-800 shadow-[4px_4px_0_#141414]">
         <button
           type="button"
           onClick={() => setEditing((v) => !v)}
@@ -154,7 +154,7 @@ export default function SectionPage({
       {error && <p className="mb-6 whitespace-pre-line rounded-xl bg-rose-50 p-4 text-sm text-rose-700">{error}</p>}
 
       {editing && (
-        <div className="mb-12 space-y-6 rounded-3xl border-[3px] border-[#141414] bg-white p-6 text-slate-800 shadow-[5px_5px_0_#141414]">
+        <div className="mb-12 space-y-6 rounded-3xl border-[1.5px] border-[#141414] bg-white p-6 text-slate-800">
           <details className="group">
             <summary className="cursor-pointer select-none text-sm font-semibold text-slate-900">
               Pengaturan section <span className="font-normal text-slate-500">(judul, layout, isian)</span>

@@ -26,7 +26,7 @@ export default function ReadingProgress() {
   }, [])
   return (
     <div className="pointer-events-none fixed inset-x-0 top-0 z-50 h-1.5">
-      <div ref={bar} className="h-full origin-left bg-[color:var(--orange)]" style={{ transform: 'scaleX(0)' }} />
+      <div ref={bar} className="h-full origin-left bg-[color:var(--accent)]" style={{ transform: 'scaleX(0)' }} />
     </div>
   )
 }

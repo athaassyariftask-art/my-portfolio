@@ -38,7 +38,7 @@ function Details({ s, detail }: { s: Slotted; detail: string | null }) {
         <ul className="space-y-2 font-medium">
           {s.list.map((pt, j) => (
             <li key={j} className="flex gap-3">
-              <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full border-2 border-[#141414] bg-[color:var(--orange)]" />
+              <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full border-[1.5px] border-[#141414] bg-[color:var(--accent)]" />
               {pt}
             </li>
           ))}
@@ -72,13 +72,13 @@ function Details({ s, detail }: { s: Slotted; detail: string | null }) {
 export default function Timeline({ items, fields, detailHref }: LayoutProps) {
   const groups = group(items, fields)
   return (
-    <div className="relative ml-3 space-y-10 border-l-[3px] border-[#141414] pl-9 md:ml-0 md:pl-12">
+    <div className="relative ml-3 space-y-10 border-l-[1.5px] border-[#141414] pl-9 md:ml-0 md:pl-12">
       {groups.map((g, i) => {
         const first = g[0]
         return (
           <Reveal key={String(first.item._id ?? i)}>
             <span
-              className={`absolute -left-[13px] mt-3 h-6 w-6 rounded-full border-[3px] border-[#141414] ${popColor(i)}`}
+              className={`absolute -left-[13px] mt-3 h-6 w-6 rounded-full border-[1.5px] border-[#141414] ${popColor(i)}`}
             />
             <div className="pop-card p-6">
               {g.length === 1 ? (
@@ -91,11 +91,11 @@ export default function Timeline({ items, fields, detailHref }: LayoutProps) {
               ) : (
                 <>
                   <h3 className="pop-display mb-5 text-2xl uppercase leading-tight">{first.s.subtitle}</h3>
-                  <ol className="relative ml-2 space-y-8 border-l-[3px] border-[#141414] pl-7">
+                  <ol className="relative ml-2 space-y-8 border-l-[1.5px] border-[#141414] pl-7">
                     {g.map(({ item, s }, j) => (
                       <li key={String(item._id ?? j)} className="relative">
                         <span
-                          className={`absolute -left-[41px] top-1.5 h-4 w-4 rounded-full border-[3px] border-[#141414] ${popColor(i + j + 1)}`}
+                          className={`absolute -left-[41px] top-1.5 h-4 w-4 rounded-full border-[1.5px] border-[#141414] ${popColor(i + j + 1)}`}
                         />
                         {s.meta && <span className="pop-pill pop-yellow mb-2">{s.meta}</span>}
                         <h4 className="text-xl font-extrabold leading-snug">{s.title}</h4>

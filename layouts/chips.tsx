@@ -26,7 +26,7 @@ export default function Chips({ items, fields, options, detailHref }: LayoutProp
               {s.body && <p className="mb-3 text-sm font-medium opacity-80">{s.body}</p>}
               <div className="flex flex-wrap gap-2">
                 {s.tags.map((t, j) => (
-                  <span key={j} className="rounded-full border-2 border-[#141414] bg-white px-3 py-1 text-sm font-bold">
+                  <span key={j} className="rounded-full border-[1.5px] border-[#141414] bg-white px-3 py-1 text-sm font-bold">
                     {t}
                   </span>
                 ))}
