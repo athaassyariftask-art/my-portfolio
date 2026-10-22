@@ -24,7 +24,12 @@ export default function PageShell({
     <main className={`pop-page ${display.variable} relative min-h-screen overflow-x-clip`}>
       <ReadingProgress />
       <div className="relative z-10 mx-auto max-w-3xl px-6 pb-24 pt-10">
-        <Link href={back.href} className="pop-pill pop-paper mb-8 inline-flex items-center gap-2">
+        <Link
+          href={back.href}
+          className="pop-pill pop-paper mb-8"
+          // style inline karena .pop-pill (display: inline-block) mengalahkan kelas Tailwind
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.4rem 1rem' }}
+        >
           <ArrowLeft className="h-3.5 w-3.5" /> {back.text}
         </Link>
         {children}
