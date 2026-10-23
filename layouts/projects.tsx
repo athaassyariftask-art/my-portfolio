@@ -42,8 +42,8 @@ export default function ProjectsView({ projects }: ProjectsProps) {
     const r = e.currentTarget.getBoundingClientRect()
     const x = (e.clientX - r.left) / r.width - 0.5
     const y = (e.clientY - r.top) / r.height - 0.5
-    e.currentTarget.style.setProperty('--ry', `${-14 + x * 18}deg`)
-    e.currentTarget.style.setProperty('--rx', `${10 - y * 12}deg`)
+    e.currentTarget.style.setProperty('--ry', `${-28 + x * 16}deg`)
+    e.currentTarget.style.setProperty('--rx', `${12 - y * 10}deg`)
   }
   function untilt(e: React.PointerEvent<HTMLDivElement>) {
     e.currentTarget.style.removeProperty('--ry')
@@ -61,12 +61,12 @@ export default function ProjectsView({ projects }: ProjectsProps) {
   const FOLDER_H = 70
   const REST_TOP = 58 // posisi awal: semua map masih di dalam kotak
   const gap = n > 1 ? Math.min(3.5, 22 / (n - 1)) : 0
-  const dz = Math.min(10, 70 / Math.max(n, 1))
+  const dz = Math.min(16, 170 / Math.max(n, 1))
   const place = (i: number) => {
-    if (!shown) return { top: REST_TOP, z: -40 }
-    if (i === cur) return { top: TOP_ACTIVE, z: 28 }
+    if (!shown) return { top: REST_TOP, z: -90 }
+    if (i === cur) return { top: TOP_ACTIVE, z: 80 }
     const rank = i < cur ? i : i - 1
-    return { top: TOP_ACTIVE - gap * (rank + 1), z: 14 - dz * (rank + 1) }
+    return { top: TOP_ACTIVE - gap * (rank + 1), z: 66 - dz * (rank + 1) }
   }
 
   return (
@@ -123,7 +123,7 @@ export default function ProjectsView({ projects }: ProjectsProps) {
             const on = i === cur
             const { top, z } = place(i)
             // potong bagian map yang melewati dasar kotak (tab di atas boleh keluar)
-            const cut = (Math.max(0, top + FOLDER_H - 100) / FOLDER_H) * 100
+            const cut = (Math.max(0, top + FOLDER_H - 96) / FOLDER_H) * 100
             return (
               <div
                 key={p.id}
@@ -136,8 +136,8 @@ export default function ProjectsView({ projects }: ProjectsProps) {
                   ['--z' as string]: `${z}px`,
                 }}
               >
-                <span className="pf-tab" style={{ left: `${(i % 4) * 24}%`, backgroundColor: tone(i) }}>
-                  {num(i)}
+                <span className="pf-tab" style={{ left: `${(i % 3) * 33}%`, backgroundColor: tone(i) }}>
+                  {num(i)} / {p.title}
                 </span>
                 <div className="pf-face" style={{ opacity: on && shown ? 1 : 0 }}>
                   <div>

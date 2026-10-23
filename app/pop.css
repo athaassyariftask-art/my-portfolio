@@ -105,72 +105,66 @@
   .pop-hover:hover, .pop-btn:hover { transform: none; }
 }
 
-/* ---- Kotak arsip 3D untuk daftar project (layouts/projects.tsx) ---- */
+/* ---- Kotak arsip 3D untuk daftar project (layouts/projects.tsx) ----
+   Kotak sedalam 240px (dinding belakang di z -120, panel depan di z +120). Map berdiri tegak di dalamnya. */
 .pf-stage {
   position: relative;
   width: 100%;
   max-width: 460px;
-  aspect-ratio: 1 / 1.02;
+  aspect-ratio: 1 / 1.1;
   margin-inline: auto;
-  perspective: 1100px;
+  perspective: 1500px;
 }
 .pf-scene {
   position: absolute;
   inset: 0;
   transform-style: preserve-3d;
-  transform: rotateX(var(--rx, 10deg)) rotateY(var(--ry, -14deg));
+  transform: translateY(4%) scale(0.84) rotateX(var(--rx, 12deg)) rotateY(var(--ry, -28deg));
   transition: transform 0.25s ease-out;
 }
 .pf-back,
 .pf-front,
 .pf-side {
   position: absolute;
+  top: 60%;
+  bottom: 0;
   border: 1.5px solid var(--ink);
 }
 .pf-back {
   left: 0;
   right: 0;
-  top: 66%;
-  bottom: 0;
-  border-radius: 14px 14px 0 0;
-  background-color: #8fa3ef;
-  transform: translateZ(-60px);
+  background-color: #3f55b8; /* bagian dalam kotak: paling gelap */
+  transform: translateZ(-120px);
 }
-/* dinding kiri & kanan kotak: lebar 120px, berpusat di tepi kotak lalu diputar 90 derajat */
 .pf-side {
-  top: 66%;
-  bottom: 0;
-  width: 120px;
-  background-color: #7186de;
+  width: 240px;
+  background-color: #4a63d1;
 }
-.pf-side-l { left: -60px; transform: rotateY(90deg); }
-.pf-side-r { right: -60px; transform: rotateY(90deg); }
+.pf-side-l { left: -120px; transform: rotateY(90deg); background-color: #3f55b8; }
+.pf-side-r { right: -120px; transform: rotateY(90deg); }
 .pf-front {
   left: 0;
   right: 0;
-  top: 66%;
-  bottom: 0;
-  transform: translateZ(60px);
-  border-radius: 14px 14px 18px 18px;
-  background-color: var(--blue);
+  transform: translateZ(120px);
+  background-color: #5b7cf0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  gap: 1.1rem;
 }
 .pf-handle {
-  width: 22%;
-  height: 14%;
+  width: 24%;
+  height: 16%;
   border: 1.5px solid var(--ink);
-  border-radius: 999px;
-  background-color: #6f84dd;
+  border-radius: 8px;
+  background-color: #1d2a6e; /* lubang pegangan */
 }
 .pf-label {
   border: 1.5px solid var(--ink);
-  border-radius: 6px;
-  background-color: #fff;
-  padding: 0.25rem 1rem;
+  border-radius: 4px;
+  background-color: #f5f1e6;
+  padding: 0.3rem 1.1rem;
   font-size: 0.8rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -178,8 +172,8 @@
 }
 .pf-folder {
   position: absolute;
-  left: 8%;
-  right: 8%;
+  left: 7%;
+  right: 7%;
   border: 1.5px solid var(--ink);
   border-radius: 10px;
   transform: translateZ(var(--z, 0px)) translateY(var(--lift, 0));
@@ -193,20 +187,24 @@
   position: absolute;
   top: -1.5rem;
   height: 1.5rem;
-  min-width: 22%;
+  width: 33%;
   padding: 0 0.6rem;
   display: flex;
   align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   border: 1.5px solid var(--ink);
   border-bottom: 0;
   border-radius: 8px 8px 0 0;
-  font-size: 0.7rem;
+  font-size: 0.62rem;
   font-weight: 800;
   letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 .pf-face {
   display: flex;
-  height: 60%; /* hanya bagian yang tampak di atas kotak */
+  height: 52%; /* hanya bagian yang tampak di atas kotak */
   flex-direction: column;
   justify-content: space-between;
   gap: 0.5rem;
