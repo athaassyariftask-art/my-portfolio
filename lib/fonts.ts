@@ -1,5 +1,10 @@
-import { Anton } from 'next/font/google'
+import { Fraunces } from 'next/font/google'
 
-// Font condensed tebal untuk judul besar saja (teks biasa tetap memakai font situs).
-// Mau ganti? Cari font lain di next/font/google dan ubah di sini; kelas .pop-display ikut berubah.
-export const display = Anton({ subsets: ['latin'], weight: '400', variable: '--font-display', display: 'swap' })
+// Serif display face for headings only (body text keeps the site font).
+// To change it: pick another font from next/font/google and edit it here; the .pop-display class follows.
+export const display = Fraunces({
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  variable: '--font-display',
+  display: 'swap',
+})

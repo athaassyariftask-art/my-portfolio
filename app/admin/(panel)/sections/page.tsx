@@ -9,7 +9,7 @@ export default async function AdminSections() {
     <>
       <PageHeader
         title="Section"
-        hint="Blok di halaman depan. Di sini kamu membuat, mengurutkan, dan menyembunyikan. Isi dan tampilan tiap section diedit di halamannya sendiri."
+        hint="Blocks on the home page. Here you create, reorder, and hide them. Each section's content and appearance are edited on its own page."
       />
       <SectionList
         presets={presets}

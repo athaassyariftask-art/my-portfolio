@@ -5,8 +5,8 @@ import type { Field, FieldType, Slot } from '@/layouts/types'
 import { btnGhost, input } from '@/components/admin/ui'
 
 /**
- * Atur isian item sebuah section: nama label, jenis isian, dan "bagian" layout yang diisinya (slot).
- * Nama internal field dibuat otomatis dan tidak berubah, jadi mengganti label tidak merusak data lama.
+ * Configure a section's item fields: label, field type, and the layout "part" it fills (slot).
+ * The internal field name is generated automatically and never changes, so renaming a label doesn't break existing data.
  */
 export default function FieldsBuilder({
   fields,
@@ -15,7 +15,7 @@ export default function FieldsBuilder({
 }: {
   fields: Field[]
   onChange: (f: Field[]) => void
-  /** Slot yang ditampilkan layout terpilih; field di luar ini diberi catatan. */
+  /** Slots shown by the selected layout; fields outside these get a note. */
   uses: Slot[]
 }) {
   const set = (i: number, patch: Partial<Field>) => onChange(fields.map((f, j) => (j === i ? { ...f, ...patch } : f)))
@@ -29,7 +29,7 @@ export default function FieldsBuilder({
   const add = () => {
     let n = fields.length + 1
     while (fields.some((f) => f.name === `field_${n}`)) n++
-    onChange([...fields, { name: `field_${n}`, label: 'Field baru', type: 'text', slot: 'body' }])
+    onChange([...fields, { name: `field_${n}`, label: 'New field', type: 'text', slot: 'body' }])
   }
 
   return (
@@ -40,14 +40,14 @@ export default function FieldsBuilder({
             <input
               value={f.label}
               onChange={(e) => set(i, { label: e.target.value })}
-              placeholder="Nama isian"
-              aria-label="Nama isian"
+              placeholder="Field name"
+              aria-label="Field name"
               className={input}
             />
             <select
               value={f.type}
               onChange={(e) => set(i, { type: e.target.value as FieldType })}
-              aria-label="Jenis isian"
+              aria-label="Field type"
               className={input}
             >
               {FIELD_TYPES.map((t) => (
@@ -57,31 +57,31 @@ export default function FieldsBuilder({
             <select
               value={f.slot}
               onChange={(e) => set(i, { slot: e.target.value as Slot })}
-              aria-label="Tampil sebagai"
+              aria-label="Display as"
               className={input}
             >
               {SLOTS.map((s) => (
-                <option key={s.key} value={s.key}>Tampil sebagai: {s.label}</option>
+                <option key={s.key} value={s.key}>Display as: {s.label}</option>
               ))}
             </select>
             <div className="flex items-center gap-3 text-sm font-semibold">
               <button type="button" onClick={() => move(i, -1)} disabled={i === 0} className="text-slate-500 hover:text-slate-900 disabled:opacity-30">↑</button>
               <button type="button" onClick={() => move(i, 1)} disabled={i === fields.length - 1} className="text-slate-500 hover:text-slate-900 disabled:opacity-30">↓</button>
-              <button type="button" onClick={() => onChange(fields.filter((_, j) => j !== i))} className="text-rose-600 hover:underline">Hapus</button>
+              <button type="button" onClick={() => onChange(fields.filter((_, j) => j !== i))} className="text-rose-600 hover:underline">Delete</button>
             </div>
           </div>
           <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-slate-500">
             <label className="flex items-center gap-1.5">
               <input type="checkbox" checked={Boolean(f.required)} onChange={(e) => set(i, { required: e.target.checked })} />
-              Wajib diisi
+              Required
             </label>
-            {!uses.includes(f.slot) && <span className="text-amber-600">Layout ini tidak menampilkan bagian tersebut.</span>}
+            {!uses.includes(f.slot) && <span className="text-amber-600">This layout doesn't display that part.</span>}
           </div>
         </div>
       ))}
-      <button type="button" onClick={add} className={btnGhost}>+ Tambah isian</button>
+      <button type="button" onClick={add} className={btnGhost}>+ Add field</button>
       <p className="text-xs text-slate-500">
-        Menghapus isian tidak menghapus datanya di item lama. Harus ada satu isian yang tampil sebagai Judul.
+        Deleting a field doesn't delete its data on existing items. One field must be displayed as the Title.
       </p>
     </div>
   )

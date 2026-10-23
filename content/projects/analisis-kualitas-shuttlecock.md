@@ -1,18 +1,18 @@
 ---
-title: Analisis Kualitas Shuttlecock
-summary: Capstone design untuk menurunkan defect rate dan retur pelanggan pada sebuah IKM shuttlecock.
+title: Shuttlecock Quality Analysis
+summary: A capstone design project to reduce the defect rate and customer returns at a small shuttlecock manufacturer (IKM).
 date: 2026-10-14
 tags: [Industrial Engineering, Quality, Capstone]
 ---
 
-## Masalah
+## Problem
 
-TODO: defect rate dan retur pelanggan yang ingin diturunkan.
+TODO: the defect rate and customer returns to be reduced.
 
-## Analisis
+## Analysis
 
-TODO: akar masalah dan leverage point yang ditemukan.
+TODO: the root causes and leverage points found.
 
-## Usulan perbaikan
+## Proposed improvements
 
-TODO: rekomendasi dan peluang perbaikan.
+TODO: recommendations and improvement opportunities.

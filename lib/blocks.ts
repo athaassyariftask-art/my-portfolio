@@ -1,10 +1,10 @@
-// Model blok ala Notion + operasi pohon (blok bisa bersarang: toggle punya children, columns punya cols).
-// Tidak ada kode React di sini supaya bisa dipakai server maupun client.
+// Notion-style block model + tree operations (blocks can nest: toggle has children, columns has cols).
+// No React code here, so it can be used on both server and client.
 
 export type BlockType =
   | 'text' | 'h1' | 'h2' | 'h3' | 'bullet' | 'number' | 'todo' | 'toggle' | 'quote' | 'callout' | 'code'
   | 'divider' | 'image' | 'gallery' | 'embed' | 'video' | 'columns'
-  | 'heading' // lama (versi sebelumnya), diubah jadi h2/h3 oleh normalize()
+  | 'heading' // legacy (earlier version), converted to h2/h3 by normalize()
 
 export type Block = {
   id: string
@@ -17,7 +17,7 @@ export type Block = {
   url?: string // image, embed, video
   urls?: string[] // gallery
   caption?: string // image
-  level?: 2 | 3 // heading lama
+  level?: 2 | 3 // legacy heading
 }
 
 export const uid = () => Math.random().toString(36).slice(2, 10)
@@ -40,28 +40,28 @@ export function makeBlock(type: BlockType, id: string = uid()): Block {
   }
 }
 
-/** Menu "/" dan "Ubah jadi". `turn` = boleh dipakai untuk mengubah blok teks yang sudah ada. */
+/** The "/" menu and "Turn into". `turn` = may be used to convert an existing text block. */
 export const MENU: { type: BlockType; label: string; hint: string; keys: string; turn: boolean }[] = [
-  { type: 'text', label: 'Teks', hint: 'Paragraf biasa', keys: 'text teks paragraf', turn: true },
-  { type: 'h1', label: 'Judul 1', hint: '# + spasi', keys: 'h1 judul heading besar', turn: true },
-  { type: 'h2', label: 'Judul 2', hint: '## + spasi', keys: 'h2 judul heading sedang', turn: true },
-  { type: 'h3', label: 'Judul 3', hint: '### + spasi', keys: 'h3 judul heading kecil', turn: true },
-  { type: 'bullet', label: 'Daftar poin', hint: '- + spasi', keys: 'bullet list daftar poin', turn: true },
-  { type: 'number', label: 'Daftar angka', hint: '1. + spasi', keys: 'number list daftar angka', turn: true },
-  { type: 'todo', label: 'To-do', hint: '[] + spasi', keys: 'todo checklist centang', turn: true },
-  { type: 'toggle', label: 'Toggle', hint: 'Isi yang bisa dilipat', keys: 'toggle lipat', turn: true },
-  { type: 'quote', label: 'Kutipan', hint: '> + spasi', keys: 'quote kutipan', turn: true },
-  { type: 'callout', label: 'Callout', hint: 'Kotak catatan', keys: 'callout catatan', turn: true },
-  { type: 'code', label: 'Kode', hint: '``` ', keys: 'code kode', turn: true },
-  { type: 'divider', label: 'Garis', hint: '---', keys: 'divider garis', turn: false },
-  { type: 'image', label: 'Foto', hint: 'Upload gambar', keys: 'image foto gambar', turn: false },
-  { type: 'gallery', label: 'Galeri', hint: 'Banyak foto', keys: 'gallery galeri foto', turn: false },
-  { type: 'video', label: 'Video (upload)', hint: 'MP4 / WebM, maks 100 MB', keys: 'video upload mp4 film', turn: false },
-  { type: 'embed', label: 'Video YouTube', hint: 'Tempel tautan', keys: 'video embed youtube vimeo link', turn: false },
-  { type: 'columns', label: '2 kolom', hint: 'Bagi jadi kolom', keys: 'columns kolom 2', turn: false },
+  { type: 'text', label: 'Text', hint: 'Plain paragraph', keys: 'text teks paragraf paragraph', turn: true },
+  { type: 'h1', label: 'Heading 1', hint: '# + space', keys: 'h1 judul heading besar', turn: true },
+  { type: 'h2', label: 'Heading 2', hint: '## + space', keys: 'h2 judul heading sedang', turn: true },
+  { type: 'h3', label: 'Heading 3', hint: '### + space', keys: 'h3 judul heading kecil', turn: true },
+  { type: 'bullet', label: 'Bulleted list', hint: '- + space', keys: 'bullet list daftar poin', turn: true },
+  { type: 'number', label: 'Numbered list', hint: '1. + space', keys: 'number list daftar angka', turn: true },
+  { type: 'todo', label: 'To-do', hint: '[] + space', keys: 'todo checklist centang', turn: true },
+  { type: 'toggle', label: 'Toggle', hint: 'Collapsible content', keys: 'toggle lipat collapse', turn: true },
+  { type: 'quote', label: 'Quote', hint: '> + space', keys: 'quote kutipan', turn: true },
+  { type: 'callout', label: 'Callout', hint: 'Note box', keys: 'callout catatan note', turn: true },
+  { type: 'code', label: 'Code', hint: '``` ', keys: 'code kode', turn: true },
+  { type: 'divider', label: 'Divider', hint: '---', keys: 'divider garis line', turn: false },
+  { type: 'image', label: 'Photo', hint: 'Upload an image', keys: 'image foto gambar photo', turn: false },
+  { type: 'gallery', label: 'Gallery', hint: 'Multiple photos', keys: 'gallery galeri foto', turn: false },
+  { type: 'video', label: 'Video (upload)', hint: 'MP4 / WebM, max 100 MB', keys: 'video upload mp4 film', turn: false },
+  { type: 'embed', label: 'YouTube video', hint: 'Paste a link', keys: 'video embed youtube vimeo link', turn: false },
+  { type: 'columns', label: '2 columns', hint: 'Split into columns', keys: 'columns kolom 2', turn: false },
 ]
 
-/** Pastikan tiap blok punya id dan ubah blok format lama. */
+/** Make sure every block has an id and convert legacy-format blocks. */
 export function normalize(blocks: Block[]): Block[] {
   return (Array.isArray(blocks) ? blocks : []).map((b) => {
     const nb: Block = { ...b, id: b.id || uid() }
@@ -72,7 +72,7 @@ export function normalize(blocks: Block[]): Block[] {
   })
 }
 
-// ---- operasi pohon (immutable) ----
+// ---- tree operations (immutable) ----
 function withKids(b: Block, f: (l: Block[]) => Block[]): Block {
   if (b.children) return { ...b, children: f(b.children) }
   if (b.cols) return { ...b, cols: b.cols.map(f) }
@@ -126,7 +126,7 @@ export function moveIn(blocks: Block[], id: string, dir: -1 | 1): Block[] {
   return blocks.map((b) => withKids(b, (l) => moveIn(l, id, dir)))
 }
 
-/** Pindahkan blok `dragId` ke tepat sebelum `targetId` (tidak boleh ke dalam dirinya sendiri). */
+/** Move block `dragId` to just before `targetId` (cannot move into itself). */
 export function relocate(blocks: Block[], dragId: string, targetId: string): Block[] {
   const d = findIn(blocks, dragId)
   if (!d || dragId === targetId || findIn([d], targetId)) return blocks
@@ -142,7 +142,7 @@ export function cloneDeep(b: Block): Block {
   }
 }
 
-/** Kolom tidak boleh kosong sama sekali (supaya selalu ada tempat mengetik). */
+/** Columns must never be completely empty (so there is always somewhere to type). */
 export function fixCols(blocks: Block[]): Block[] {
   return blocks.map((b) => {
     if (b.cols) return { ...b, cols: b.cols.map((l) => (l.length ? fixCols(l) : [makeBlock('text')])) }
@@ -151,5 +151,5 @@ export function fixCols(blocks: Block[]): Block[] {
   })
 }
 
-/** Teks markdown polos dari satu string (untuk mengisi awal dari deskripsi lama). */
+/** A plain markdown text block from a string (to pre-fill from an old description). */
 export const textBlock = (text: string): Block => ({ ...makeBlock('text'), text })

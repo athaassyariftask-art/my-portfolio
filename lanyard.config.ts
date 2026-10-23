@@ -1,10 +1,10 @@
 // ============================================================
-// Pengaturan kartu lanyard. Edit file ini, bukan kodenya.
-// Semua gambar ditaruh di frontend/public/lanyard/ lalu tulis path-nya di `src`,
-// mis. src: '/lanyard/stiker-1.png'. PNG transparan paling bagus (bentuk stiker ikut gambarnya).
-// Slot yang `src`-nya kosong tampil sebagai kotak abu-abu bertanda "+" saat `npm run dev`,
-// dan HILANG otomatis di production, jadi aman dibiarkan kosong.
-// Foto profil diatur di site.config.ts (`photo`).
+// Lanyard card settings. Edit this file, not the code.
+// Put all images in public/lanyard/ and write their path in `src`,
+// e.g. src: '/lanyard/sticker-1.png'. A transparent PNG works best (the sticker takes the image's shape).
+// A slot with an empty `src` shows as a grey box with a "+" during `npm run dev`,
+// and disappears automatically in production, so it is safe to leave empty.
+// The profile photo is set in site.config.ts (`photo`).
 // ============================================================
 
 export type StickerSlot = {

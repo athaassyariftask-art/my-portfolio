@@ -1,25 +1,22 @@
-/* Sentuhan kecil: warna seleksi teks, fokus, dan kursor di atas elemen yang bisa diklik. */
+/* Small touches: text selection color, focus ring, accent color for form controls, slim scrollbar. */
 ::selection {
-  background: #f7c9e5; /* pink pastel */
-  color: #0f172a; /* slate-900 */
+  background: rgba(246, 198, 80, 0.55); /* marker yellow */
+  color: #0f1b33;
 }
 
 html {
-  accent-color: #3730a3; /* checkbox dan slider ikut warna aksen */
-  scrollbar-color: #cbd5e1 transparent;
+  accent-color: #1f3fa0; /* checkboxes and sliders follow the accent */
+  scrollbar-color: #cfc9b8 transparent;
   scrollbar-width: thin;
+  scroll-behavior: smooth;
 }
 
 :focus-visible {
-  outline: 2px solid #3730a3;
+  outline: 2px solid #1f3fa0;
   outline-offset: 3px;
   border-radius: 6px;
 }
 
-/* Kursor cincin hitam dengan titik pink di tengah, hanya untuk elemen yang bisa diklik (cadangan: pointer biasa) */
-a[href],
-button:not(:disabled),
-summary,
-[role="button"] {
-  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><circle cx='16' cy='16' r='11' fill='none' stroke='%23141414' stroke-width='2.5'/><circle cx='16' cy='16' r='3' fill='%23f7c9e5' stroke='%23141414' stroke-width='1.5'/></svg>") 16 16, pointer;
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
 }

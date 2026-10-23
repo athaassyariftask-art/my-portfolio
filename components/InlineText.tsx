@@ -4,8 +4,8 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import { readError } from '@/components/admin/ui'
 
 /**
- * Teks pendek yang bisa diedit di tempat oleh admin (mis. judul dan ringkasan project).
- * Pengunjung hanya melihat teks biasa. Tersimpan otomatis saat kursor keluar dari kolom.
+ * Short text the admin can edit in place (e.g. a project's title and summary).
+ * Visitors just see plain text. Saves automatically when the cursor leaves the field.
  */
 export default function InlineText({
   endpoint,
@@ -17,7 +17,7 @@ export default function InlineText({
   required,
   as: Tag = 'p',
 }: {
-  endpoint: string // mis. "projects/3"
+  endpoint: string // e.g. "projects/3"
   field: string
   initial: string
   canEdit: boolean
@@ -44,7 +44,7 @@ export default function InlineText({
   async function save() {
     const v = value.trim()
     if (v === saved) return
-    if (required && !v) return setValue(saved) // judul tidak boleh kosong
+    if (required && !v) return setValue(saved) // the title must not be empty
     setStatus('saving')
     setError('')
     const res = await fetch(`/api/admin/${endpoint}`, {
@@ -76,7 +76,7 @@ export default function InlineText({
       />
       {status !== '' && (
         <p className={`mt-1 font-mono text-xs ${status === 'error' ? 'text-rose-600' : 'text-slate-400'}`}>
-          {status === 'saving' ? 'Menyimpan…' : status === 'ok' ? '✓ Tersimpan' : error}
+          {status === 'saving' ? 'Saving…' : status === 'ok' ? '✓ Saved' : error}
         </p>
       )}
     </div>

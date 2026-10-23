@@ -1,9 +1,9 @@
 import { site as defaults } from '@/site.config'
 import { apiGet } from './api'
 
-export type Site = Omit<typeof defaults, 'headline'> & { cv: string } // cv: alamat PDF dari Admin → Profil (kosong = tombol tidak tampil)
+export type Site = Omit<typeof defaults, 'headline'> & { cv: string } // cv: PDF URL from Admin → Profile (empty = button hidden)
 
-/** Hash kecil untuk cache-busting alamat foto. */
+/** Small hash for cache-busting the photo URL. */
 const hash = (s: string) => {
   let h = 0
   for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0
@@ -13,8 +13,8 @@ const str = (v: unknown, fallback: string) => (typeof v === 'string' && v.trim()
 const arr = <T,>(v: unknown, fallback: T[]): T[] => (Array.isArray(v) && v.length ? (v as T[]) : fallback)
 
 /**
- * Profil = isi dari database (diedit lewat /admin), dengan site.config.ts sebagai cadangan.
- * Kolom yang kosong di database otomatis memakai nilai bawaan, jadi website tidak pernah kosong.
+ * Profile = content from the database (edited via /admin), with site.config.ts as a fallback.
+ * Empty columns in the database automatically use the default value, so the site is never blank.
  */
 export async function getProfile(): Promise<Site> {
   const d = await apiGet<Record<string, unknown>>('/profile/')
@@ -29,7 +29,7 @@ export async function getProfile(): Promise<Site> {
     role: str(d.role, defaults.role),
     affiliation: str(d.affiliation, defaults.affiliation),
     email: str(d.email, defaults.email),
-    // Foto dari Vercel Blob disajikan lewat /api/photo (same-origin untuk lanyard); kalau belum diupload, pakai site.config.ts
+    // Photos from Vercel Blob are served via /api/photo (same-origin for the lanyard); if none is uploaded, use site.config.ts
     photo: typeof d.photo === 'string' && d.photo ? `/api/photo?v=${hash(d.photo)}` : defaults.photo,
     cv: typeof d.cv === 'string' && d.cv.startsWith('https://') ? d.cv : '',
     links: arr(d.links, defaults.links),

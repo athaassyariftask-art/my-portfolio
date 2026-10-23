@@ -12,35 +12,41 @@ const GRID: Record<number, string> = {
   4: 'sm:grid-cols-2 lg:grid-cols-4',
 }
 
-/** Kartu berwarna bergaris tebal. Bila ada gambar: gambar di atas, kartu berlatar kertas. */
+/** White cards with a soft shadow. A soft tint marks the label; with an image, the image sits on top. */
 export default function Cards({ items, fields, options, detailHref }: LayoutProps) {
   const cols = GRID[options.columns ?? 3] ?? GRID[3]
   return (
-    <div className={`grid gap-7 ${cols}`}>
+    <div className={`grid gap-6 ${cols}`}>
       {items.map((item, i) => {
         const s = readSlots(item, fields)
         const detail = detailHref(item)
         return (
           <Reveal key={String(item._id ?? i)} delay={(i % 3) * 0.08}>
-            <div
-              className={`pop-card pop-hover flex h-full flex-col overflow-hidden ${s.image ? '' : popColor(i + 2)}`}
-            >
+            <div className="pop-card pop-hover group relative flex h-full flex-col overflow-hidden">
               {s.image && (
-                <div className={`aspect-[16/9] overflow-hidden border-b-[1.5px] border-[#141414] ${popColor(i)}`}>
+                <div className={`aspect-[16/9] overflow-hidden border-b border-[color:var(--line)] ${popColor(i)}`}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={s.image} alt={s.title} className="h-full w-full object-cover" />
                 </div>
               )}
-              <div className="flex flex-1 flex-col p-7">
-                {s.meta && <span className="pop-pill mb-4 self-start bg-[#ffffff]">{s.meta}</span>}
-                <h3 className="pop-display mb-1 text-2xl uppercase leading-tight">{s.title}</h3>
-                {s.subtitle && <p className="mb-3 font-semibold opacity-70">{s.subtitle}</p>}
-                {s.body && <p className="whitespace-pre-line font-medium">{s.body}</p>}
+              {!s.image && (
+                <span
+                  aria-hidden
+                  className="pop-display pointer-events-none absolute right-5 top-2 select-none text-7xl opacity-[0.08] transition-all duration-300 group-hover:-translate-y-1 group-hover:text-[color:var(--accent)] group-hover:opacity-25"
+                >
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+              )}
+              <div className="relative flex flex-1 flex-col p-6">
+                {s.meta && <span className={`pop-pill mb-4 self-start ${popColor(i)}`}>{s.meta}</span>}
+                <h3 className="pop-display text-xl leading-snug md:text-2xl">{s.title}</h3>
+                {s.subtitle && <p className="mt-1 text-sm font-medium text-[color:var(--muted)]">{s.subtitle}</p>}
+                {s.body && <p className="mt-3 whitespace-pre-line text-[15px] leading-relaxed">{s.body}</p>}
                 {s.list.length > 0 && (
-                  <ul className="mt-3 space-y-1.5 font-medium">
+                  <ul className="mt-3 space-y-1.5 text-[15px] leading-relaxed">
                     {s.list.map((pt, j) => (
                       <li key={j} className="flex gap-2.5">
-                        <span className="mt-2 h-2 w-2 shrink-0 rounded-full border-[1.5px] border-[#141414] bg-[#ffffff]" />
+                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[color:var(--accent)]" />
                         {pt}
                       </li>
                     ))}
@@ -49,16 +55,16 @@ export default function Cards({ items, fields, options, detailHref }: LayoutProp
                 {s.tags.length > 0 && (
                   <div className="mt-4 flex flex-wrap gap-2">
                     {s.tags.map((t) => (
-                      <span key={t} className="pop-pill bg-[#ffffff]">{t}</span>
+                      <span key={t} className="pop-pill">{t}</span>
                     ))}
                   </div>
                 )}
                 {(detail || s.link) && (
-                  <div className="mt-auto flex flex-wrap gap-3 pt-5">
-                    {detail && <Link href={detail} className="pop-pill pop-teal">Lihat detail →</Link>}
+                  <div className="mt-auto flex flex-wrap gap-x-5 gap-y-2 pt-5 text-sm">
+                    {detail && <Link href={detail} className="pop-link">View details →</Link>}
                     {s.link && (
-                      <a href={s.link} target="_blank" rel="noreferrer" className="pop-pill inline-flex items-center gap-1 bg-[#ffffff]">
-                        Buka link <ArrowUpRight className="h-3.5 w-3.5" />
+                      <a href={s.link} target="_blank" rel="noreferrer" className="pop-link">
+                        Open link <ArrowUpRight className="h-3.5 w-3.5" />
                       </a>
                     )}
                   </div>

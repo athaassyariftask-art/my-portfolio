@@ -1,6 +1,6 @@
 import { upload } from '@vercel/blob/client'
 
-// Upload langsung dari browser ke Vercel Blob (tidak lewat fungsi server), jadi tidak ada batas 4,5 MB.
+// Uploads go straight from the browser to Vercel Blob (not through a server function), so the 4.5 MB limit doesn't apply.
 export const MAX_IMAGE_MB = 8
 export const MAX_CV_MB = 10
 export const MAX_VIDEO_MB = 100
@@ -20,16 +20,16 @@ async function put(file: File, kind: UploadKind, maxMb: number, tooBig: string):
     })
     return blob.url
   } catch (e) {
-    throw new Error(e instanceof Error && e.message ? e.message : 'Upload gagal.')
+    throw new Error(e instanceof Error && e.message ? e.message : 'Upload failed.')
   }
 }
 
-/** Upload gambar. Mengembalikan alamat https publik. */
-export const uploadImage = (file: File) => put(file, 'image', MAX_IMAGE_MB, `Ukuran maksimal ${MAX_IMAGE_MB} MB.`)
+/** Upload an image. Returns the public https URL. */
+export const uploadImage = (file: File) => put(file, 'image', MAX_IMAGE_MB, `Maximum size is ${MAX_IMAGE_MB} MB.`)
 
-/** Upload video (mp4/webm/mov). */
+/** Upload a video (mp4/webm/mov). */
 export const uploadVideo = (file: File) =>
-  put(file, 'video', MAX_VIDEO_MB, `Ukuran video maksimal ${MAX_VIDEO_MB} MB. Untuk video besar, pakai blok Embed (link YouTube).`)
+  put(file, 'video', MAX_VIDEO_MB, `Maximum video size is ${MAX_VIDEO_MB} MB. For larger videos, use the Embed block (YouTube link).`)
 
-/** Upload CV (PDF). */
-export const uploadPdf = (file: File) => put(file, 'pdf', MAX_CV_MB, `Ukuran maksimal ${MAX_CV_MB} MB.`)
+/** Upload a CV (PDF). */
+export const uploadPdf = (file: File) => put(file, 'pdf', MAX_CV_MB, `Maximum size is ${MAX_CV_MB} MB.`)

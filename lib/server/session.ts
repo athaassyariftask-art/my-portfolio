@@ -1,4 +1,4 @@
-// Login admin tunggal: password di environment variable, sesi = cookie bertanda tangan HMAC (tanpa tabel user / JWT).
+// Single admin login: the password lives in an environment variable, the session is an HMAC-signed cookie (no user table / JWT).
 import { createHmac, timingSafeEqual } from 'node:crypto'
 
 export const TOKEN_COOKIE = 'porto_admin'
@@ -6,8 +6,8 @@ export const SESSION_SECONDS = 60 * 60 * 12
 
 const secret = () => {
   const pw = process.env.ADMIN_PASSWORD
-  if (!pw) throw new Error('ADMIN_PASSWORD belum diisi (lihat DEPLOY.md).')
-  // password ikut jadi kunci: ganti password = semua sesi lama otomatis tidak berlaku
+  if (!pw) throw new Error('ADMIN_PASSWORD is not set (see DEPLOY.md).')
+  // the password is part of the key: changing it invalidates every existing session
   return `${process.env.SESSION_SECRET ?? ''}|${pw}`
 }
 const sign = (payload: string) => createHmac('sha256', secret()).update(payload).digest('base64url')

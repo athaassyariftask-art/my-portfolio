@@ -5,10 +5,10 @@ import { useEffect, useRef, useState } from 'react'
 export type NameVariant = { greeting: string; text: string }
 
 const NOISE = '▓▒░█<>/\\|{}[]=+*#%&@$?!'
-const SCRAMBLE_MS = 750 // lama transisi acak -> teks baru
-const FRAME_MS = 50 // seberapa sering huruf acak berganti (lebih besar = lebih "patah-patah")
+const SCRAMBLE_MS = 750 // length of the scramble -> new text transition
+const FRAME_MS = 50 // how often the scrambled letters change (larger = choppier)
 
-/** Satu langkah acak: huruf kiri mengunci lebih dulu seiring p (0..1) naik. */
+/** One scramble step: letters on the left lock first as p (0..1) rises. */
 function scrambled(from: string[], target: string[], p: number, pool: string[]) {
   const len = Math.max(from.length, target.length)
   let out = ''
@@ -20,22 +20,25 @@ function scrambled(from: string[], target: string[], p: number, pool: string[]) 
 }
 
 /**
- * Sapaan + nama yang berganti bahasa/aksara dengan efek glitch: huruf diacak lalu "mengunci" dari kiri
- * ke kanan, disertai pecahan warna (merah/cyan) sesaat. Sapaan mengikuti warna induknya (hitam),
- * nama memakai nameClassName (biru). Tanpa animasi kalau OS memakai "reduce motion".
+ * Greeting + name that can cycle through languages/scripts with a scramble effect: letters are shuffled
+ * and then "lock in" from left to right, with a brief, subtle color split. The greeting uses greetingClassName,
+ * the name uses nameClassName. With a single variant nothing animates. No animation when the OS asks for
+ * "reduce motion".
  */
 export default function GlitchName({
   variants,
   hold = 2800,
   nameClassName = '',
+  greetingClassName = '',
 }: {
   variants: NameVariant[]
   hold?: number
   nameClassName?: string
+  greetingClassName?: string
 }) {
   const [greeting, setGreeting] = useState(variants[0]?.greeting ?? '')
   const [text, setText] = useState(variants[0]?.text ?? '')
-  const [fx, setFx] = useState(0) // kekuatan glitch (px); 0 = mati
+  const [fx, setFx] = useState(0) // glitch strength (px); 0 = off
   const shown = useRef({ greeting: variants[0]?.greeting ?? '', text: variants[0]?.text ?? '' })
   const key = variants.map((v) => v.greeting + v.text).join('|')
 
@@ -55,7 +58,7 @@ export default function GlitchName({
 
     const scrambleTo = (to: NameVariant) => {
       const fromG = Array.from(shown.current.greeting)
-      const toG = Array.from(to.greeting) // per karakter Unicode, bukan per byte
+      const toG = Array.from(to.greeting) // per Unicode character, not per byte
       const fromT = Array.from(shown.current.text)
       const toT = Array.from(to.text)
       const poolG = [...fromG, ...toG, ...NOISE]
@@ -101,7 +104,7 @@ export default function GlitchName({
 
   const glitch = fx
     ? {
-        textShadow: `${fx}px 0 rgba(244,63,94,0.75), ${-fx}px 0 rgba(6,182,212,0.75)`,
+        textShadow: `${fx}px 0 rgba(31,63,160,0.35), ${-fx}px 0 rgba(246,198,80,0.7)`,
         transform: `translateX(${fx * 0.4}px)`,
       }
     : undefined
@@ -111,11 +114,11 @@ export default function GlitchName({
       <span className="sr-only">
         {variants[0]?.greeting} {variants[0]?.text}
       </span>
-      <span aria-hidden className="block min-h-[1.1em] break-words" style={glitch}>
+      <span aria-hidden className={`block min-h-[1.1em] break-words ${greetingClassName}`} style={glitch}>
         {greeting}
       </span>
-      <span aria-hidden className={`block min-h-[1.1em] break-words ${nameClassName}`} style={glitch}>
-        {text}
+      <span aria-hidden className="block min-h-[1.1em] break-words" style={glitch}>
+        <span className={nameClassName}>{text}</span>
       </span>
     </>
   )

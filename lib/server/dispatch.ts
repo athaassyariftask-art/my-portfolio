@@ -1,11 +1,11 @@
-// Router API di dalam proses Next.js. Bentuk URL & JSON sama dengan API Django sebelumnya.
+// API router inside the Next.js process. URL and JSON shapes match the previous Django API.
 import { PRESETS, LAYOUTS, FIELD_TYPES, SLOTS } from './presets'
 import { ApiError, DETAIL_KEY, validateDetail, validateMessage, validateProfile, validateProject, validateSection } from './validate'
 import type { Store } from './types'
 
 export type Req = {
   method: string
-  /** path tanpa awalan /api, mis. "sections/3" */
+  /** path without the /api prefix, e.g. "sections/3" */
   path: string
   query?: Record<string, string>
   body?: unknown
@@ -15,8 +15,8 @@ export type Req = {
 export type Res = { status: number; body: unknown }
 
 const ok = (body: unknown, status = 200): Res => ({ status, body })
-const NOT_FOUND: Res = { status: 404, body: { detail: 'Tidak ditemukan.' } }
-const DENIED: Res = { status: 403, body: { detail: 'Perlu login admin.' } }
+const NOT_FOUND: Res = { status: 404, body: { detail: 'Not found.' } }
+const DENIED: Res = { status: 403, body: { detail: 'Admin login required.' } }
 const MAX_PER_HOUR = 5
 
 function numId(s: string | undefined): number | null {
@@ -29,7 +29,7 @@ export async function dispatch(store: Store, req: Req): Promise<Res> {
   } catch (e) {
     if (e instanceof ApiError) return { status: e.status, body: e.body }
     console.error(e)
-    return { status: 500, body: { detail: 'Terjadi kesalahan di server.' } }
+    return { status: 500, body: { detail: 'Something went wrong on the server.' } }
   }
 }
 
@@ -39,7 +39,7 @@ async function route(store: Store, req: Req): Promise<Res> {
   const m = req.method.toUpperCase()
   const write = m !== 'GET' && m !== 'HEAD'
 
-  // semua penulisan butuh admin, kecuali kirim pesan kontak
+  // all writes require admin, except sending a contact message
   if (write && !(res === 'contact' && m === 'POST' && parts.length === 1) && !req.staff) return DENIED
 
   switch (res) {
@@ -138,7 +138,7 @@ async function route(store: Store, req: Req): Promise<Res> {
           const v = validateMessage(req.body)
           const ip = (req.ip || 'unknown').slice(0, 64)
           if ((await store.countRecentMessages(ip)) >= MAX_PER_HOUR) {
-            return { status: 429, body: { detail: 'Terlalu banyak pesan. Coba lagi satu jam lagi.' } }
+            return { status: 429, body: { detail: 'Too many messages. Please try again in an hour.' } }
           }
           await store.insertMessage({ ...v, ip })
           return ok({ ok: true }, 201)

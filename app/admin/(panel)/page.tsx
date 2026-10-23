@@ -21,40 +21,40 @@ export default async function AdminHome() {
       icon: Layers,
       title: 'Section',
       value: sections.length,
-      note: hidden ? `${hidden} disembunyikan` : 'Semua tampil',
-      hint: 'Susun blok di halaman depan',
+      note: hidden ? `${hidden} hidden` : 'All visible',
+      hint: 'Arrange blocks on the home page',
     },
     {
       href: '/admin/projects',
       icon: FolderKanban,
       title: 'Project',
       value: projects.length,
-      note: drafts ? `${drafts} draft` : 'Semua terbit',
-      hint: 'Tambah dan atur project',
+      note: drafts ? `${drafts} draft` : 'All published',
+      hint: 'Add and manage projects',
     },
     {
       href: '/admin/messages',
       icon: Mail,
-      title: 'Pesan',
+      title: 'Messages',
       value: messages.length,
-      note: messages.length ? 'Dari form kontak' : 'Belum ada',
-      hint: 'Pesan dari pengunjung',
+      note: messages.length ? 'From the contact form' : 'None yet',
+      hint: 'Messages from visitors',
     },
     {
       href: '/admin/profile',
       icon: UserRound,
-      title: 'Profil',
+      title: 'Profile',
       value: null,
-      note: 'Nama, foto, CV, link',
-      hint: 'Identitas di halaman depan',
+      note: 'Name, photo, CV, links',
+      hint: 'Your identity on the home page',
     },
   ]
 
   return (
     <>
       <PageHeader
-        title="Ringkasan"
-        hint="Isi section dan halaman detail diedit langsung di website (login lalu klik Edit). Di sini hanya pengaturan struktur."
+        title="Overview"
+        hint="Section content and detail pages are edited directly on the website (sign in, then click Edit). This area only manages structure."
       />
       <div className="grid gap-4 sm:grid-cols-2">
         {tiles.map(({ href, icon: Icon, title, value, note, hint }) => (

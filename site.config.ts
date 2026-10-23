@@ -1,17 +1,17 @@
 // ============================================================
-// Teks identitas ada di sini. Ini hanya CADANGAN kalau database kosong/backend mati;
-// isi aslinya diedit lewat Admin → Profil.
-// Section (Fokus, Pengalaman, Toolbox, Achievement, ...) ada di frontend/modules/.
-// Project TIDAK diisi di sini: kelola lewat Admin → Project.
+// Identity text lives here. This is only a FALLBACK for when the database is empty or unreachable;
+// the real values are edited in Admin → Profile.
+// Sections (Focus, Experience, Toolbox, Achievements, ...) are managed in Admin → Sections.
+// Projects are NOT filled in here: manage them in Admin → Projects.
 // ============================================================
 
 export const site = {
-  name: 'Nama Kamu', // TODO
-  role: 'Mahasiswa Teknik Industri',
+  name: 'Your Name', // TODO
+  role: 'Industrial Engineering Student',
   affiliation: 'Universitas Brawijaya',
-  email: 'email@kamu.com', // TODO
-  // Foto di kartu lanyard: taruh file di frontend/public/photo.jpg (potret, rasio ±4:5).
-  // Kalau file tidak ada, kartu menampilkan inisial.
+  email: 'you@example.com', // TODO
+  // Photo on the lanyard card: put the file at public/photo.jpg (portrait, roughly 4:5).
+  // If the file is missing, the card shows initials instead.
   photo: '/photo.jpg',
   links: [
     { label: 'GitHub', href: 'https://github.com/username' }, // TODO
@@ -19,9 +19,9 @@ export const site = {
   ],
 
   headline: {
-    lead: 'Data, sistem, dan',
-    accent: 'keputusan yang lebih baik.',
+    lead: 'Data, systems, and',
+    accent: 'better decisions.',
   },
   intro:
-    'Saya mengubah masalah yang kompleks menjadi sesuatu yang terstruktur, bisa dianalisis, dan siap dipakai untuk mengambil keputusan, lewat sistem informasi, analisis data, dan optimasi.',
+    'I turn complex problems into something structured, analyzable, and ready for decision-making, through information systems, data analysis, and optimization.',
 }

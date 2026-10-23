@@ -5,7 +5,7 @@ import { requireAdmin } from '@/lib/auth'
 export const metadata = { title: 'Admin', robots: { index: false, follow: false } }
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
-  await requireAdmin() // belum login -> redirect ke /admin/login
+  await requireAdmin() // not signed in -> redirect to /admin/login
   const messages = unwrapList(await apiGet<unknown>('/contact/', { auth: true })).length
 
   return (

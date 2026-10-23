@@ -3,7 +3,7 @@
 import { useState } from 'react'
 
 const field =
-  'w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white placeholder:text-slate-500 focus:border-blue-500 focus:outline-none'
+  'w-full rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-white placeholder:text-white/45 focus:border-[color:var(--hi)] focus:outline-none'
 
 export default function ContactForm() {
   const [state, setState] = useState<'idle' | 'sending' | 'ok' | 'error'>('idle')
@@ -24,22 +24,22 @@ export default function ContactForm() {
       form.reset()
     } else {
       setState('error')
-      setMsg(res?.status === 429 ? 'Terlalu banyak pesan. Coba lagi nanti.' : 'Pesan gagal terkirim. Coba lagi.')
+      setMsg(res?.status === 429 ? 'Too many messages. Please try again later.' : 'Your message could not be sent. Please try again.')
     }
   }
 
   return (
     <form onSubmit={onSubmit} className="space-y-3">
-      <input name="name" required maxLength={100} placeholder="Nama" className={field} />
+      <input name="name" required maxLength={100} placeholder="Name" className={field} />
       <input name="email" type="email" required placeholder="Email" className={field} />
-      <textarea name="message" required rows={4} placeholder="Pesan" className={field} />
+      <textarea name="message" required rows={4} placeholder="Message" className={field} />
       <button
         disabled={state === 'sending'}
-        className="rounded-full bg-white px-7 py-3 font-semibold text-slate-900 transition-colors hover:bg-blue-500 hover:text-white disabled:opacity-50"
+        className="rounded-full bg-[color:var(--hi)] px-7 py-3 font-semibold text-[color:var(--ink)] transition-colors hover:bg-white disabled:opacity-50"
       >
-        {state === 'sending' ? 'Mengirim…' : 'Kirim pesan'}
+        {state === 'sending' ? 'Sending…' : 'Send message'}
       </button>
-      {state === 'ok' && <p className="text-sm text-emerald-400">Terima kasih, pesan terkirim.</p>}
+      {state === 'ok' && <p className="text-sm text-emerald-400">Thanks, your message has been sent.</p>}
       {state === 'error' && <p className="text-sm text-rose-400">{msg}</p>}
     </form>
   )

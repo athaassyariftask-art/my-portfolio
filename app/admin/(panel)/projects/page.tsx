@@ -5,16 +5,16 @@ import { btnPrimary, card } from '@/components/admin/ui'
 import { getProjects } from '@/lib/projects'
 
 export default async function AdminProjects() {
-  const projects = await getProjects({ auth: true }) // staff melihat draft juga
+  const projects = await getProjects({ auth: true }) // staff can see drafts too
 
   return (
     <>
-      <PageHeader title="Project" hint="Judul, ringkasan, dan isi halaman project diedit langsung di halaman project-nya.">
-        <Link href="/admin/projects/new" className={btnPrimary}>+ Tambah project</Link>
+      <PageHeader title="Project" hint="Title, summary, and page content are edited directly on each project's own page.">
+        <Link href="/admin/projects/new" className={btnPrimary}>+ Add project</Link>
       </PageHeader>
 
       {projects.length === 0 ? (
-        <p className={`${card} border-dashed p-10 text-center text-slate-500`}>Belum ada project. Klik “Tambah project” untuk mulai.</p>
+        <p className={`${card} border-dashed p-10 text-center text-slate-500`}>No projects yet. Click “Add project” to get started.</p>
       ) : (
         <ul className={`${card} divide-y divide-slate-100 overflow-hidden`}>
           {projects.map((p) => (
@@ -28,13 +28,13 @@ export default async function AdminProjects() {
               <div className="min-w-0 flex-1">
                 <p className="truncate font-semibold text-slate-900">{p.title}</p>
                 <p className="flex gap-2 text-xs text-slate-500">
-                  <span>Urutan {p.order}</span>
+                  <span>Order {p.order}</span>
                   {!p.published && <span className="font-semibold text-amber-600">Draft</span>}
                   {p.featured && <span className="font-semibold text-blue-600">Featured</span>}
                 </p>
               </div>
-              <Link href={`/projects/${p.id}`} className="text-sm font-semibold text-blue-600 hover:underline">Buka</Link>
-              <Link href={`/admin/projects/${p.id}`} className="text-sm font-semibold text-slate-600 hover:underline">Pengaturan</Link>
+              <Link href={`/projects/${p.id}`} className="text-sm font-semibold text-blue-600 hover:underline">Open</Link>
+              <Link href={`/admin/projects/${p.id}`} className="text-sm font-semibold text-slate-600 hover:underline">Settings</Link>
               <DeleteButton endpoint={`projects/${p.id}`} name={p.title} />
             </li>
           ))}

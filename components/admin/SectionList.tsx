@@ -48,7 +48,7 @@ export default function SectionList({ sections, presets }: { sections: Row[]; pr
     setBusy(false)
   }
 
-  // Urutan dinomori ulang (0, 10, 20, ...) supaya tidak bentrok kalau banyak yang bernilai sama.
+  // Order is renumbered (0, 10, 20, ...) so values don't collide when several are equal.
   const move = (i: number, d: -1 | 1) =>
     run(async () => {
       const j = i + d
@@ -67,7 +67,7 @@ export default function SectionList({ sections, presets }: { sections: Row[]; pr
   const create = (body: Record<string, unknown>) =>
     run(async () => {
       const created = (await send('POST', 'sections', { ...body, order: nextOrder(), is_visible: true })) as { slug: string }
-      router.push(`/s/${created.slug}`) // langsung diedit di halamannya
+      router.push(`/s/${created.slug}`) // edit it right on its own page
     })
 
   const fromPreset = (p: Preset) =>
@@ -90,24 +90,24 @@ export default function SectionList({ sections, presets }: { sections: Row[]; pr
           {sections.map((s, i) => (
             <li key={s.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 p-4">
               <div className="flex shrink-0 flex-col text-xs font-semibold text-slate-400">
-                <button disabled={busy || i === 0} onClick={() => move(i, -1)} aria-label="Naikkan" className="hover:text-slate-900 disabled:opacity-30">↑</button>
-                <button disabled={busy || i === sections.length - 1} onClick={() => move(i, 1)} aria-label="Turunkan" className="hover:text-slate-900 disabled:opacity-30">↓</button>
+                <button disabled={busy || i === 0} onClick={() => move(i, -1)} aria-label="Move up" className="hover:text-slate-900 disabled:opacity-30">↑</button>
+                <button disabled={busy || i === sections.length - 1} onClick={() => move(i, 1)} aria-label="Move down" className="hover:text-slate-900 disabled:opacity-30">↓</button>
               </div>
               <div className="min-w-0 flex-1 basis-48">
                 <p className="truncate font-semibold text-slate-900">{s.title}</p>
                 <p className="flex flex-wrap gap-x-2 text-xs text-slate-500">
                   <span>{s.kind === 'projects' ? 'Project' : getLayout(s.layout).label}</span>
                   {s.kind !== 'projects' && <span>{s.count} item</span>}
-                  <span>{s.page === 'about' ? 'Halaman Tentang saya' : 'Beranda'}</span>
-                  {!s.is_visible && <span className="font-semibold text-amber-600">Disembunyikan</span>}
+                  <span>{s.page === 'about' ? 'About me page' : 'Home'}</span>
+                  {!s.is_visible && <span className="font-semibold text-amber-600">Hidden</span>}
                 </p>
               </div>
               <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-600">
                 <input type="checkbox" checked={s.is_visible} disabled={busy} onChange={() => toggle(s)} />
-                Tampil
+                Visible
               </label>
               <Link href={`/s/${s.slug}`} className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-semibold text-white hover:bg-blue-600">
-                Buka &amp; edit
+                Open &amp; edit
               </Link>
               <DeleteButton endpoint={`sections/${s.id}`} name={s.title} />
             </li>
@@ -116,18 +116,18 @@ export default function SectionList({ sections, presets }: { sections: Row[]; pr
       )}
 
       {!picking ? (
-        <button onClick={() => setPicking(true)} className={btnPrimary}>+ Section baru</button>
+        <button onClick={() => setPicking(true)} className={btnPrimary}>+ New section</button>
       ) : (
         <div className={`${card} p-6`}>
           <div className="mb-5 flex items-start justify-between gap-4">
             <div>
-              <h2 className="font-semibold text-slate-900">Mulai dari template</h2>
+              <h2 className="font-semibold text-slate-900">Start from a template</h2>
               <p className="text-sm text-slate-500">
-                Template hanya titik awal. Setelah dibuat kamu bebas mengganti layout dan isian di halaman section-nya.
+                A template is just a starting point. Once it's created, you can freely change the layout and fields on the section's own page.
               </p>
             </div>
             {sections.length > 0 && (
-              <button onClick={() => setPicking(false)} className="text-sm font-medium text-slate-500 hover:text-slate-900">Tutup</button>
+              <button onClick={() => setPicking(false)} className="text-sm font-medium text-slate-500 hover:text-slate-900">Close</button>
             )}
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -150,14 +150,14 @@ export default function SectionList({ sections, presets }: { sections: Row[]; pr
                 className="rounded-2xl border border-slate-200 p-4 text-left transition-colors hover:border-slate-900 disabled:opacity-50"
               >
                 <span className="block font-semibold text-slate-900">Project</span>
-                <span className="block text-sm text-slate-500">Kartu project dari menu Project.</span>
-                <span className="mt-2 block text-xs text-slate-400">Isi dikelola di Admin → Project</span>
+                <span className="block text-sm text-slate-500">Project cards from the Projects menu.</span>
+                <span className="mt-2 block text-xs text-slate-400">Content is managed in Admin → Project</span>
               </button>
             )}
           </div>
           {presets.length === 0 && (
             <p className="mt-4 rounded-xl bg-amber-50 p-3 text-sm text-amber-800">
-              Template tidak bisa dimuat. Pastikan backend Django berjalan dan sudah di-migrate.
+              Couldn't load templates. Make sure the Django backend is running and migrated.
             </p>
           )}
         </div>

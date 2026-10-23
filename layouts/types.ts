@@ -26,7 +26,7 @@ export type Field = {
 
 export type Options = { columns?: number; detail?: boolean }
 
-export type LayoutKey = 'cards' | 'timeline' | 'list' | 'chips' | 'text'
+export type LayoutKey = 'cards' | 'timeline' | 'list' | 'chips' | 'text' | 'journey'
 
 /** Isi item yang sudah dipetakan ke slot (lihat slots.ts). */
 export type Slotted = {

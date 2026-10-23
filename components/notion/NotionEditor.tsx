@@ -11,15 +11,15 @@ import { BODY, CALLOUT, CODE, H1, H2, H3, QUOTE } from './style'
 
 /* eslint-disable @next/next/no-img-element */
 
-// ---------------------------------------------------------------- konteks operasi
+// ---------------------------------------------------------------- operations context
 type Ops = {
   get: (id: string) => Block | null
   patch: (id: string, p: Partial<Block>) => void
   insertAfter: (id: string, b: Block) => void
   remove: (id: string) => void
   move: (id: string, d: -1 | 1) => void
-  turn: (id: string, t: BlockType) => void // ubah jenis, teks dipertahankan
-  replace: (id: string, t: BlockType) => void // ganti jadi blok baru kosong
+  turn: (id: string, t: BlockType) => void // change type, keep the text
+  replace: (id: string, t: BlockType) => void // replace with a new empty block
   duplicate: (id: string) => void
   relocate: (drag: string, target: string) => void
   focus: (id: string, pos?: number | 'end') => void
@@ -30,7 +30,7 @@ type Ops = {
 const Ctx = createContext<Ops>(null as unknown as Ops)
 const useOps = () => useContext(Ctx)
 
-// ---------------------------------------------------------------- pintasan markdown
+// ---------------------------------------------------------------- markdown shortcuts
 function shortcut(v: string): { type: BlockType; text: string; checked?: boolean } | null {
   let m: RegExpMatchArray | null
   if ((m = v.match(/^(#{1,3}) ([\s\S]*)$/))) return { type: (['h1', 'h2', 'h3'] as const)[m[1].length - 1], text: m[2] }
@@ -43,14 +43,14 @@ function shortcut(v: string): { type: BlockType; text: string; checked?: boolean
   return null
 }
 
-// ---------------------------------------------------------------- menu (dipakai "/" dan ⋮⋮)
+// ---------------------------------------------------------------- menu (used by "/" and ⋮⋮)
 type Item = { key: string; label: string; hint?: string; danger?: boolean; head?: boolean; run: () => void }
 
 function MenuList({ items, sel }: { items: Item[]; sel?: number }) {
   return (
     <div
       className="absolute left-0 top-full z-30 mt-1 max-h-80 w-60 overflow-auto rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xl"
-      onMouseDown={(e) => e.preventDefault()} // jangan mencuri fokus dari textarea
+      onMouseDown={(e) => e.preventDefault()} // don't steal focus from the textarea
     >
       {items.map((it, i) =>
         it.head ? (
@@ -89,7 +89,7 @@ function useOutside(active: boolean, close: () => void) {
   return ref
 }
 
-// ---------------------------------------------------------------- kolom teks otomatis tinggi
+// ---------------------------------------------------------------- auto-height text field
 function Field({ b, className, placeholder }: { b: Block; className: string; placeholder?: string }) {
   const ops = useOps()
   const ref = useRef<HTMLTextAreaElement>(null)
@@ -105,7 +105,7 @@ function Field({ b, className, placeholder }: { b: Block; className: string; pla
     el.style.height = el.scrollHeight + 'px'
   }, [text])
 
-  // menu "/" hanya di blok teks biasa, selama isinya satu baris diawali "/"
+  // the "/" menu only appears in plain text blocks, while the content is a single line starting with "/"
   const query = b.type === 'text' && text.startsWith('/') && !text.includes('\n') && closedAt !== text ? text.slice(1).toLowerCase() : null
   const matches = query === null ? [] : MENU.filter((m) => !query || (m.keys + ' ' + m.label.toLowerCase()).includes(query))
   const open = matches.length > 0
@@ -138,7 +138,7 @@ function Field({ b, className, placeholder }: { b: Block; className: string; pla
     try {
       const url = await uploadImage(img)
       ops.insertAfter(b.id, { ...makeBlock('image'), url })
-    } catch { /* abaikan; pengguna bisa upload lewat blok Foto */ }
+    } catch { /* ignore; the user can upload via the Photo block */ }
     ops.busy(false)
   }
 
@@ -156,7 +156,7 @@ function Field({ b, className, placeholder }: { b: Block; className: string; pla
     if (e.key === 'Enter' && !e.shiftKey && !isCode) {
       e.preventDefault()
       const isList = b.type === 'bullet' || b.type === 'number' || b.type === 'todo'
-      if (isList && text === '') return ops.patch(b.id, { type: 'text' }) // Enter di item kosong = keluar dari daftar
+      if (isList && text === '') return ops.patch(b.id, { type: 'text' }) // Enter on an empty item = leave the list
       const pos = el.selectionStart
       ops.patch(b.id, { text: text.slice(0, pos) })
       ops.insertAfter(b.id, { ...makeBlock(isList ? b.type : 'text'), text: text.slice(el.selectionEnd) })
@@ -217,7 +217,7 @@ function Field({ b, className, placeholder }: { b: Block; className: string; pla
   )
 }
 
-// ---------------------------------------------------------------- isi tiap jenis blok
+// ---------------------------------------------------------------- content of each block type
 function Gallery({ b }: { b: Block }) {
   const ops = useOps()
   const input = useRef<HTMLInputElement>(null)
@@ -231,7 +231,7 @@ function Gallery({ b }: { b: Block }) {
       for (const f of Array.from(files)) urls.push(await uploadImage(f))
       ops.patch(b.id, { urls })
     } catch (e) {
-      setErr(e instanceof Error ? e.message : 'Upload gagal.')
+      setErr(e instanceof Error ? e.message : 'Upload failed.')
     }
     ops.busy(false)
     if (input.current) input.current.value = ''
@@ -246,7 +246,7 @@ function Gallery({ b }: { b: Block }) {
             <button type="button" onClick={() => ops.patch(b.id, { urls: urls.filter((_, j) => j !== i) })} className="absolute -right-1.5 -top-1.5 h-5 w-5 rounded-full bg-rose-600 text-xs text-white">×</button>
           </div>
         ))}
-        <button type="button" onClick={() => input.current?.click()} className="flex aspect-square items-center justify-center rounded-lg border border-slate-300 text-sm text-slate-500 hover:border-slate-900 hover:text-slate-900">+ Foto</button>
+        <button type="button" onClick={() => input.current?.click()} className="flex aspect-square items-center justify-center rounded-lg border border-slate-300 text-sm text-slate-500 hover:border-slate-900 hover:text-slate-900">+ Photo</button>
       </div>
       <input ref={input} type="file" accept="image/*" multiple hidden onChange={(e) => add(e.target.files)} />
       {err && <p className="mt-2 text-sm text-rose-600">{err}</p>}
@@ -266,7 +266,7 @@ function ImageBody({ b }: { b: Block }) {
     try {
       ops.patch(b.id, { url: await uploadImage(f) })
     } catch (e) {
-      setErr(e instanceof Error ? e.message : 'Upload gagal.')
+      setErr(e instanceof Error ? e.message : 'Upload failed.')
     }
     ops.busy(false)
     if (input.current) input.current.value = ''
@@ -277,18 +277,18 @@ function ImageBody({ b }: { b: Block }) {
         <figure>
           <div className="group/img relative">
             <img src={b.url} alt={b.caption ?? ''} className="w-full rounded-2xl border border-slate-200" />
-            <button type="button" onClick={() => input.current?.click()} className="absolute right-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-700 opacity-0 shadow transition-opacity group-hover/img:opacity-100">Ganti foto</button>
+            <button type="button" onClick={() => input.current?.click()} className="absolute right-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-700 opacity-0 shadow transition-opacity group-hover/img:opacity-100">Replace photo</button>
           </div>
           <input
             value={b.caption ?? ''}
             onChange={(e) => ops.patch(b.id, { caption: e.target.value })}
-            placeholder="Tambahkan keterangan…"
+            placeholder="Add a caption…"
             className="mt-2 w-full bg-transparent text-center font-mono text-xs text-slate-500 outline-none placeholder:text-transparent focus:placeholder:text-slate-300"
           />
         </figure>
       ) : (
         <button type="button" onClick={() => input.current?.click()} className="flex w-full items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white/60 py-10 text-sm text-slate-500 transition-colors hover:border-blue-600 hover:text-blue-600">
-          Klik untuk upload foto
+          Click to upload a photo
         </button>
       )}
       <input ref={input} type="file" accept="image/*" hidden onChange={(e) => pick(e.target.files)} />
@@ -311,7 +311,7 @@ function VideoBody({ b }: { b: Block }) {
     try {
       ops.patch(b.id, { url: await uploadVideo(f) })
     } catch (e) {
-      setErr(e instanceof Error ? e.message : 'Upload gagal.')
+      setErr(e instanceof Error ? e.message : 'Upload failed.')
     }
     setLoading(false)
     ops.busy(false)
@@ -323,18 +323,18 @@ function VideoBody({ b }: { b: Block }) {
         <figure>
           <div className="group/img relative">
             <video src={b.url} controls preload="metadata" className="w-full rounded-2xl border border-slate-200 bg-black" />
-            <button type="button" onClick={() => input.current?.click()} className="absolute right-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-700 opacity-0 shadow transition-opacity group-hover/img:opacity-100">Ganti video</button>
+            <button type="button" onClick={() => input.current?.click()} className="absolute right-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-700 opacity-0 shadow transition-opacity group-hover/img:opacity-100">Replace video</button>
           </div>
           <input
             value={b.caption ?? ''}
             onChange={(e) => ops.patch(b.id, { caption: e.target.value })}
-            placeholder="Tambahkan keterangan…"
+            placeholder="Add a caption…"
             className="mt-2 w-full bg-transparent text-center font-mono text-xs text-slate-500 outline-none placeholder:text-transparent focus:placeholder:text-slate-300"
           />
         </figure>
       ) : (
         <button type="button" disabled={loading} onClick={() => input.current?.click()} className="flex w-full items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white/60 py-10 text-sm text-slate-500 transition-colors hover:border-blue-600 hover:text-blue-600 disabled:opacity-60">
-          {loading ? 'Mengunggah video…' : `Klik untuk upload video (MP4 / WebM / MOV, maks ${MAX_VIDEO_MB} MB)`}
+          {loading ? 'Uploading video…' : `Click to upload a video (MP4 / WebM / MOV, max ${MAX_VIDEO_MB} MB)`}
         </button>
       )}
       <input ref={input} type="file" accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov,.m4v" hidden onChange={(e) => pick(e.target.files)} />
@@ -352,7 +352,7 @@ function Embed({ b }: { b: Block }) {
         data-bid={b.id}
         value={b.url ?? ''}
         onChange={(e) => ops.patch(b.id, { url: e.target.value })}
-        placeholder="Tempel tautan YouTube atau Vimeo (https://…)"
+        placeholder="Paste a YouTube or Vimeo link (https://…)"
         className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm outline-none focus:border-blue-600"
       />
       {src ? (
@@ -360,7 +360,7 @@ function Embed({ b }: { b: Block }) {
           <iframe src={src} className="h-full w-full" allowFullScreen loading="lazy" title="Embed" />
         </div>
       ) : b.url ? (
-        <p className="text-sm text-amber-700">Tautan ini belum didukung. Pakai YouTube atau Vimeo (https).</p>
+        <p className="text-sm text-amber-700">This link isn't supported yet. Use YouTube or Vimeo (https).</p>
       ) : null}
     </div>
   )
@@ -370,25 +370,25 @@ function Body({ b, index }: { b: Block; index: number }) {
   const ops = useOps()
   switch (b.type) {
     case 'text':
-      return <Field b={b} className={BODY} placeholder="Ketik “/” untuk perintah…" />
+      return <Field b={b} className={BODY} placeholder="Type “/” for commands…" />
     case 'h1':
-      return <Field b={b} className={H1} placeholder="Judul 1" />
+      return <Field b={b} className={H1} placeholder="Heading 1" />
     case 'h2':
-      return <Field b={b} className={H2} placeholder="Judul 2" />
+      return <Field b={b} className={H2} placeholder="Heading 2" />
     case 'h3':
-      return <Field b={b} className={H3} placeholder="Judul 3" />
+      return <Field b={b} className={H3} placeholder="Heading 3" />
     case 'bullet':
       return (
         <div className="flex gap-3">
           <span className="mt-[0.7em] h-1.5 w-1.5 shrink-0 rounded-full bg-slate-700" />
-          <div className="flex-1"><Field b={b} className={BODY} placeholder="Daftar" /></div>
+          <div className="flex-1"><Field b={b} className={BODY} placeholder="List" /></div>
         </div>
       )
     case 'number':
       return (
         <div className="flex gap-2">
           <span className={`${BODY} w-5 shrink-0 text-right`}>{index}.</span>
-          <div className="flex-1"><Field b={b} className={BODY} placeholder="Daftar" /></div>
+          <div className="flex-1"><Field b={b} className={BODY} placeholder="List" /></div>
         </div>
       )
     case 'todo':
@@ -403,7 +403,7 @@ function Body({ b, index }: { b: Block; index: number }) {
       return (
         <div>
           <div className="flex gap-2">
-            <button type="button" onClick={() => ops.patch(b.id, { open: !open })} className="mt-[0.2em] h-6 w-5 shrink-0 text-slate-500 hover:text-slate-900" aria-label="Buka/tutup">
+            <button type="button" onClick={() => ops.patch(b.id, { open: !open })} className="mt-[0.2em] h-6 w-5 shrink-0 text-slate-500 hover:text-slate-900" aria-label="Expand/collapse">
               {open ? '▾' : '▸'}
             </button>
             <div className="flex-1"><Field b={b} className={`${BODY} font-semibold`} placeholder="Toggle" /></div>
@@ -413,7 +413,7 @@ function Body({ b, index }: { b: Block; index: number }) {
               {(b.children ?? []).length ? (
                 <BlockList list={b.children ?? []} />
               ) : (
-                <button type="button" onClick={() => { const t = makeBlock('text'); ops.patch(b.id, { children: [t] }); ops.focus(t.id, 0) }} className="py-1 text-sm text-slate-400 hover:text-slate-700">+ Isi di dalam toggle</button>
+                <button type="button" onClick={() => { const t = makeBlock('text'); ops.patch(b.id, { children: [t] }); ops.focus(t.id, 0) }} className="py-1 text-sm text-slate-400 hover:text-slate-700">+ Add content inside toggle</button>
               )}
             </div>
           )}
@@ -421,11 +421,11 @@ function Body({ b, index }: { b: Block; index: number }) {
       )
     }
     case 'quote':
-      return <div className={QUOTE}><Field b={b} className="italic" placeholder="Kutipan" /></div>
+      return <div className={QUOTE}><Field b={b} className="italic" placeholder="Quote" /></div>
     case 'callout':
-      return <div className={CALLOUT}><Field b={b} className="" placeholder="Catatan penting" /></div>
+      return <div className={CALLOUT}><Field b={b} className="" placeholder="Important note" /></div>
     case 'code':
-      return <div className={CODE}><Field b={b} className="font-mono text-sm" placeholder="Kode" /></div>
+      return <div className={CODE}><Field b={b} className="font-mono text-sm" placeholder="Code" /></div>
     case 'divider':
       return <hr className="my-4 border-slate-300" />
     case 'image':
@@ -451,7 +451,7 @@ function Body({ b, index }: { b: Block; index: number }) {
   }
 }
 
-// ---------------------------------------------------------------- satu baris blok (gagang + isi)
+// ---------------------------------------------------------------- one block row (handle + content)
 function Row({ b, index }: { b: Block; index: number }) {
   const ops = useOps()
   const [menu, setMenu] = useState(false)
@@ -473,17 +473,17 @@ function Row({ b, index }: { b: Block; index: number }) {
   }))
   const items: Item[] = []
   if (isTextual(b.type)) {
-    items.push({ key: 'h-turn', label: 'Ubah jadi', head: true, run: () => {} })
+    items.push({ key: 'h-turn', label: 'Turn into', head: true, run: () => {} })
     for (const m of MENU.filter((x) => x.turn)) {
       items.push({ key: 't-' + m.type, label: m.label + (m.type === b.type ? '  ✓' : ''), hint: m.hint, run: close(() => ops.turn(b.id, m.type)) })
     }
-    items.push({ key: 'h-act', label: 'Aksi', head: true, run: () => {} })
+    items.push({ key: 'h-act', label: 'Actions', head: true, run: () => {} })
   }
   items.push(
-    { key: 'dup', label: 'Duplikat', run: close(() => ops.duplicate(b.id)) },
-    { key: 'up', label: 'Pindah ke atas', run: close(() => ops.move(b.id, -1)) },
-    { key: 'down', label: 'Pindah ke bawah', run: close(() => ops.move(b.id, 1)) },
-    { key: 'del', label: 'Hapus', danger: true, run: close(() => ops.remove(b.id)) },
+    { key: 'dup', label: 'Duplicate', run: close(() => ops.duplicate(b.id)) },
+    { key: 'up', label: 'Move up', run: close(() => ops.move(b.id, -1)) },
+    { key: 'down', label: 'Move down', run: close(() => ops.move(b.id, 1)) },
+    { key: 'del', label: 'Delete', danger: true, run: close(() => ops.remove(b.id)) },
   )
 
   return (
@@ -500,13 +500,13 @@ function Row({ b, index }: { b: Block; index: number }) {
       <div ref={ref} className={`relative flex w-11 shrink-0 items-start justify-end gap-0.5 pt-1 transition-opacity focus-within:opacity-100 group-hover/row:opacity-100 ${menu || adding ? 'opacity-100' : 'opacity-40'}`}>
         <button
           type="button"
-          title="Tambah blok di bawah (teks, foto, video, kolom, dll)"
+          title="Add a block below (text, photo, video, columns, etc.)"
           onClick={() => { setMenu(false); setAdding((v) => !v) }}
           className="h-6 w-5 rounded text-slate-400 hover:bg-slate-100 hover:text-slate-800"
         >+</button>
         <button
           type="button"
-          title="Seret untuk memindah, klik untuk menu"
+          title="Drag to move, click for menu"
           draggable
           onDragStart={(e) => { ops.drag.current = b.id; e.dataTransfer.setData('text/plain', b.id) }}
           onDragEnd={() => { ops.drag.current = null }}
@@ -548,14 +548,14 @@ export default function NotionEditor({
   latest.current = blocks
   const pending = useRef<{ id: string; pos: number | 'end' } | null>(null)
   const drag = useRef<string | null>(null)
-  const [, setTick] = useState(0) // dipakai supaya permintaan fokus selalu diikuti render
+  const [, setTick] = useState(0) // so a focus request is always followed by a render
 
   const commit = (next: Block[]) => {
     latest.current = next
     onChange(next)
   }
 
-  // setelah setiap render: pindahkan fokus/kursor kalau ada permintaan
+  // after every render: move focus/cursor if requested
   useEffect(() => {
     const p = pending.current
     if (!p) return
@@ -564,7 +564,7 @@ export default function NotionEditor({
     if (!el) return
     el.focus()
     const n = p.pos === 'end' ? el.value.length : p.pos
-    try { el.setSelectionRange(n, n) } catch { /* input non-teks */ }
+    try { el.setSelectionRange(n, n) } catch { /* non-text input */ }
   })
 
   const ops: Ops = {
@@ -624,7 +624,7 @@ export default function NotionEditor({
       <div ref={root} className="text-base">
         <BlockList list={blocks} />
         <div onClick={appendAtEnd} className="min-h-24 cursor-text py-3 text-sm text-slate-300 hover:text-slate-400">
-          {blocks.length === 0 ? 'Klik di sini untuk mulai menulis. Ketik “/” untuk memilih jenis blok.' : ''}
+          {blocks.length === 0 ? 'Click here to start writing. Type “/” to choose a block type.' : ''}
         </div>
       </div>
     </Ctx.Provider>

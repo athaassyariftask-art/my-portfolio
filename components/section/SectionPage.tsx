@@ -16,15 +16,15 @@ type Status = 'saved' | 'dirty' | 'saving' | 'error'
 type Patch = Partial<Pick<Section, 'title' | 'layout' | 'schema' | 'options' | 'page' | 'items' | 'is_visible'>>
 
 const STATUS_TEXT: Record<Status, string> = {
-  saved: 'Tersimpan',
-  dirty: 'Belum tersimpan…',
-  saving: 'Menyimpan…',
-  error: 'Gagal menyimpan',
+  saved: 'Saved',
+  dirty: 'Not saved yet…',
+  saving: 'Saving…',
+  error: 'Save failed',
 }
 
 /**
- * Halaman section untuk admin: tampilan asli section + panel edit di tempat.
- * Semua perubahan (judul, layout, isian, item) tersimpan otomatis ±1 detik setelah berhenti mengetik.
+ * Section page for admins: the section's real appearance + an in-place edit panel.
+ * All changes (title, layout, fields, items) save automatically ~1 second after typing stops.
  */
 export default function SectionPage({
   initial,
@@ -49,14 +49,14 @@ export default function SectionPage({
   const isProjects = initial.kind === 'projects'
   const lay = getLayout(layout)
 
-  // ---- simpan otomatis ----
+  // ---- autosave ----
   const pending = useRef<Patch>({})
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const busy = useRef(false)
 
   async function flush() {
     if (busy.current) {
-      timer.current = setTimeout(flush, 400) // tunggu simpan yang sedang jalan
+      timer.current = setTimeout(flush, 400) // wait for the save in progress
       return
     }
     const body = pending.current
@@ -75,12 +75,12 @@ export default function SectionPage({
       ok = res.ok
       if (!ok) setError(await readError(res))
     } catch {
-      setError('Tidak bisa menghubungi server.')
+      setError('Could not reach the server.')
     }
     busy.current = false
     if (ok) setStatus(Object.keys(pending.current).length ? 'dirty' : 'saved')
     else {
-      pending.current = { ...body, ...pending.current } // coba lagi pada perubahan berikutnya
+      pending.current = { ...body, ...pending.current } // retry on the next change
       setStatus('error')
     }
   }
@@ -93,7 +93,7 @@ export default function SectionPage({
   }
 
   useEffect(() => {
-    // Peringatan kalau halaman ditutup saat masih ada yang belum tersimpan
+    // Warn if the page is closed while there are unsaved changes
     const warn = (e: BeforeUnloadEvent) => {
       if (Object.keys(pending.current).length || busy.current) e.preventDefault()
     }
@@ -109,7 +109,7 @@ export default function SectionPage({
   const known = new Set(detailKeys)
   const publicDetailHref = (item: Item) => {
     const href = detailHref(item)
-    // admin melihat tautan ke semua item; di pratinjau ini cukup tampilkan yang ada
+    // admins see links to every item; in this preview, just show the ones that exist
     return href && (known.has(`item-${item._id}`) || editing) ? href : null
   }
 
@@ -122,17 +122,17 @@ export default function SectionPage({
   return (
     <div>
       <div className="mb-8 flex flex-wrap items-center gap-4">
-        <h1 className="pop-display text-4xl uppercase md:text-5xl">{title || 'Tanpa judul'}</h1>
-        {!visible && <span className="pop-pill pop-yellow">Disembunyikan</span>}
+        <h1 className="pop-display text-4xl md:text-5xl">{title || 'Untitled'}</h1>
+        {!visible && <span className="pop-pill pop-yellow">Hidden</span>}
       </div>
 
-      <div className="sticky top-3 z-30 mb-8 flex flex-wrap items-center gap-3 rounded-2xl border-[1.5px] border-[#141414] bg-white px-4 py-3 text-sm text-slate-800 shadow-[4px_4px_0_#141414]">
+      <div className="sticky top-3 z-30 mb-8 flex flex-wrap items-center gap-3 rounded-2xl border border-[color:var(--line)] bg-white px-4 py-3 text-sm text-slate-800 shadow-[var(--shadow-md)]">
         <button
           type="button"
           onClick={() => setEditing((v) => !v)}
           className="rounded-full bg-slate-900 px-4 py-1.5 font-semibold text-white hover:bg-blue-600"
         >
-          {editing ? 'Tutup edit' : 'Edit section'}
+          {editing ? 'Close editor' : 'Edit section'}
         </button>
         <span
           className={`font-mono text-xs ${status === 'error' ? 'text-rose-600' : status === 'saved' ? 'text-emerald-600' : 'text-slate-500'}`}
@@ -142,28 +142,28 @@ export default function SectionPage({
         </span>
         {status === 'error' && (
           <button type="button" onClick={flush} className="text-xs font-semibold text-blue-600 hover:underline">
-            Coba lagi
+            Try again
           </button>
         )}
         <span className="flex-1" />
         <Link href="/admin/sections" className="text-xs font-semibold text-slate-500 hover:text-slate-900">
-          Semua section
+          All sections
         </Link>
       </div>
 
       {error && <p className="mb-6 whitespace-pre-line rounded-xl bg-rose-50 p-4 text-sm text-rose-700">{error}</p>}
 
       {editing && (
-        <div className="mb-12 space-y-6 rounded-3xl border-[1.5px] border-[#141414] bg-white p-6 text-slate-800">
+        <div className="mb-12 space-y-6 rounded-3xl border border-[color:var(--line)] bg-white p-6 text-slate-800 shadow-[var(--shadow-sm)]">
           <details className="group">
             <summary className="cursor-pointer select-none text-sm font-semibold text-slate-900">
-              Pengaturan section <span className="font-normal text-slate-500">(judul, layout, isian)</span>
+              Section settings <span className="font-normal text-slate-500">(title, layout, fields)</span>
             </summary>
 
             <div className="mt-5 space-y-7">
               <div className="grid gap-5 md:grid-cols-[1fr_auto_auto] md:items-end">
                 <div>
-                  <label className={label} htmlFor="sec-title">Judul section</label>
+                  <label className={label} htmlFor="sec-title">Section title</label>
                   <input
                     id="sec-title"
                     value={title}
@@ -175,7 +175,7 @@ export default function SectionPage({
                   />
                 </div>
                 <div>
-                  <label className={label} htmlFor="sec-page">Tampil di</label>
+                  <label className={label} htmlFor="sec-page">Show on</label>
                   <select
                     id="sec-page"
                     value={page}
@@ -186,8 +186,8 @@ export default function SectionPage({
                     }}
                     className={input}
                   >
-                    <option value="home">Beranda</option>
-                    <option value="about">Halaman Tentang saya</option>
+                    <option value="home">Home</option>
+                    <option value="about">About me page</option>
                   </select>
                 </div>
                 <label className="flex items-center gap-2 pb-3 text-sm">
@@ -199,13 +199,13 @@ export default function SectionPage({
                       touch({ is_visible: e.target.checked })
                     }}
                   />
-                  Tampilkan di website
+                  Show on website
                 </label>
               </div>
 
               {isProjects ? (
                 <p className="rounded-2xl border border-dashed border-slate-300 p-5 text-sm text-slate-600">
-                  Isi section ini adalah kartu project. Tambah atau ubah project di{' '}
+                  This section's content is project cards. Add or edit projects in{' '}
                   <Link href="/admin/projects" className="font-semibold text-blue-600 hover:underline">Admin → Project</Link>.
                 </p>
               ) : (
@@ -233,7 +233,7 @@ export default function SectionPage({
                     <div className="mt-4 flex flex-wrap items-center gap-6 text-sm">
                       {lay.columns && (
                         <label className="flex items-center gap-2">
-                          Jumlah kolom
+                          Number of columns
                           <select
                             value={options.columns ?? 3}
                             onChange={(e) => setOpt({ columns: Number(e.target.value) })}
@@ -247,13 +247,13 @@ export default function SectionPage({
                       )}
                       <label className="flex items-center gap-2">
                         <input type="checkbox" checked={detailOn} onChange={(e) => setOpt({ detail: e.target.checked })} />
-                        Tiap item punya halaman detail (ala Notion)
+                        Each item has a detail page (Notion-style)
                       </label>
                     </div>
                   </div>
 
                   <div>
-                    <p className={label}>Isian item</p>
+                    <p className={label}>Item fields</p>
                     <FieldsBuilder
                       fields={schema}
                       uses={lay.uses}
@@ -270,9 +270,9 @@ export default function SectionPage({
 
           {!isProjects && (
             <div>
-              <p className={`${label} mb-3`}>Isi section</p>
+              <p className={`${label} mb-3`}>Section content</p>
               <ItemsEditor
-                // remount kalau jenis/jumlah isian berubah supaya draft form ikut menyesuaikan
+                // remount when field types/count change so the form drafts adjust
                 key={schema.map((f) => `${f.name}:${f.type}`).join('|')}
                 fields={schema}
                 initial={items}
@@ -290,10 +290,10 @@ export default function SectionPage({
         </div>
       )}
 
-      {/* Tampilan asli section (langsung ikut berubah saat diedit) */}
-      <p className="mb-4 font-mono text-xs uppercase tracking-widest opacity-60">Pratinjau</p>
+      {/* The section's real appearance (updates live as you edit) */}
+      <p className="mb-4 font-mono text-xs uppercase tracking-widest opacity-60">Preview</p>
       {!isProjects && items.length === 0 ? (
-        <p className="pop-card p-8 font-bold">Belum ada item. Tambah lewat panel di atas.</p>
+        <p className="pop-card p-8 font-bold">No items yet. Add some using the panel above.</p>
       ) : (
         <SectionBody
           section={{ kind: initial.kind, layout, schema, options, items }}

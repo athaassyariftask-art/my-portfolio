@@ -13,7 +13,7 @@ export default function LogoutButton() {
       }}
       className="text-sm font-medium text-slate-500 transition-colors hover:text-rose-600"
     >
-      Logout
+      Sign out
     </button>
   )
 }

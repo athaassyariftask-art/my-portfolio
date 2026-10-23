@@ -15,7 +15,7 @@ export default function NewPage() {
 
   async function create() {
     const slug = slugify(title)
-    if (!slug) return setError('Isi judul dulu.')
+    if (!slug) return setError('Enter a title first.')
     setBusy(true)
     setError('')
     const res = await fetch('/api/admin/pages', {
@@ -35,12 +35,12 @@ export default function NewPage() {
     <div className="flex flex-wrap items-start gap-3">
       <input
         className={`${input} max-w-sm`}
-        placeholder="Judul halaman baru, mis. Dokumentasi KKN"
+        placeholder="New page title, e.g. Community service documentation"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && create()}
       />
-      <button type="button" disabled={busy} onClick={create} className={btnPrimary}>+ Buat halaman</button>
+      <button type="button" disabled={busy} onClick={create} className={btnPrimary}>+ Create page</button>
       {error && <p className="w-full rounded-xl bg-rose-50 p-3 text-sm text-rose-700">{error}</p>}
     </div>
   )

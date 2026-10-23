@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 
-/** Garis biru tipis di atas layar yang memanjang mengikuti seberapa jauh halaman sudah dibaca. */
+/** Thin accent line at the top of the screen that grows with how far the page has been read. */
 export default function ReadingProgress() {
   const bar = useRef<HTMLDivElement>(null)
   useEffect(() => {

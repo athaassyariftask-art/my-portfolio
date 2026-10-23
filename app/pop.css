@@ -1,17 +1,24 @@
-/* Tema "pop" versi kalem: latar putih, tinta hampir hitam, garis tipis, kartu pastel (gaya Gumroad yang lebih formal).
-   Semua warna ada di :root, tinggal diganti kalau mau palet lain. Nama kelas sengaja tetap (pop-*)
-   supaya semua halaman ikut berubah tanpa mengubah komponennya. */
+/* Site theme: "warm paper + navy ink".
+   Formal enough for a portfolio, relaxed enough to be pleasant: warm off-white page, white cards with a
+   hairline border and soft shadow, a serif display face, small mono labels, and one marker-yellow highlight.
+   All colors live in :root, so a different palette is a one-place change. Class names keep the old `pop-*`
+   prefix on purpose so every page picks up the new look without touching its components. */
 :root {
-  --ink: #141414;
-  --cream: #ffffff; /* latar halaman */
-  --paper: #ffffff; /* isi kartu */
-  --accent: #3730a3; /* satu warna tua: nama, garis tab aktif, progres baca, titik timeline */
-  /* pastel untuk label & blok warna */
-  --pink: #f7c9e5;
-  --orange: #fcd5ac;
-  --teal: #bfe9d9;
-  --blue: #cbd5fb;
-  --yellow: #fbe48c;
+  --ink: #0f1b33; /* text, dark blocks */
+  --muted: #5b667a; /* secondary text */
+  --cream: #f6f4ee; /* page background (warm paper) */
+  --paper: #ffffff; /* card surface */
+  --line: #ddd8cb; /* hairlines and card borders */
+  --accent: #1f3fa0; /* links, active states, progress bar, timeline dots */
+  --hi: #f6c650; /* marker highlight */
+  --shadow-sm: 0 1px 2px rgba(15, 27, 51, 0.05), 0 6px 18px -10px rgba(15, 27, 51, 0.16);
+  --shadow-md: 0 2px 4px rgba(15, 27, 51, 0.06), 0 16px 32px -14px rgba(15, 27, 51, 0.24);
+  /* soft tints for labels and small color blocks */
+  --pink: #f4dcd6;
+  --orange: #f6e3c4;
+  --teal: #d5e8df;
+  --blue: #d9e3f7;
+  --yellow: #f7e7a8;
 }
 
 .pop-page {
@@ -19,12 +26,41 @@
   color: var(--ink);
 }
 
+/* Serif display face for headings (set in lib/fonts.ts) */
 .pop-display {
-  font-family: var(--font-display), 'Arial Narrow', Impact, sans-serif;
-  letter-spacing: 0.01em;
+  font-family: var(--font-display), Georgia, 'Times New Roman', serif;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 
-/* Warna isi */
+/* Small mono label (eyebrows, indexes, dates) */
+.pop-label {
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Marker-pen highlight under a word or name */
+.pop-mark {
+  background-image: linear-gradient(transparent 62%, var(--hi) 62%, var(--hi) 90%, transparent 90%);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  padding-inline: 0.08em;
+}
+
+/* Faint dotted "graph paper" backdrop that fades out toward the bottom (used on the hero) */
+.pop-grid {
+  background-image: radial-gradient(rgba(15, 27, 51, 0.1) 1px, transparent 1px);
+  background-size: 22px 22px;
+  -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent);
+  mask-image: linear-gradient(to bottom, #000 55%, transparent);
+}
+
+/* Tints */
 .pop-pink { background-color: var(--pink); }
 .pop-orange { background-color: var(--orange); }
 .pop-teal { background-color: var(--teal); }
@@ -32,194 +68,97 @@
 .pop-yellow { background-color: var(--yellow); }
 .pop-paper { background-color: var(--paper); }
 
-/* Kartu: garis tipis, sudut membulat, tanpa bayangan */
+/* Card: hairline border, rounded corners, soft shadow */
 .pop-card {
-  border: 1.5px solid var(--ink);
-  border-radius: 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
   background-color: var(--paper);
+  box-shadow: var(--shadow-sm);
 }
 .pop-hover {
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 .pop-hover:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 4px 4px 0 var(--ink);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(15, 27, 51, 0.28);
 }
 
-/* Label kecil */
+/* Small pill label */
 .pop-pill {
   display: inline-block;
-  border: 1.5px solid var(--ink);
-  border-radius: 8px;
-  padding: 0.2rem 0.65rem;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  border: 1px solid rgba(15, 27, 51, 0.14);
+  border-radius: 999px;
+  padding: 0.2rem 0.7rem;
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   line-height: 1.5;
   color: var(--ink);
   background-color: var(--paper);
 }
 
-/* Tombol */
+/* Buttons */
 .pop-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
-  border: 1.5px solid var(--ink);
-  border-radius: 10px;
-  padding: 0.75rem 1.4rem;
-  font-weight: 700;
+  gap: 0.55rem;
+  border: 1px solid rgba(15, 27, 51, 0.2);
+  border-radius: 999px;
+  padding: 0.7rem 1.35rem;
+  font-weight: 600;
   color: var(--ink);
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, color 0.15s ease;
 }
 .pop-btn:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 var(--ink);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 .pop-btn:active {
-  transform: translate(0, 0);
+  transform: none;
   box-shadow: none;
 }
-.pop-btn-ink { background-color: var(--ink); color: #fff; }
+.pop-btn-ink {
+  background-color: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+.pop-btn-ink:hover { background-color: var(--accent); border-color: var(--accent); }
+.pop-btn-ghost { background-color: transparent; }
+.pop-btn-ghost:hover { background-color: var(--paper); }
 
-/* Dulu: teks dengan garis tepi tebal. Kini polos (warna ditentukan kelas teksnya). */
-.pop-outline { -webkit-text-stroke: 0; }
+/* Inline text link with an arrow, used for "View details" style actions */
+.pop-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+  transition: text-decoration-color 0.15s ease;
+}
+.pop-link:hover { text-decoration-color: currentColor; }
 
-/* Lingkaran bernomor */
+/* Numbered circle */
 .pop-badge {
   display: inline-flex;
-  height: 2.4rem;
-  min-width: 2.4rem;
+  height: 2.25rem;
+  min-width: 2.25rem;
   align-items: center;
   justify-content: center;
-  border: 1.5px solid var(--ink);
-  border-radius: 10px;
+  border: 1px solid rgba(15, 27, 51, 0.16);
+  border-radius: 999px;
   padding: 0 0.5rem;
-  font-weight: 700;
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
   color: var(--ink);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .pop-hover, .pop-btn { transition: none; }
   .pop-hover:hover, .pop-btn:hover { transform: none; }
-}
-
-/* ---- Kotak arsip 3D untuk daftar project (layouts/projects.tsx) ----
-   Kotak sedalam 240px (dinding belakang di z -120, panel depan di z +120). Map berdiri tegak di dalamnya. */
-.pf-stage {
-  position: relative;
-  width: 100%;
-  max-width: 460px;
-  aspect-ratio: 1 / 1.1;
-  margin-inline: auto;
-  perspective: 1500px;
-}
-.pf-scene {
-  position: absolute;
-  inset: 0;
-  transform-style: preserve-3d;
-  transform: translateY(4%) scale(0.84) rotateX(var(--rx, 12deg)) rotateY(var(--ry, -28deg));
-  transition: transform 0.25s ease-out;
-}
-.pf-back,
-.pf-front,
-.pf-side {
-  position: absolute;
-  top: 60%;
-  bottom: 0;
-  border: 1.5px solid var(--ink);
-}
-.pf-back {
-  left: 0;
-  right: 0;
-  background-color: #3f55b8; /* bagian dalam kotak: paling gelap */
-  transform: translateZ(-120px);
-}
-.pf-side {
-  width: 240px;
-  background-color: #4a63d1;
-}
-.pf-side-l { left: -120px; transform: rotateY(90deg); background-color: #3f55b8; }
-.pf-side-r { right: -120px; transform: rotateY(90deg); }
-.pf-front {
-  left: 0;
-  right: 0;
-  transform: translateZ(120px);
-  background-color: #5b7cf0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1.1rem;
-}
-.pf-handle {
-  width: 24%;
-  height: 16%;
-  border: 1.5px solid var(--ink);
-  border-radius: 8px;
-  background-color: #1d2a6e; /* lubang pegangan */
-}
-.pf-label {
-  border: 1.5px solid var(--ink);
-  border-radius: 4px;
-  background-color: #f5f1e6;
-  padding: 0.3rem 1.1rem;
-  font-size: 0.8rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-.pf-folder {
-  position: absolute;
-  left: 7%;
-  right: 7%;
-  border: 1.5px solid var(--ink);
-  border-radius: 10px;
-  transform: translateZ(var(--z, 0px)) translateY(var(--lift, 0));
-  transition:
-    top 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.12),
-    transform 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.12),
-    clip-path 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.12);
-}
-.pf-stage:hover .pf-folder.is-on { --lift: -3%; }
-.pf-tab {
-  position: absolute;
-  top: -1.5rem;
-  height: 1.5rem;
-  width: 33%;
-  padding: 0 0.6rem;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  border: 1.5px solid var(--ink);
-  border-bottom: 0;
-  border-radius: 8px 8px 0 0;
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-.pf-face {
-  display: flex;
-  height: 52%; /* hanya bagian yang tampak di atas kotak */
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 0.5rem;
-  overflow: hidden;
-  padding: 1rem 1.1rem;
-  transition: opacity 0.3s ease 0.2s;
-}
-.pf-cover {
-  min-height: 0;
-  flex: 1 1 0;
-  width: 100%;
-  border: 1.5px solid var(--ink);
-  border-radius: 8px;
-  object-fit: cover;
-}
-@media (prefers-reduced-motion: reduce) {
-  .pf-folder, .pf-face, .pf-scene { transition: none; }
 }

@@ -9,10 +9,10 @@ import { readError } from '@/components/admin/ui'
 type Status = 'saved' | 'dirty' | 'saving' | 'error'
 
 /**
- * Isi halaman ala Notion.
- * - Pengunjung: hanya membaca (`fallback` tampil selama blok masih kosong).
- * - Admin yang login: langsung bisa mengetik di halaman. Tersimpan otomatis ±1 detik setelah berhenti mengetik.
- *   `seedMarkdown` = isi lama (mis. deskripsi project) yang dimasukkan sebagai blok teks pertama.
+ * Notion-style page content.
+ * - Visitors: read-only (`fallback` is shown while there are no blocks).
+ * - Signed-in admin: can type directly on the page. Saves automatically ~1 second after typing stops.
+ *   `seedMarkdown` = legacy content (e.g. a project description) inserted as the first text block.
  */
 export default function EditableBlocks({
   detailKey,
@@ -40,7 +40,7 @@ export default function EditableBlocks({
   const dirty = useRef(false)
 
   async function save() {
-    if (saving.current) return // simpan berikutnya dijalankan setelah yang sekarang selesai
+    if (saving.current) return // the next save runs after the current one finishes
     saving.current = true
     setStatus('saving')
     setError('')
@@ -56,14 +56,14 @@ export default function EditableBlocks({
       if (res.ok) ok = true
       else setError(await readError(res))
     } catch {
-      setError('Tidak bisa menghubungi server.')
+      setError('Could not reach the server.')
     }
     saving.current = false
     if (!ok) {
       dirty.current = true
       setStatus('error')
     } else if (latest.current !== sent) {
-      save() // ada ketikan baru selama menyimpan
+      save() // new edits arrived while saving
     } else {
       setStatus('saved')
     }
@@ -91,10 +91,10 @@ export default function EditableBlocks({
   }
 
   const label: Record<Status, string> = {
-    saved: '✓ Tersimpan',
-    dirty: 'Belum disimpan…',
-    saving: 'Menyimpan…',
-    error: 'Gagal menyimpan',
+    saved: '✓ Saved',
+    dirty: 'Not saved yet…',
+    saving: 'Saving…',
+    error: 'Save failed',
   }
   const color = status === 'error' ? 'text-rose-600' : status === 'saved' ? 'text-emerald-600' : 'text-slate-500'
 
@@ -102,19 +102,19 @@ export default function EditableBlocks({
     <div>
       <div className="sticky top-3 z-20 mb-6 flex items-center justify-between rounded-full border border-slate-200 bg-white/90 px-4 py-2 shadow-sm backdrop-blur">
         <span className={`font-mono text-xs ${color}`}>
-          {uploading ? 'Mengunggah foto…' : label[status]}
+          {uploading ? 'Uploading photo…' : label[status]}
           {status === 'error' && error && <span className="ml-2 text-rose-600">{error}</span>}
         </span>
         <div className="flex items-center gap-3">
           {status === 'error' && (
-            <button type="button" onClick={save} className="font-mono text-xs font-semibold text-blue-600 hover:underline">Coba lagi</button>
+            <button type="button" onClick={save} className="font-mono text-xs font-semibold text-blue-600 hover:underline">Try again</button>
           )}
           <button
             type="button"
             onClick={() => setPreview((v) => !v)}
             className="rounded-full border border-slate-300 px-3 py-1 font-mono text-xs text-slate-700 hover:border-slate-900"
           >
-            {preview ? '✎ Edit' : '👁 Pratinjau'}
+            {preview ? '✎ Edit' : '👁 Preview'}
           </button>
         </div>
       </div>

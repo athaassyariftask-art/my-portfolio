@@ -1,14 +1,14 @@
 ---
 title: Scare Simulation Game
-summary: Game first-person berbasis Pygame yang terinspirasi simulasi scare di Monsters University.
+summary: A first-person Pygame game inspired by the scare simulation in Monsters University.
 date: 2026-08-04
 tags: [Pygame, Game Logic]
 ---
 
-## Konsep
+## Concept
 
-TODO: gambaran singkat game dan mekanik utamanya.
+TODO: a short overview of the game and its core mechanics.
 
-## Yang dipelajari
+## What I learned
 
-TODO: tantangan teknis dan solusinya.
+TODO: technical challenges and how I solved them.

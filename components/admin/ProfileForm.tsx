@@ -8,7 +8,7 @@ import ItemsEditor, { findMissing } from './ItemsEditor'
 import { btnPrimary, input, label, readError } from './ui'
 
 const LINK_FIELDS: Field[] = [
-  { name: 'label', label: 'Nama', type: 'text', required: true, placeholder: 'GitHub' },
+  { name: 'label', label: 'Name', type: 'text', required: true, placeholder: 'GitHub' },
   { name: 'href', label: 'URL', type: 'url', required: true, placeholder: 'https://github.com/…' },
 ]
 
@@ -58,7 +58,7 @@ export default function ProfileForm({ initial }: { initial: Site }) {
     <form onSubmit={onSubmit} className="space-y-6">
       <div className="grid gap-6 md:grid-cols-2">
         <div>
-          <label className={label} htmlFor="name">Nama</label>
+          <label className={label} htmlFor="name">Name</label>
           <input id="name" name="name" defaultValue={initial.name} className={input} />
         </div>
         <div>
@@ -70,18 +70,18 @@ export default function ProfileForm({ initial }: { initial: Site }) {
           <input id="role" name="role" defaultValue={initial.role} className={input} />
         </div>
         <div>
-          <label className={label} htmlFor="affiliation">Afiliasi</label>
+          <label className={label} htmlFor="affiliation">Affiliation</label>
           <input id="affiliation" name="affiliation" defaultValue={initial.affiliation} className={input} />
         </div>
       </div>
 
       <div>
-        <label className={label} htmlFor="intro">Intro singkat</label>
+        <label className={label} htmlFor="intro">Short intro</label>
         <textarea id="intro" name="intro" rows={4} defaultValue={initial.intro} className={input} />
       </div>
 
       <div>
-        <p className={label}>Link sosial</p>
+        <p className={label}>Social links</p>
         <ItemsEditor
           fields={LINK_FIELDS}
           initial={initial.links}
@@ -92,10 +92,10 @@ export default function ProfileForm({ initial }: { initial: Site }) {
       </div>
 
       {error && <p className="whitespace-pre-line rounded-xl bg-rose-50 p-4 text-sm text-rose-700">{error}</p>}
-      {saved && <p className="rounded-xl bg-emerald-50 p-4 text-sm text-emerald-700">Tersimpan. Website sudah memakai data terbaru.</p>}
+      {saved && <p className="rounded-xl bg-emerald-50 p-4 text-sm text-emerald-700">Saved. The website is now using the latest data.</p>}
 
       <button disabled={busy} className={btnPrimary}>
-        {busy ? 'Menyimpan…' : 'Simpan profil'}
+        {busy ? 'Saving…' : 'Save profile'}
       </button>
     </form>
   )

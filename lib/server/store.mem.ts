@@ -1,4 +1,4 @@
-// Penyimpanan di memori: untuk tes otomatis (tanpa database). Data hilang saat proses berhenti.
+// In-memory storage: for automated tests (no database). Data is lost when the process stops.
 import type { DetailRow, Message, Profile, Project, SectionRow, Store } from './types'
 
 export function memStore(): Store {

@@ -25,7 +25,7 @@ export default function PageEditor({ page }: { page: Page }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title: title.trim(), is_published: published, blocks }),
     })
-    setMsg(res.ok ? { ok: true, text: 'Tersimpan.' } : { ok: false, text: await readError(res) })
+    setMsg(res.ok ? { ok: true, text: 'Saved.' } : { ok: false, text: await readError(res) })
     setSaving(false)
     if (res.ok) router.refresh()
   }
@@ -34,25 +34,25 @@ export default function PageEditor({ page }: { page: Page }) {
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
         <div>
-          <label className={label}>Judul</label>
+          <label className={label}>Title</label>
           <input className={input} value={title} onChange={(e) => setTitle(e.target.value)} />
         </div>
         <label className="flex items-center gap-2 pb-3 text-sm font-semibold text-slate-700">
           <input type="checkbox" checked={published} onChange={(e) => setPublished(e.target.checked)} className="h-4 w-4" />
-          Terbitkan
+          Publish
         </label>
       </div>
-      <p className="font-mono text-xs text-slate-400">Alamat: /p/{page.slug}</p>
+      <p className="font-mono text-xs text-slate-400">URL: /p/{page.slug}</p>
 
       <NotionEditor blocks={blocks} onChange={setBlocks} onBusy={setUploading} />
 
       {msg && <p className={`rounded-xl p-3 text-sm ${msg.ok ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>{msg.text}</p>}
       <div className="flex items-center gap-4">
         <button type="button" disabled={saving || uploading} onClick={save} className={btnPrimary}>
-          {uploading ? 'Mengunggah…' : saving ? 'Menyimpan…' : 'Simpan'}
+          {uploading ? 'Uploading…' : saving ? 'Saving…' : 'Save'}
         </button>
-        <Link href="/admin/pages" className="text-sm text-slate-500 hover:text-slate-900">← Daftar halaman</Link>
-        {published && <Link href={`/p/${page.slug}`} target="_blank" className="text-sm text-blue-600 hover:underline">Lihat ↗</Link>}
+        <Link href="/admin/pages" className="text-sm text-slate-500 hover:text-slate-900">← All pages</Link>
+        {published && <Link href={`/p/${page.slug}`} target="_blank" className="text-sm text-blue-600 hover:underline">View ↗</Link>}
       </div>
     </div>
   )

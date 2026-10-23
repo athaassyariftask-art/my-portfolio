@@ -4,7 +4,7 @@ import ProjectForm from '@/components/admin/ProjectForm'
 export default function NewProject() {
   return (
     <>
-      <PageHeader title="Project baru" />
+      <PageHeader title="New project" />
       <ProjectForm />
     </>
   )

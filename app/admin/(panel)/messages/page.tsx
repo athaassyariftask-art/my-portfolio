@@ -11,10 +11,10 @@ export default async function AdminMessages() {
 
   return (
     <>
-      <PageHeader title="Pesan" hint="Pesan dari form kontak di halaman depan." />
+      <PageHeader title="Messages" hint="Messages from the contact form on the home page." />
 
       {messages.length === 0 ? (
-        <p className={`${card} border-dashed p-10 text-center text-slate-500`}>Belum ada pesan.</p>
+        <p className={`${card} border-dashed p-10 text-center text-slate-500`}>No messages yet.</p>
       ) : (
         <ul className="space-y-4">
           {messages.map((m) => (
@@ -26,7 +26,7 @@ export default async function AdminMessages() {
                 </div>
                 <div className="flex items-center gap-4">
                   <span className="text-xs text-slate-400">{m.created_at.slice(0, 10)}</span>
-                  <DeleteButton endpoint={`contact/${m.id}`} name={`pesan dari ${m.name}`} />
+                  <DeleteButton endpoint={`contact/${m.id}`} name={`message from ${m.name}`} />
                 </div>
               </div>
               <p className="whitespace-pre-line text-slate-700">{m.message}</p>

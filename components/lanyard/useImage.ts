@@ -39,7 +39,7 @@ export function useImage(url?: string, coverAspect?: number): LoadedImage | null
         setImg({ tex: t, aspect })
       },
       undefined,
-      () => console.warn(`[lanyard] gagal memuat gambar: ${url} (cek path & file di folder public/)`)
+      () => console.warn(`[lanyard] failed to load image: ${url} (check the path and the file in public/)`)
     )
     return () => {
       alive = false

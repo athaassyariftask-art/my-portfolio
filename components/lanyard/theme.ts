@@ -1,16 +1,16 @@
-// Warna kartu (disamakan dengan tema halaman depan: tinta hitam, putih, pastel, aksen indigo)
+// Card colors (kept in step with the site theme in app/pop.css: navy ink, white, soft tints, indigo accent)
 export const COLOR = {
-  frame: '#141414', // tinta
-  frameHover: '#2a2a2a',
-  paper: '#ffffff', // isi kartu
-  band: '#cbd5fb', // pita atas: lavender pastel
-  bandSoft: '#fbe48c', // label role: kuning pastel
-  dot: '#3730a3', // titik kecil di pita: aksen indigo
-  strap: '#f4a9d8', // tali: pink
+  frame: '#0f1b33', // ink
+  frameHover: '#243252',
+  paper: '#ffffff', // card body
+  band: '#d9e3f7', // top band: soft blue
+  bandSoft: '#f7e7a8', // role label: soft butter yellow
+  dot: '#1f3fa0', // small dots on the band: accent
+  strap: '#f6c650', // strap: marker yellow
   metal: '#6b6b6b',
   slot: '#0a0a0a',
-  photoBg: '#eef0fb',
-  photoText: '#333333',
-  subtle: '#6b6b6b',
-  line: '#d6d9e8',
+  photoBg: '#e8edf8',
+  photoText: '#2a3550',
+  subtle: '#5b667a',
+  line: '#ddd8cb',
 }

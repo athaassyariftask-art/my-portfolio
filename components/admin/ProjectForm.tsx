@@ -46,7 +46,7 @@ export default function ProjectForm({ project }: { project?: Project }) {
         body: JSON.stringify(payload),
       })
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Upload gagal.')
+      setError(err instanceof Error ? err.message : 'Upload failed.')
       setBusy(false)
       return
     }
@@ -62,16 +62,16 @@ export default function ProjectForm({ project }: { project?: Project }) {
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       <div>
-        <label className={label} htmlFor="title">Judul</label>
+        <label className={label} htmlFor="title">Title</label>
         <input id="title" name="title" required defaultValue={project?.title} className={input} />
       </div>
 
       <p className="rounded-xl bg-blue-50 p-4 text-sm text-blue-800">
-        Ringkasan dan isi halaman project diedit langsung di websitenya: buka halaman project saat login, lalu klik teks untuk mengetik.
+        The summary and page content are edited directly on the website: open the project page while signed in, then click the text to type.
       </p>
 
       <div>
-        <label className={label} htmlFor="tech_stack">Tag / teknologi (pisahkan dengan koma)</label>
+        <label className={label} htmlFor="tech_stack">Tags / technologies (comma-separated)</label>
         <input
           id="tech_stack"
           name="tech_stack"
@@ -83,20 +83,20 @@ export default function ProjectForm({ project }: { project?: Project }) {
 
       <div className="grid gap-6 md:grid-cols-2">
         <div>
-          <label className={label} htmlFor="github_url">Link repo (opsional)</label>
+          <label className={label} htmlFor="github_url">Repo link (optional)</label>
           <input id="github_url" name="github_url" type="url" defaultValue={project?.repo ?? ''} className={input} />
         </div>
         <div>
-          <label className={label} htmlFor="demo_url">Link demo (opsional)</label>
+          <label className={label} htmlFor="demo_url">Demo link (optional)</label>
           <input id="demo_url" name="demo_url" type="url" defaultValue={project?.demo ?? ''} className={input} />
         </div>
       </div>
 
       <div>
-        <span className={label}>Gambar cover</span>
+        <span className={label}>Cover image</span>
         {preview && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={preview} alt="Preview cover" className="mb-3 max-h-52 rounded-2xl border border-slate-200" />
+          <img src={preview} alt="Cover preview" className="mb-3 max-h-52 rounded-2xl border border-slate-200" />
         )}
         <input
           type="file"
@@ -110,19 +110,19 @@ export default function ProjectForm({ project }: { project?: Project }) {
         {project?.cover && !file && (
           <label className="mt-3 flex items-center gap-2 text-sm text-slate-600">
             <input type="checkbox" checked={removeImage} onChange={(e) => setRemoveImage(e.target.checked)} />
-            Hapus gambar cover
+            Remove cover image
           </label>
         )}
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
         <div>
-          <label className={label} htmlFor="order">Urutan (kecil tampil dulu)</label>
+          <label className={label} htmlFor="order">Order (lower shows first)</label>
           <input id="order" name="order" type="number" min={0} defaultValue={project?.order ?? 0} className={input} />
         </div>
         <label className="flex items-center gap-3 pt-6 text-slate-700">
           <input type="checkbox" name="is_published" defaultChecked={project?.published ?? true} className="h-4 w-4" />
-          Tampilkan di website
+          Show on website
         </label>
         <label className="flex items-center gap-3 pt-6 text-slate-700">
           <input type="checkbox" name="featured" defaultChecked={project?.featured ?? false} className="h-4 w-4" />
@@ -134,9 +134,9 @@ export default function ProjectForm({ project }: { project?: Project }) {
 
       <div className="flex gap-3">
         <button disabled={busy} className={btnPrimary}>
-          {busy ? 'Menyimpan…' : project ? 'Simpan perubahan' : 'Tambah project'}
+          {busy ? 'Saving…' : project ? 'Save changes' : 'Add project'}
         </button>
-        <Link href="/admin/projects" className={btnGhost}>Batal</Link>
+        <Link href="/admin/projects" className={btnGhost}>Cancel</Link>
       </div>
     </form>
   )

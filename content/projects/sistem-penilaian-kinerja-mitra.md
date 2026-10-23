@@ -1,22 +1,22 @@
 ---
-title: Sistem Penilaian Kinerja Mitra
-summary: Aplikasi web berbasis Django dengan metode AHP untuk menilai kinerja petani mitra.
+title: Partner Performance Assessment System
+summary: A Django web app using the AHP method to assess the performance of partner farmers.
 date: 2026-10-01
-tags: [Django, AHP, PostgreSQL, Sistem Informasi]
+tags: [Django, AHP, PostgreSQL, Information Systems]
 featured: true
-# cover: /projects/penilaian-mitra.png   (taruh gambar di public/projects/)
+# cover: /projects/penilaian-mitra.png   (put the image in public/projects/)
 # repo: https://github.com/username/repo
-# demo: https://contoh.com
+# demo: https://example.com
 ---
 
-## Latar belakang
+## Background
 
-TODO: jelaskan masalah yang ingin diselesaikan.
+TODO: describe the problem being solved.
 
-## Pendekatan
+## Approach
 
-TODO: metode (AHP), rancangan sistem, aktor, dan alur datanya.
+TODO: the method (AHP), system design, actors, and data flow.
 
-## Hasil
+## Results
 
-TODO: apa yang berhasil dibangun dan dampaknya.
+TODO: what was built and its impact.

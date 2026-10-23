@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return { title: f?.slots.title || 'Detail' }
 }
 
-/** Halaman detail untuk satu item (achievement, pengalaman, fokus, ...), isinya diedit ala Notion. */
+/** Detail page for one item (achievement, experience, focus, ...); the content is edited Notion-style. */
 export default async function ItemDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const found = await find(id)
@@ -26,18 +26,18 @@ export default async function ItemDetail({ params }: { params: Promise<{ id: str
   const { s, slots } = found
   const key = `item-${id}`
   const [blocks, admin] = await Promise.all([getDetail(key), isAdmin()])
-  if (blocks.length === 0 && !admin) notFound() // pengunjung tidak melihat halaman kosong
+  if (blocks.length === 0 && !admin) notFound() // visitors never see an empty page
 
   return (
     <PageShell back={{ href: s.page === 'about' ? '/about' : `/#${s.slug}`, text: s.title }}>
       {(slots.subtitle || slots.meta) && (
         <div className="mb-4 flex flex-wrap gap-2">
           {slots.meta && <span className="pop-pill pop-yellow">{slots.meta}</span>}
-          {slots.subtitle && <span className="pop-pill pop-paper">{slots.subtitle}</span>}
+          {slots.subtitle && <span className="pop-pill">{slots.subtitle}</span>}
         </div>
       )}
       <h1 className={`${titleClass} mb-4`}>{slots.title}</h1>
-      {slots.body && <p className="mb-8 whitespace-pre-line text-lg font-medium">{slots.body}</p>}
+      {slots.body && <p className="mb-8 whitespace-pre-line text-lg text-[color:var(--muted)]">{slots.body}</p>}
       <ContentCard>
         <EditableBlocks detailKey={key} initial={blocks} canEdit={admin} />
       </ContentCard>

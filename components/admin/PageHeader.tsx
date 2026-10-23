@@ -1,4 +1,4 @@
-/** Kepala halaman admin yang seragam: judul, keterangan singkat, dan tombol aksi di kanan. */
+/** Consistent admin page header: title, short hint, and action buttons on the right. */
 export default function PageHeader({
   title,
   hint,

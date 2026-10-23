@@ -4,7 +4,7 @@ import { useRef, useState } from 'react'
 import { uploadImage } from '@/lib/upload'
 import { btnGhost, input, label } from './ui'
 
-// Tipe longgar supaya bisa dipakai section (punya slot) maupun form lain seperti link sosial (tanpa slot).
+// Loose types so it works for sections (with slots) and for other forms like social links (without slots).
 export type Item = Record<string, unknown>
 export type Field = {
   name: string
@@ -16,8 +16,8 @@ export type Field = {
   help?: string
 }
 
-// Form daftar item yang dibuat otomatis dari daftar Field (schema).
-// Dipakai oleh editor section DAN form profil (link sosial): satu komponen untuk semua.
+// Item-list form generated automatically from a list of Fields (schema).
+// Used by both the section editor AND the profile form (social links): one component for all.
 
 type Row = { key: number; orig: Item; draft: Record<string, string> }
 
@@ -33,7 +33,7 @@ const toDraft = (fields: Field[], item: Item): Record<string, string> =>
 
 const split = (s: string, sep: string) => s.split(sep).map((x) => x.trim()).filter(Boolean)
 
-/** Draft (teks mentah di form) -> item. Key lain di item lama (bukan di schema) tetap dipertahankan. */
+/** Draft (raw form text) -> item. Other keys on the original item (not in the schema) are preserved. */
 function toItem(fields: Field[], orig: Item, draft: Record<string, string>): Item {
   const out: Item = { ...orig }
   for (const f of fields) {
@@ -43,14 +43,14 @@ function toItem(fields: Field[], orig: Item, draft: Record<string, string>): Ite
   return out
 }
 
-/** Pesan error kalau ada field wajib yang kosong, atau null kalau semua beres. */
+/** Error message if a required field is empty, or null if everything is fine. */
 export function findMissing(fields: Field[], items: Item[], itemLabel: string): string | null {
   for (let i = 0; i < items.length; i++) {
     for (const f of fields) {
       if (!f.required) continue
       const v = items[i][f.name]
       if (v == null || v === '' || (Array.isArray(v) && v.length === 0)) {
-        return `${itemLabel} #${i + 1}: kolom "${f.label}" wajib diisi.`
+        return `${itemLabel} #${i + 1}: the "${f.label}" field is required.`
       }
     }
   }
@@ -63,9 +63,9 @@ type Props = {
   onChange: (items: Item[]) => void
   itemLabel?: string
   itemTitle?: (item: Item) => string
-  /** Beri id tetap ke item baru (dipakai section, supaya halaman detail item punya alamat). */
+  /** Give new items a stable id (used by sections, so item detail pages have an address). */
   withIds?: boolean
-  /** Tautan halaman detail item (ditampilkan di kepala kartu), atau null. */
+  /** Link to the item's detail page (shown in the card header), or null. */
   itemHref?: (item: Item) => string | null
 }
 
@@ -81,7 +81,7 @@ function ImageField({ id, value, onChange }: { id: string; value: string; onChan
           // eslint-disable-next-line @next/next/no-img-element
           <img src={value} alt="" className="h-full w-full object-cover" />
         ) : (
-          'Belum ada'
+          'None yet'
         )}
       </div>
       <div className="space-y-1.5">
@@ -107,10 +107,10 @@ function ImageField({ id, value, onChange }: { id: string; value: string; onChan
         />
         {value && (
           <button type="button" onClick={() => onChange('')} className="text-sm font-medium text-rose-600 hover:underline">
-            Hapus gambar
+            Remove image
           </button>
         )}
-        {busy && <p className="text-xs text-slate-500">Mengunggah…</p>}
+        {busy && <p className="text-xs text-slate-500">Uploading…</p>}
         {err && <p className="text-xs text-rose-600">{err}</p>}
       </div>
     </div>
@@ -140,7 +140,7 @@ export default function ItemsEditor({ fields, initial, onChange, itemLabel = 'It
     <div className="space-y-4">
       {rows.length === 0 && (
         <p className="rounded-2xl border border-dashed border-slate-300 p-6 text-sm text-slate-500">
-          Belum ada {itemLabel.toLowerCase()}. Klik tombol tambah di bawah.
+          No {itemLabel.toLowerCase()} yet. Click the add button below.
         </p>
       )}
 
@@ -158,12 +158,12 @@ export default function ItemsEditor({ fields, initial, onChange, itemLabel = 'It
               <div className="flex shrink-0 items-center gap-3 text-sm font-semibold">
                 {href && (
                   <a href={href} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
-                    Halaman detail ↗
+                    Detail page ↗
                   </a>
                 )}
                 <button type="button" onClick={() => move(i, -1)} disabled={i === 0} className="text-slate-500 hover:text-slate-900 disabled:opacity-30">↑</button>
                 <button type="button" onClick={() => move(i, 1)} disabled={i === rows.length - 1} className="text-slate-500 hover:text-slate-900 disabled:opacity-30">↓</button>
-                <button type="button" onClick={() => emit(rows.filter((x) => x.key !== r.key))} className="text-rose-600 hover:underline">Hapus</button>
+                <button type="button" onClick={() => emit(rows.filter((x) => x.key !== r.key))} className="text-rose-600 hover:underline">Delete</button>
               </div>
             </div>
 
@@ -208,7 +208,7 @@ export default function ItemsEditor({ fields, initial, onChange, itemLabel = 'It
       })}
 
       <button type="button" onClick={() => emit([...rows, mk(withIds ? { _id: newId() } : {})])} className={btnGhost}>
-        + Tambah {itemLabel.toLowerCase()}
+        + Add {itemLabel.toLowerCase()}
       </button>
     </div>
   )

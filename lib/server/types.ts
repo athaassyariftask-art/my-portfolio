@@ -1,5 +1,5 @@
-// Bentuk data backend. Nama field sengaja sama dengan API Django sebelumnya (snake_case),
-// jadi lib/projects.ts, lib/sections.ts, dst. tidak perlu diubah.
+// Backend data shapes. Field names intentionally match the previous Django API (snake_case),
+// so lib/projects.ts, lib/sections.ts, etc. don't need to change.
 
 export type Project = {
   id: number
@@ -48,7 +48,7 @@ export type DetailRow = { key: string; blocks: unknown[]; title: string; parent:
 export type Message = { id: number; name: string; email: string; message: string; created_at: string }
 export type MessageInput = { name: string; email: string; message: string; ip: string }
 
-/** Semua akses data lewat antarmuka ini: store.pg.ts (Postgres/Neon) dan store.mem.ts (memori, untuk tes & dev tanpa DB). */
+/** All data access goes through this interface: store.pg.ts (Postgres/Neon) and store.mem.ts (in-memory, for tests and dev without a DB). */
 export interface Store {
   listProjects(opts: { publishedOnly: boolean }): Promise<Project[]>
   getProject(id: number): Promise<Project | null>
@@ -73,6 +73,6 @@ export interface Store {
   listMessages(): Promise<Message[]>
   getMessage(id: number): Promise<Message | null>
   insertMessage(m: MessageInput): Promise<Message>
-  countRecentMessages(ip: string): Promise<number> // dalam 1 jam terakhir
+  countRecentMessages(ip: string): Promise<number> // within the last hour
   deleteMessage(id: number): Promise<boolean>
 }

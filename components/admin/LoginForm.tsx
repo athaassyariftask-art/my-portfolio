@@ -24,7 +24,7 @@ export default function LoginForm() {
       router.refresh()
       return
     }
-    setError((await res.json().catch(() => ({}))).error ?? 'Gagal login.')
+    setError((await res.json().catch(() => ({}))).error ?? 'Sign-in failed.')
     setBusy(false)
   }
 
@@ -40,7 +40,7 @@ export default function LoginForm() {
       </div>
       {error && <p className="text-sm text-rose-600">{error}</p>}
       <button disabled={busy} className={`${btnPrimary} w-full`}>
-        {busy ? 'Masuk…' : 'Masuk'}
+        {busy ? 'Signing in…' : 'Sign in'}
       </button>
     </form>
   )

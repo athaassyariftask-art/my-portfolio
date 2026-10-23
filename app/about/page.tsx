@@ -7,7 +7,7 @@ import { getProfile } from '@/lib/profile'
 import { getProjects } from '@/lib/projects'
 import { getSections } from '@/lib/sections'
 
-export const metadata = { title: 'Tentang saya' }
+export const metadata = { title: 'About me' }
 
 export default async function About() {
   const [site, projects, sections, aboutBlocks, detail] = await Promise.all([
@@ -20,13 +20,13 @@ export default async function About() {
   const items = pickSections(sections, 'about')
 
   return (
-    <PageShell back={{ href: '/', text: 'Beranda' }}>
-      <div className="mb-4 flex flex-wrap gap-2">
-        <span className="pop-pill pop-teal">{site.role}</span>
-        <span className="pop-pill pop-yellow">{site.affiliation}</span>
+    <PageShell back={{ href: '/', text: 'Home' }}>
+      <div className="mb-5 flex flex-wrap gap-2">
+        <span className="pop-pill pop-blue">{site.role}</span>
+        <span className="pop-pill">{site.affiliation}</span>
       </div>
       <h1 className={`${titleClass} mb-10`}>
-        Tentang <span className="pop-outline text-[color:var(--accent)]">{site.name}</span>
+        About <span className="pop-mark">{site.name}</span>
       </h1>
 
       <div className="mb-16">
@@ -37,7 +37,7 @@ export default async function About() {
 
       <Sections items={items} projects={projects} narrow detail={detail} />
 
-      <Link href="/#contact" className="pop-btn pop-yellow">Hubungi saya</Link>
+      <Link href="/#contact" className="pop-btn pop-btn-ink">Get in touch</Link>
     </PageShell>
   )
 }

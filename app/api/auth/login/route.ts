@@ -5,20 +5,20 @@ import {
 
 export async function POST(req: Request) {
   if (!process.env.ADMIN_PASSWORD) {
-    return NextResponse.json({ error: 'ADMIN_PASSWORD belum diisi di environment variable.' }, { status: 500 })
+    return NextResponse.json({ error: 'ADMIN_PASSWORD is not set in the environment variables.' }, { status: 500 })
   }
   const ip = clientIp(req)
-  if (loginBlocked(ip)) return NextResponse.json({ error: 'Terlalu banyak percobaan. Coba lagi sebentar.' }, { status: 429 })
+  if (loginBlocked(ip)) return NextResponse.json({ error: 'Too many attempts. Please try again shortly.' }, { status: 429 })
 
   const { username, password } = await req.json().catch(() => ({}))
   if (!checkCredentials(username, password)) {
     loginFailed(ip)
-    return NextResponse.json({ error: 'Username atau password salah.' }, { status: 401 })
+    return NextResponse.json({ error: 'Incorrect username or password.' }, { status: 401 })
   }
   loginSucceeded(ip)
 
   const out = NextResponse.json({ ok: true })
-  // httpOnly: tidak bisa dibaca JavaScript di browser (aman dari XSS)
+  // httpOnly: not readable by browser JavaScript (safe from XSS)
   out.cookies.set(TOKEN_COOKIE, createToken(), {
     httpOnly: true,
     sameSite: 'lax',

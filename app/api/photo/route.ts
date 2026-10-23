@@ -1,6 +1,6 @@
 import { handle } from '@/lib/server'
 
-// Foto profil disajikan dari alamat website sendiri (same-origin), supaya tekstur 3D di lanyard tidak terblokir CORS.
+// The profile photo is served from the site's own origin (same-origin) so the lanyard's 3D texture isn't blocked by CORS.
 export async function GET() {
   const res = await handle({ method: 'GET', path: 'profile', staff: false })
   const url = (res.body as { photo?: string } | null)?.photo
@@ -15,7 +15,7 @@ export async function GET() {
   return new Response(upstream.body, {
     headers: {
       'Content-Type': upstream.headers.get('content-type') ?? 'image/jpeg',
-      // alamat berubah (?v=...) tiap ganti foto, jadi aman di-cache lama
+      // the URL changes (?v=...) whenever the photo changes, so it is safe to cache for a long time
       'Cache-Control': 'public, max-age=31536000, immutable',
     },
   })

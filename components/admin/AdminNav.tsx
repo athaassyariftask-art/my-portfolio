@@ -6,14 +6,14 @@ import { ExternalLink, FolderKanban, Layers, LayoutDashboard, Mail, UserRound } 
 import LogoutButton from './LogoutButton'
 
 const items = [
-  { href: '/admin', label: 'Ringkasan', icon: LayoutDashboard, exact: true },
+  { href: '/admin', label: 'Overview', icon: LayoutDashboard, exact: true },
   { href: '/admin/sections', label: 'Section', icon: Layers },
   { href: '/admin/projects', label: 'Project', icon: FolderKanban },
-  { href: '/admin/profile', label: 'Profil', icon: UserRound },
-  { href: '/admin/messages', label: 'Pesan', icon: Mail },
+  { href: '/admin/profile', label: 'Profile', icon: UserRound },
+  { href: '/admin/messages', label: 'Messages', icon: Mail },
 ]
 
-/** Sidebar admin (menjadi bilah atas di layar kecil). */
+/** Admin sidebar (becomes a top bar on small screens). */
 export default function AdminNav({ messages }: { messages: number }) {
   const path = usePathname()
   const active = (href: string, exact?: boolean) => (exact ? path === href : path.startsWith(href))
@@ -45,7 +45,7 @@ export default function AdminNav({ messages }: { messages: number }) {
 
       <div className="hidden space-y-1 border-t border-slate-200 p-3 md:block">
         <Link href="/" target="_blank" className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100">
-          <ExternalLink className="h-4 w-4" /> Lihat situs
+          <ExternalLink className="h-4 w-4" /> View site
         </Link>
         <div className="px-3 py-2 text-sm"><LogoutButton /></div>
       </div>

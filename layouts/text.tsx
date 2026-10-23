@@ -3,7 +3,7 @@ import Reveal from '@/components/Reveal'
 import { readSlots } from './slots'
 import type { LayoutProps } from './types'
 
-/** Teks panjang (boleh Markdown) dengan judul bagian. Tenang, cocok untuk halaman baca seperti /about. */
+/** Long text (Markdown allowed) with a heading. Calm, suited to reading pages such as /about. */
 export default function Text({ items, fields }: LayoutProps) {
   return (
     <div className="space-y-14">
@@ -11,8 +11,8 @@ export default function Text({ items, fields }: LayoutProps) {
         const s = readSlots(item, fields)
         return (
           <Reveal key={String(item._id ?? i)}>
-            {s.title && <h3 className="mb-4 text-2xl font-bold">{s.title}</h3>}
-            {s.subtitle && <p className="mb-3 font-mono text-xs uppercase tracking-widest opacity-60">{s.subtitle}</p>}
+            {s.title && <h3 className="pop-display mb-4 text-2xl">{s.title}</h3>}
+            {s.subtitle && <p className="pop-label mb-3">{s.subtitle}</p>}
             <Markdown>{s.body}</Markdown>
           </Reveal>
         )

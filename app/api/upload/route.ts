@@ -9,28 +9,28 @@ const RULES: Record<string, { types: string[]; maxMb: number }> = {
   pdf: { types: ['application/pdf'], maxMb: 10 },
 }
 
-// Server hanya menerbitkan "tiket upload" (khusus admin, dengan batas jenis & ukuran); file-nya dikirim browser langsung ke Blob.
+// The server only issues an "upload ticket" (admin only, with type and size limits); the browser sends the file straight to Blob.
 export async function POST(req: Request) {
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return NextResponse.json({ error: 'BLOB_READ_WRITE_TOKEN belum diisi (hubungkan Vercel Blob, lihat DEPLOY.md).' }, { status: 500 })
+    return NextResponse.json({ error: 'BLOB_READ_WRITE_TOKEN is not set (connect Vercel Blob, see DEPLOY.md).' }, { status: 500 })
   }
   const body = (await req.json().catch(() => null)) as HandleUploadBody | null
-  if (!body) return NextResponse.json({ error: 'Data tidak valid.' }, { status: 400 })
+  if (!body) return NextResponse.json({ error: 'Invalid data.' }, { status: 400 })
 
   try {
     const json = await handleUpload({
       body,
       request: req,
       onBeforeGenerateToken: async (_pathname, clientPayload) => {
-        if (!verifyToken((await cookies()).get(TOKEN_COOKIE)?.value)) throw new Error('Sesi habis, silakan login lagi.')
+        if (!verifyToken((await cookies()).get(TOKEN_COOKIE)?.value)) throw new Error('Session expired, please log in again.')
         const rule = RULES[clientPayload ?? '']
-        if (!rule) throw new Error('Jenis upload tidak dikenal.')
+        if (!rule) throw new Error('Unknown upload type.')
         return { allowedContentTypes: rule.types, maximumSizeInBytes: rule.maxMb * 1024 * 1024, addRandomSuffix: true }
       },
       onUploadCompleted: async () => {},
     })
     return NextResponse.json(json)
   } catch (e) {
-    return NextResponse.json({ error: e instanceof Error ? e.message : 'Upload ditolak.' }, { status: 400 })
+    return NextResponse.json({ error: e instanceof Error ? e.message : 'Upload rejected.' }, { status: 400 })
   }
 }
