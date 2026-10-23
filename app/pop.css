@@ -105,34 +105,52 @@
   .pop-hover:hover, .pop-btn:hover { transform: none; }
 }
 
-/* ---- Kotak arsip untuk daftar project (layouts/projects.tsx) ---- */
+/* ---- Kotak arsip 3D untuk daftar project (layouts/projects.tsx) ---- */
 .pf-stage {
   position: relative;
   width: 100%;
   max-width: 460px;
   aspect-ratio: 1 / 1.02;
   margin-inline: auto;
-  /* map boleh keluar lewat atas, tapi terpotong di dasar kotak */
-  clip-path: inset(-4rem -1px 0 -1px);
+  perspective: 1100px;
+}
+.pf-scene {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx, 10deg)) rotateY(var(--ry, -14deg));
+  transition: transform 0.25s ease-out;
 }
 .pf-back,
-.pf-front {
+.pf-front,
+.pf-side {
   position: absolute;
-  left: 0;
-  right: 0;
   border: 1.5px solid var(--ink);
 }
 .pf-back {
+  left: 0;
+  right: 0;
   top: 64%;
   bottom: 0;
   border-radius: 14px 14px 0 0;
   background-color: #8fa3ef;
-  z-index: 0;
+  transform: translateZ(-60px);
 }
+/* dinding kiri & kanan kotak: lebar 120px, berpusat di tepi kotak lalu diputar 90 derajat */
+.pf-side {
+  top: 64%;
+  bottom: 0;
+  width: 120px;
+  background-color: #7186de;
+}
+.pf-side-l { left: -60px; transform: rotateY(90deg); }
+.pf-side-r { right: -60px; transform: rotateY(90deg); }
 .pf-front {
+  left: 0;
+  right: 0;
   top: 68%;
   bottom: 0;
-  z-index: 40;
+  transform: translateZ(60px);
   border-radius: 6px 6px 18px 18px;
   background-color: var(--blue);
   display: flex;
@@ -164,8 +182,13 @@
   right: 8%;
   border: 1.5px solid var(--ink);
   border-radius: 10px;
-  transition: top 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.12);
+  transform: translateZ(var(--z, 0px)) translateY(var(--lift, 0));
+  transition:
+    top 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.12),
+    transform 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.12),
+    clip-path 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.12);
 }
+.pf-stage:hover .pf-folder.is-on { --lift: -3%; }
 .pf-tab {
   position: absolute;
   top: -1.5rem;
@@ -189,7 +212,7 @@
   gap: 0.5rem;
   overflow: hidden;
   padding: 1rem 1.1rem;
-  transition: opacity 0.3s ease 0.15s;
+  transition: opacity 0.3s ease 0.2s;
 }
 .pf-cover {
   min-height: 0;
@@ -200,5 +223,5 @@
   object-fit: cover;
 }
 @media (prefers-reduced-motion: reduce) {
-  .pf-folder, .pf-face { transition: none; }
+  .pf-folder, .pf-face, .pf-scene { transition: none; }
 }

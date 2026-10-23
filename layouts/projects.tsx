@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
 import type { ProjectsProps } from './types'
@@ -17,6 +17,38 @@ const plain = (s: string) => s.replace(/[#*_`>\[\]]/g, '').slice(0, 140)
  */
 export default function ProjectsView({ projects }: ProjectsProps) {
   const [active, setActive] = useState(0)
+  // `shown` = kotak sedang terlihat di layar. Dipakai untuk memutar animasi map naik setiap kali bagian ini muncul.
+  const [shown, setShown] = useState(false)
+  const stage = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = stage.current
+    if (!el || typeof IntersectionObserver === 'undefined') {
+      setShown(true)
+      return
+    }
+    const io = new IntersectionObserver(([e]) => {
+      // jeda singkat supaya posisi awal (map di dalam kotak) sempat tergambar sebelum naik
+      if (e.isIntersecting) setTimeout(() => setShown(true), 120)
+      else setShown(false)
+    }, { threshold: 0.35 })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+
+  // Kotak miring mengikuti mouse (lewat variabel CSS, tanpa render ulang)
+  function tilt(e: React.PointerEvent<HTMLDivElement>) {
+    if (e.pointerType !== 'mouse') return
+    const r = e.currentTarget.getBoundingClientRect()
+    const x = (e.clientX - r.left) / r.width - 0.5
+    const y = (e.clientY - r.top) / r.height - 0.5
+    e.currentTarget.style.setProperty('--ry', `${-14 + x * 18}deg`)
+    e.currentTarget.style.setProperty('--rx', `${10 - y * 12}deg`)
+  }
+  function untilt(e: React.PointerEvent<HTMLDivElement>) {
+    e.currentTarget.style.removeProperty('--ry')
+    e.currentTarget.style.removeProperty('--rx')
+  }
 
   if (projects.length === 0) {
     return <p className="pop-card p-10 font-bold">Belum ada project yang ditampilkan.</p>
@@ -24,15 +56,18 @@ export default function ProjectsView({ projects }: ProjectsProps) {
 
   const n = projects.length
   const cur = Math.min(active, n - 1)
-  // Map yang sedang dipilih naik ke TOP_ACTIVE; map lain menyembul di belakangnya, tersusun ke atas
+  // Map yang dipilih naik ke TOP_ACTIVE; map lain menyembul di belakangnya, tersusun ke atas dan ke belakang
   const TOP_ACTIVE = 24
   const FOLDER_H = 70
+  const REST_TOP = 58 // posisi awal: semua map masih di dalam kotak
   const gap = n > 1 ? Math.min(3.5, 22 / (n - 1)) : 0
-  const tops = projects.map((_, i) => {
-    if (i === cur) return TOP_ACTIVE
-    const rank = i < cur ? i : i - 1 // urutan di antara map yang diam
-    return TOP_ACTIVE - gap * (rank + 1)
-  })
+  const dz = Math.min(10, 70 / Math.max(n, 1))
+  const place = (i: number) => {
+    if (!shown) return { top: REST_TOP, z: -40 }
+    if (i === cur) return { top: TOP_ACTIVE, z: 28 }
+    const rank = i < cur ? i : i - 1
+    return { top: TOP_ACTIVE - gap * (rank + 1), z: 14 - dz * (rank + 1) }
+  }
 
   return (
     <div className="grid items-center gap-10 lg:grid-cols-[1fr_minmax(0,460px)]">
@@ -78,48 +113,56 @@ export default function ProjectsView({ projects }: ProjectsProps) {
         })}
       </ol>
 
-      {/* Kotak arsip */}
-      <div className="pf-stage" aria-hidden={false}>
-        <div className="pf-back" />
-        {projects.map((p, i) => {
-          const on = i === cur
-          return (
-            <div
-              key={p.id}
-              className="pf-folder"
-              style={{
-                top: `${tops[i]}%`,
-                height: `${FOLDER_H}%`,
-                zIndex: on ? n + 5 : n - i,
-                backgroundColor: tone(i),
-              }}
-            >
-              <span className="pf-tab" style={{ left: `${(i % 4) * 24}%`, backgroundColor: tone(i) }}>
-                {num(i)}
-              </span>
-              <div className="pf-face" style={{ opacity: on ? 1 : 0 }}>
-                <div>
-                  <p className="pop-display text-sm opacity-60">PROJECT / {num(i)}</p>
-                  <h3 className="pop-display mt-1 text-2xl uppercase leading-tight sm:text-3xl">{p.title}</h3>
+      {/* Kotak arsip (3D) */}
+      <div className="pf-stage" ref={stage} onPointerMove={tilt} onPointerLeave={untilt}>
+        <div className="pf-scene">
+          <div className="pf-back" />
+          <div className="pf-side pf-side-l" />
+          <div className="pf-side pf-side-r" />
+          {projects.map((p, i) => {
+            const on = i === cur
+            const { top, z } = place(i)
+            // potong bagian map yang melewati dasar kotak (tab di atas boleh keluar)
+            const cut = (Math.max(0, top + FOLDER_H - 100) / FOLDER_H) * 100
+            return (
+              <div
+                key={p.id}
+                className={`pf-folder ${on ? 'is-on' : ''}`}
+                style={{
+                  top: `${top}%`,
+                  height: `${FOLDER_H}%`,
+                  backgroundColor: tone(i),
+                  clipPath: `inset(-3rem -2px ${cut}% -2px)`,
+                  ['--z' as string]: `${z}px`,
+                }}
+              >
+                <span className="pf-tab" style={{ left: `${(i % 4) * 24}%`, backgroundColor: tone(i) }}>
+                  {num(i)}
+                </span>
+                <div className="pf-face" style={{ opacity: on && shown ? 1 : 0 }}>
+                  <div>
+                    <p className="pop-display text-sm opacity-60">PROJECT / {num(i)}</p>
+                    <h3 className="pop-display mt-1 text-2xl uppercase leading-tight sm:text-3xl">{p.title}</h3>
+                  </div>
+                  {p.cover && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={p.cover} alt="" className="pf-cover" />
+                  )}
+                  <Link
+                    href={`/projects/${p.id}`}
+                    tabIndex={on ? 0 : -1}
+                    className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-widest"
+                  >
+                    Buka file <ArrowUpRight className="h-3.5 w-3.5" />
+                  </Link>
                 </div>
-                {p.cover && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={p.cover} alt="" className="pf-cover" />
-                )}
-                <Link
-                  href={`/projects/${p.id}`}
-                  tabIndex={on ? 0 : -1}
-                  className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-widest"
-                >
-                  Buka file <ArrowUpRight className="h-3.5 w-3.5" />
-                </Link>
               </div>
-            </div>
-          )
-        })}
-        <div className="pf-front">
-          <span className="pf-handle" />
-          <span className="pf-label">My works</span>
+            )
+          })}
+          <div className="pf-front">
+            <span className="pf-handle" />
+            <span className="pf-label">My works</span>
+          </div>
         </div>
       </div>
     </div>
