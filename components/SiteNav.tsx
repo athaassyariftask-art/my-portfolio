@@ -32,7 +32,7 @@ export default function SiteNav({ name, items }: { name: string; items: NavItem[
       className="sticky top-0 z-50 border-b border-[color:var(--line)]"
       style={{ backgroundColor: 'color-mix(in srgb, var(--cream) 94%, transparent)' }}
     >
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-1 px-6 py-3">
+      <div className="pop-wrap flex flex-wrap items-center justify-between gap-x-6 gap-y-1 py-3">
         <a href="#" className="pop-display text-lg">
           {name}
           <span style={{ color: 'var(--accent)' }}>.</span>
@@ -40,7 +40,7 @@ export default function SiteNav({ name, items }: { name: string; items: NavItem[
 
         <nav
           aria-label="Page sections"
-          className="order-3 -mx-6 flex w-[calc(100%+3rem)] items-center gap-6 overflow-x-auto px-6 text-sm font-medium md:order-none md:mx-0 md:w-auto md:px-0"
+          className="order-3 flex w-full items-center gap-6 overflow-x-auto text-sm font-medium md:order-none md:w-auto"
         >
           {items.map((i) => (
             <a

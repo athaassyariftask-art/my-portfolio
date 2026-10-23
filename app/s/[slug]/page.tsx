@@ -30,7 +30,7 @@ export default async function SectionRoute({ params }: { params: Promise<{ slug:
 
   return (
     <main className="pop-page relative min-h-screen overflow-x-hidden">
-      <div className="relative z-10 mx-auto max-w-6xl px-6 pb-24 pt-10">
+      <div className="pop-wrap relative z-10 pb-24 pt-10">
         <Link href={back.href} className="pop-link mb-8 text-sm">
           <ArrowLeft className="h-3.5 w-3.5" /> {back.text}
         </Link>

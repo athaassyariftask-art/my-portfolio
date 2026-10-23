@@ -60,14 +60,6 @@
   mask-image: linear-gradient(to bottom, #000 55%, transparent);
 }
 
-/* Tints */
-.pop-pink { background-color: var(--pink); }
-.pop-orange { background-color: var(--orange); }
-.pop-teal { background-color: var(--teal); }
-.pop-blue { background-color: var(--blue); }
-.pop-yellow { background-color: var(--yellow); }
-.pop-paper { background-color: var(--paper); }
-
 /* Card: hairline border, rounded corners, soft shadow */
 .pop-card {
   border: 1px solid var(--line);
@@ -157,6 +149,23 @@
   font-weight: 600;
   color: var(--ink);
 }
+
+/* Wide page container: uses the whole screen (up to 1800px) with fluid side padding */
+.pop-wrap {
+  width: 100%;
+  max-width: 1800px;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 5rem);
+}
+
+/* Tints. Kept after .pop-card / .pop-pill / .pop-badge on purpose: same specificity, so the later rule wins
+   and `pop-pill pop-yellow` really is yellow. */
+.pop-pink { background-color: var(--pink); }
+.pop-orange { background-color: var(--orange); }
+.pop-teal { background-color: var(--teal); }
+.pop-blue { background-color: var(--blue); }
+.pop-yellow { background-color: var(--yellow); }
+.pop-paper { background-color: var(--paper); }
 
 @media (prefers-reduced-motion: reduce) {
   .pop-hover, .pop-btn { transition: none; }

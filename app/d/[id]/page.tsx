@@ -1,6 +1,7 @@
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import EditableBlocks from '@/components/EditableBlocks'
-import PageShell, { ContentCard, titleClass } from '@/components/PageShell'
+import PageShell, { AsideCard, ContentCard, ReadingGrid, titleClass } from '@/components/PageShell'
 import { getDetail, isAdmin } from '@/lib/details'
 import { getSections } from '@/lib/sections'
 import { readSlots } from '@/layouts/slots'
@@ -27,20 +28,41 @@ export default async function ItemDetail({ params }: { params: Promise<{ id: str
   const key = `item-${id}`
   const [blocks, admin] = await Promise.all([getDetail(key), isAdmin()])
   if (blocks.length === 0 && !admin) notFound() // visitors never see an empty page
+  const back = s.page === 'about' ? '/about' : `/#${s.slug}`
 
   return (
-    <PageShell back={{ href: s.page === 'about' ? '/about' : `/#${s.slug}`, text: s.title }}>
-      {(slots.subtitle || slots.meta) && (
-        <div className="mb-4 flex flex-wrap gap-2">
-          {slots.meta && <span className="pop-pill pop-yellow">{slots.meta}</span>}
-          {slots.subtitle && <span className="pop-pill">{slots.subtitle}</span>}
-        </div>
-      )}
-      <h1 className={`${titleClass} mb-4`}>{slots.title}</h1>
-      {slots.body && <p className="mb-8 whitespace-pre-line text-lg text-[color:var(--muted)]">{slots.body}</p>}
-      <ContentCard>
-        <EditableBlocks detailKey={key} initial={blocks} canEdit={admin} />
-      </ContentCard>
+    <PageShell back={{ href: back, text: s.title }}>
+      <span className="pop-label mb-4 block">{s.title}</span>
+      <h1 className={`${titleClass} mb-5 max-w-5xl`}>{slots.title}</h1>
+      {slots.body && <p className="mb-10 max-w-3xl whitespace-pre-line text-lg text-[color:var(--muted)] md:text-xl">{slots.body}</p>}
+
+      <ReadingGrid
+        aside={
+          <AsideCard title="Details">
+            {(slots.meta || slots.subtitle) && (
+              <dl className="mb-5 space-y-4 text-sm">
+                {slots.meta && (
+                  <div>
+                    <dt className="pop-label mb-1">When</dt>
+                    <dd className="font-medium">{slots.meta}</dd>
+                  </div>
+                )}
+                {slots.subtitle && (
+                  <div>
+                    <dt className="pop-label mb-1">Where</dt>
+                    <dd className="font-medium">{slots.subtitle}</dd>
+                  </div>
+                )}
+              </dl>
+            )}
+            <Link href={back} className="pop-link text-sm">← Back to {s.title}</Link>
+          </AsideCard>
+        }
+      >
+        <ContentCard>
+          <EditableBlocks detailKey={key} initial={blocks} canEdit={admin} />
+        </ContentCard>
+      </ReadingGrid>
     </PageShell>
   )
 }

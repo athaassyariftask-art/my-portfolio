@@ -101,7 +101,7 @@ export default async function Home() {
       {/* Hero: greeting + name */}
       <section className="relative">
         <div aria-hidden className="pop-grid absolute inset-x-0 top-0 h-[34rem]" />
-        <div className="relative z-10 mx-auto max-w-6xl px-6 pb-20 pt-12 lg:pb-28 lg:pt-20">
+        <div className="pop-wrap relative z-10 pb-20 pt-12 lg:pb-28 lg:pt-20">
           <div className="lg:max-w-[58%]">
             {site.photo && (
               // eslint-disable-next-line @next/next/no-img-element
@@ -116,7 +116,7 @@ export default async function Home() {
               <span className="pop-pill">{site.affiliation}</span>
             </div>
 
-            <h1 className="pop-display text-5xl sm:text-6xl lg:text-7xl">
+            <h1 className="pop-display text-5xl sm:text-6xl lg:text-7xl xl:text-8xl">
               <RotatingName
                 variants={names}
                 hold={hero.hold}
@@ -150,17 +150,17 @@ export default async function Home() {
 
       {/* Every section is visible on the page. Order, titles and visibility are managed in Admin → Sections. */}
       {panels.map((p, i) => (
-        <section key={p.id} id={p.id} className="relative z-10 mx-auto max-w-6xl scroll-mt-24 px-6 pb-24">
+        <section key={p.id} id={p.id} className="pop-wrap relative z-10 scroll-mt-24 pb-24">
           <SectionHeading n={String(i + 1).padStart(2, '0')} label={p.title} editHref={p.editHref} />
           {p.node}
         </section>
       ))}
 
-      <section id="contact" className="relative z-10 mx-auto max-w-6xl scroll-mt-24 px-6 pb-24">
+      <section id="contact" className="pop-wrap relative z-10 scroll-mt-24 pb-24">
         {contact}
       </section>
 
-      <footer className="relative z-10 mx-auto flex max-w-6xl items-center justify-between px-6 pb-10">
+      <footer className="pop-wrap relative z-10 flex items-center justify-between pb-10">
         <span className="pop-label">
           © {new Date().getFullYear()} {site.name}
         </span>

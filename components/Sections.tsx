@@ -33,7 +33,7 @@ export default function Sections({
 }) {
   if (items.length === 0 && detail.admin) {
     return (
-      <section className="relative z-10 mx-auto max-w-3xl px-6 pb-28">
+      <section className="pop-wrap relative z-10 pb-28">
         <div className="pop-card p-8 text-center font-semibold">
           No sections are visible yet.{' '}
           <Link href="/admin/sections" className="pop-link">Create one in Admin → Sections</Link>
@@ -47,7 +47,7 @@ export default function Sections({
         <section
           key={s.id}
           id={anchor}
-          className={narrow ? 'relative z-10 scroll-mt-24 pb-16' : 'relative z-10 mx-auto max-w-6xl scroll-mt-24 px-6 pb-28'}
+          className={narrow ? 'relative z-10 scroll-mt-24 pb-16' : 'pop-wrap relative z-10 scroll-mt-24 pb-28'}
         >
           <SectionHeading
             n={String(i + 1).padStart(2, '0')}
