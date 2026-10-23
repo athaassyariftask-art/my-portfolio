@@ -298,14 +298,14 @@ function Scene({ badge }: { badge: BadgeInfo }) {
 
   return (
     <>
-      {/* Cahaya studio hangat (tanpa unduhan HDR) supaya nada warnanya ikut background kertas */}
+      {/* Cahaya studio netral (tanpa unduhan HDR) supaya warna kartu terlihat jujur di latar putih */}
       <Environment resolution={256}>
-        <Lightformer form="rect" intensity={2.2} color="#fff4e6" position={[-3, 4, 6]} scale={[10, 6, 1]} />
-        <Lightformer form="rect" intensity={1.2} color="#eef2ff" position={[6, 1, 4]} scale={[6, 8, 1]} />
+        <Lightformer form="rect" intensity={2.2} color="#ffffff" position={[-3, 4, 6]} scale={[10, 6, 1]} />
+        <Lightformer form="rect" intensity={1.2} color="#f1f3ff" position={[6, 1, 4]} scale={[6, 8, 1]} />
         <Lightformer form="rect" intensity={0.8} color="#ffffff" position={[0, -4, 3]} scale={[12, 2, 1]} />
       </Environment>
-      <ambientLight intensity={0.7} color="#fff8ee" />
-      <directionalLight position={[-4, 5, 6]} intensity={0.9} color="#fffaf0" />
+      <ambientLight intensity={0.7} color="#ffffff" />
+      <directionalLight position={[-4, 5, 6]} intensity={0.9} color="#ffffff" />
       <Physics gravity={[0, -25, 0]} timeStep={TIME_STEP}>
         <Lanyard anchorX={anchorX} badge={badge} />
       </Physics>

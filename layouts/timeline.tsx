@@ -78,7 +78,7 @@ export default function Timeline({ items, fields, detailHref }: LayoutProps) {
         return (
           <Reveal key={String(first.item._id ?? i)}>
             <span
-              className={`absolute -left-[13px] mt-3 h-6 w-6 rounded-full border-[1.5px] border-[#141414] ${popColor(i)}`}
+              className={`absolute -left-[12.75px] mt-3 h-6 w-6 rounded-full border-[1.5px] border-[#141414] ${popColor(i)}`}
             />
             <div className="pop-card p-6">
               {g.length === 1 ? (
@@ -95,7 +95,7 @@ export default function Timeline({ items, fields, detailHref }: LayoutProps) {
                     {g.map(({ item, s }, j) => (
                       <li key={String(item._id ?? j)} className="relative">
                         <span
-                          className={`absolute -left-[41px] top-1.5 h-4 w-4 rounded-full border-[1.5px] border-[#141414] ${popColor(i + j + 1)}`}
+                          className={`absolute -left-[36.75px] top-1.5 h-4 w-4 rounded-full border-[1.5px] border-[#141414] ${popColor(i + j + 1)}`}
                         />
                         {s.meta && <span className="pop-pill pop-yellow mb-2">{s.meta}</span>}
                         <h4 className="text-xl font-extrabold leading-snug">{s.title}</h4>

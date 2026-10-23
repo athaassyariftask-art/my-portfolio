@@ -130,7 +130,7 @@
 .pf-back {
   left: 0;
   right: 0;
-  top: 64%;
+  top: 66%;
   bottom: 0;
   border-radius: 14px 14px 0 0;
   background-color: #8fa3ef;
@@ -138,7 +138,7 @@
 }
 /* dinding kiri & kanan kotak: lebar 120px, berpusat di tepi kotak lalu diputar 90 derajat */
 .pf-side {
-  top: 64%;
+  top: 66%;
   bottom: 0;
   width: 120px;
   background-color: #7186de;
@@ -148,10 +148,10 @@
 .pf-front {
   left: 0;
   right: 0;
-  top: 68%;
+  top: 66%;
   bottom: 0;
   transform: translateZ(60px);
-  border-radius: 6px 6px 18px 18px;
+  border-radius: 14px 14px 18px 18px;
   background-color: var(--blue);
   display: flex;
   flex-direction: column;
@@ -206,7 +206,7 @@
 }
 .pf-face {
   display: flex;
-  height: 63%; /* hanya bagian yang tampak di atas kotak */
+  height: 60%; /* hanya bagian yang tampak di atas kotak */
   flex-direction: column;
   justify-content: space-between;
   gap: 0.5rem;
