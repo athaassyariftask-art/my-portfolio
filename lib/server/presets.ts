@@ -76,6 +76,7 @@ export const PRESETS = [
       f('program', 'Program / major', 'text', 'subtitle'),
       f('description', 'Description', 'textarea', 'body'),
       f('highlights', 'Highlights', 'lines', 'list'),
+      f('logo', 'School logo', 'image', 'image'),
     ],
     items: [
       {
