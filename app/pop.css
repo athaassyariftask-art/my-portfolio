@@ -167,7 +167,23 @@
 .pop-yellow { background-color: var(--yellow); }
 .pop-paper { background-color: var(--paper); }
 
+/* Blinking caret for the typed hero name; stays solid while letters are being typed or erased */
+.pop-caret {
+  display: inline-block;
+  width: 0.06em;
+  height: 0.82em;
+  margin-left: 0.06em;
+  vertical-align: -0.06em;
+  background-color: var(--accent);
+  animation: pop-blink 1.05s steps(1) infinite;
+}
+.pop-caret-solid { animation: none; }
+@keyframes pop-blink {
+  50% { opacity: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pop-hover, .pop-btn { transition: none; }
+  .pop-caret { animation: none; }
   .pop-hover:hover, .pop-btn:hover { transform: none; }
 }

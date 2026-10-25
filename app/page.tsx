@@ -9,7 +9,7 @@ import { getDetailContext } from '@/lib/details'
 import { getSections } from '@/lib/sections'
 import { hero } from '@/hero.config'
 import ContactForm from '@/components/ContactForm'
-import RotatingName from '@/components/RotatingName'
+import TypewriterName from '@/components/TypewriterName'
 import LanyardLayer from '@/components/LanyardLayer'
 import Reveal from '@/components/Reveal'
 import SectionHeading from '@/components/SectionHeading'
@@ -47,7 +47,7 @@ export default async function Home() {
         <div>
           <span className="pop-label mb-5 block !text-[color:var(--hi)]">Contact</span>
           <h2 className="pop-display mb-8 text-3xl leading-tight md:text-4xl">
-            Let's discuss something!
+            Have a problem you&rsquo;d like to turn into a system?
           </h2>
           <div className="flex flex-wrap items-center gap-3">
             <a
@@ -117,7 +117,7 @@ export default async function Home() {
             </div>
 
             <h1 className="pop-display text-5xl sm:text-6xl lg:text-7xl xl:text-8xl">
-              <RotatingName
+              <TypewriterName
                 variants={names}
                 hold={hero.hold}
                 greetingClassName="mb-3 text-2xl italic text-[color:var(--muted)] sm:text-3xl"
