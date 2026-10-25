@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState } from 'react'
 import Link from 'next/link'
 import { AnimatePresence, motion, useReducedMotion, useScroll, useSpring } from 'framer-motion'
 import { ArrowUpRight, ChevronDown } from 'lucide-react'
+import { duration, isLive } from '@/lib/period'
 
 /** Plain data only: this is a client component, so nothing here can be a function. */
 export type TrackRole = {
@@ -17,34 +18,6 @@ export type TrackRole = {
   detail: string | null
 }
 export type TrackGroup = { org: string; roles: TrackRole[] }
-
-const MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
-const isLive = (meta: string) => /\b(present|now|current)\b/i.test(meta)
-
-/** A bare year means January when it starts a period and December when it ends one. */
-function parseDate(s: string, asEnd = false): Date | null {
-  const m = s.match(/([A-Za-z]{3,9})\.?\s+((?:19|20)\d{2})/)
-  if (m) {
-    const i = MONTHS.indexOf(m[1].slice(0, 3).toLowerCase())
-    if (i >= 0) return new Date(Number(m[2]), i, 1)
-  }
-  const y = s.match(/\b(?:19|20)\d{2}\b/)
-  return y ? new Date(Number(y[0]), asEnd ? 11 : 0, 1) : null
-}
-
-/** "November 2024 - Now" -> "2 yrs 1 mo". Returns '' when the period text can't be understood. */
-function duration(meta: string, now: Date): string {
-  const parts = meta.split(/\s*[-–—]\s*|\s+to\s+/i)
-  if (parts.length < 2) return ''
-  const start = parseDate(parts[0])
-  const end = isLive(parts[1]) ? now : parseDate(parts[1], true)
-  if (!start || !end) return ''
-  const months = (end.getFullYear() - start.getFullYear()) * 12 + end.getMonth() - start.getMonth() + 1
-  if (months < 1) return ''
-  const y = Math.floor(months / 12)
-  const mo = months % 12
-  return [y ? `${y} yr${y > 1 ? 's' : ''}` : '', mo ? `${mo} mo` : ''].filter(Boolean).join(' ')
-}
 
 /** Up to three capital letters of the organisation name, for the round badge. */
 function initials(name: string): string {

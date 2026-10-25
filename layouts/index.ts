@@ -1,5 +1,6 @@
 import Cards from './cards'
 import Chips from './chips'
+import IdStack from './idstack'
 import Journey from './journey'
 import List from './list'
 import Text from './text'
@@ -47,6 +48,13 @@ export const layouts: Record<LayoutKey, Layout> = {
     description: 'Animated map with a pin per item and next / previous buttons. Good for education.',
     uses: ['image', 'meta', 'title', 'subtitle', 'body', 'list', 'tags', 'link'],
     View: Journey,
+  },
+  idstack: {
+    key: 'idstack',
+    label: 'ID card stack',
+    description: 'Stack of student-ID cards with a progress ring for ongoing studies. Good for education.',
+    uses: ['image', 'meta', 'title', 'subtitle', 'body', 'list', 'tags', 'link'],
+    View: IdStack,
   },
   text: {
     key: 'text',

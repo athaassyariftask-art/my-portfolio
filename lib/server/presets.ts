@@ -6,6 +6,7 @@ export const LAYOUTS: Record<string, string> = {
   list: 'List',
   chips: 'Chips / tags',
   journey: 'Journey map',
+  idstack: 'ID card stack',
   text: 'Long text',
 }
 
@@ -64,9 +65,9 @@ export const PRESETS = [
   {
     key: 'education',
     label: 'Education',
-    description: 'Schools and programs as pins on an animated map, with next / previous buttons.',
+    description: 'Schools and programs as a stack of student-ID cards, with a progress ring for ongoing studies.',
     title: 'Education',
-    layout: 'journey',
+    layout: 'idstack',
     options: { detail: false },
     page: 'home',
     schema: [
