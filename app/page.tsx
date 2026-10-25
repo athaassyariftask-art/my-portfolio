@@ -47,7 +47,7 @@ export default async function Home() {
         <div>
           <span className="pop-label mb-5 block !text-[color:var(--hi)]">Contact</span>
           <h2 className="pop-display mb-8 text-3xl leading-tight md:text-4xl">
-            Have a problem you&rsquo;d like to turn into a system?
+            Let's discuss something exciting!!
           </h2>
           <div className="flex flex-wrap items-center gap-3">
             <a
