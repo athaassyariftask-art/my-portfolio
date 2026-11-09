@@ -75,7 +75,7 @@ export default function InlineText({
         className={`block w-full resize-none overflow-hidden rounded-lg bg-transparent outline-none ring-0 transition-colors hover:bg-white/60 focus:bg-white/80 placeholder:text-slate-300 ${className}`}
       />
       {status !== '' && (
-        <p className={`mt-1 font-mono text-xs ${status === 'error' ? 'text-rose-600' : 'text-slate-400'}`}>
+        <p className={`mt-1 font-mono text-xs ${status === 'error' ? 'text-rose-600' : 'text-[color:var(--muted)]'}`}>
           {status === 'saving' ? 'Saving…' : status === 'ok' ? '✓ Saved' : error}
         </p>
       )}

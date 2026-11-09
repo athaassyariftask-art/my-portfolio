@@ -22,4 +22,26 @@ export const hero = {
     // { greeting: '你好，我是', text: '阿塔拉·法雷尔' },
     // { greeting: 'Привет, я', text: 'Аталлах Фаррел' },
   ] as { greeting: string; text: string }[],
+
+  // ---- Home page content (all optional) ----
+  // The short line under the name.
+  tagline: 'Information systems, decision support and mobile apps for real-world problems.',
+  // About text and photo: Admin → Profile. Tagline, achievement cards and Expertise below are only the DEFAULTS:
+  // edit them on the site in Admin → Profile → Home content (that overrides what is written here).
+  // Your GitHub username. Leave empty to read it from the GitHub link in Admin → Profile → Links.
+  githubUser: '',
+  // The big numbers next to the About text. `since` ("YYYY-MM") turns into whole years up to today;
+  // `projects: true` counts your published projects; `value` is a fixed number. `suffix` is appended ("+").
+  stats: [
+    { label: 'Years as lab assistant', since: '2024-11', suffix: '+' },
+    { label: 'Projects built', projects: true },
+    { label: 'Topics taught (Figma, Flutter)', value: 2 },
+  ] as { label: string; since?: string; projects?: boolean; value?: number; suffix?: string }[],
+  // The four columns under About. `icon` is one of: workflow, code, target, palette.
+  expertise: [
+    { icon: 'workflow', title: 'System analysis & design', text: 'Modelling real processes with DFD, ERD, UML and BPMN, from requirements to a clear system blueprint.' },
+    { icon: 'code', title: 'Web & mobile development', text: 'Building working systems with Django and Flutter, from database to a screen people can use.' },
+    { icon: 'target', title: 'Decision support & simulation', text: 'Turning criteria into ranked decisions with AHP, and testing process changes with simulation in Arena.' },
+    { icon: 'palette', title: 'UI/UX & visual design', text: 'Designing interfaces in Figma and producing clear, on-brand visuals for real organizations.' },
+  ] as { icon: 'workflow' | 'code' | 'target' | 'palette'; title: string; text: string }[],
 }

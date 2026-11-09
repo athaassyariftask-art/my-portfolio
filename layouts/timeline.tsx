@@ -34,6 +34,8 @@ function group(items: Item[], fields: LayoutProps['fields']): Entry[][] {
 export default function Timeline({ items, fields, detailHref }: LayoutProps) {
   const data: TrackGroup[] = group(items, fields).map((g, gi) => ({
     org: g[0].s.subtitle.trim(),
+    // One logo per organization: the first role that has an image supplies it
+    logo: g.find((e) => e.s.image)?.s.image ?? '',
     roles: g.map(({ item, s }, ri) => ({
       id: String(item._id ?? `${gi}-${ri}`),
       meta: s.meta,

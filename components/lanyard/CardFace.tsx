@@ -74,7 +74,7 @@ export default function CardFace({ badge, hovered }: { badge: BadgeInfo; hovered
       {/* Pita biru: titik hijau + label di kiri, slot logo di kanan */}
       <Plate w={3.04} h={0.34} r={0.14} color={COLOR.band} roughness={0.7} position={[0, 0.74, 0.058]} />
       <Plate w={0.1} h={0.1} r={0.05} color={COLOR.dot} basic position={[-1.36, 0.74, 0.064]} />
-      <Text position={[-1.24, 0.74, 0.064]} fontSize={0.1} letterSpacing={0.14} color={COLOR.frame} anchorX="left" anchorY="middle" font={font}>
+      <Text position={[-1.24, 0.74, 0.064]} fontSize={0.1} letterSpacing={0.14} color={COLOR.ink} anchorX="left" anchorY="middle" font={font}>
         {lanyard.label}
       </Text>
       <group position={[1.3, 0.74, 0.066]}>
@@ -99,14 +99,14 @@ export default function CardFace({ badge, hovered }: { badge: BadgeInfo; hovered
       )}
 
       {/* Identitas */}
-      <Text position={[-0.2, 0.34, 0.07]} fontSize={0.20} lineHeight={1.05} color={COLOR.frame} anchorX="left" anchorY="middle" maxWidth={1.55} font={font}>
+      <Text position={[-0.2, 0.34, 0.07]} fontSize={0.20} lineHeight={1.05} color={COLOR.ink} anchorX="left" anchorY="middle" maxWidth={1.55} font={font}>
         {badge.name}
       </Text>
-      <Text position={[-0.2, 0.13, 0.07]} fontSize={0.12} lineHeight={1.05} color={COLOR.frame} anchorX="left" anchorY="middle" maxWidth={1.55} font='/fonts/Poppins-Regular.ttf'>
+      <Text position={[-0.2, 0.13, 0.07]} fontSize={0.12} lineHeight={1.05} color={COLOR.ink} anchorX="left" anchorY="middle" maxWidth={1.55} font='/fonts/Poppins-Regular.ttf'>
         {'November 21st, 2005'}
       </Text>
       <Plate w={pillW} h={0.2} r={0.1} color={COLOR.bandSoft} basic position={[-0.2 + pillW / 2, -0.1, 0.07]} />
-      <Text position={[-0.1, -0.1, 0.078]} fontSize={0.1} letterSpacing={0.04} color={COLOR.frame} anchorX="left" anchorY="middle" maxWidth={pillW - 0.18} font={font}>
+      <Text position={[-0.1, -0.1, 0.078]} fontSize={0.1} letterSpacing={0.04} color={COLOR.ink} anchorX="left" anchorY="middle" maxWidth={pillW - 0.18} font={font}>
         {badge.role}
       </Text>
 

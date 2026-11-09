@@ -17,7 +17,7 @@ import {
 import { lanyard } from '@/lanyard.config'
 import CardFace, { type BadgeInfo } from './lanyard/CardFace'
 import Charms from './lanyard/Charm'
-import { COLOR } from './lanyard/theme'
+import { COLOR, setLanyardTheme } from './lanyard/theme'
 
 export type { BadgeInfo }
 
@@ -418,16 +418,29 @@ function Scene({ badge }: { badge: BadgeInfo }) {
 }
 
 export default function InteractiveLanyard(props: BadgeInfo) {
+  // Follows the site's light/dark theme: the scene is rebuilt (key) whenever it changes
+  const [theme, setTheme] = useState<'light' | 'dark' | null>(null)
+  useEffect(() => {
+    const sync = () => {
+      const t = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'
+      setLanyardTheme(t)
+      setTheme(t)
+    }
+    sync()
+    window.addEventListener('themechange', sync)
+    return () => window.removeEventListener('themechange', sync)
+  }, [])
+  if (!theme) return null
   return (
     <Canvas
-      camera={{ position: [0, 0, 13], fov: 35 }}
+      camera={{ position: [0, 0, 10], fov: 35 }}
       gl={{ alpha: true }}
       // Events are read from the body: the canvas has pointer-events:none, so the website underneath stays clickable
       eventSource={typeof document !== 'undefined' ? document.body : undefined}
       eventPrefix="client"
       style={{ pointerEvents: 'none' }}
     >
-      <Scene badge={props} />
+      <Scene key={theme} badge={props} />
     </Canvas>
   )
 }

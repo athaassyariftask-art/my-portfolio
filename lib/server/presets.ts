@@ -52,6 +52,7 @@ export const PRESETS = [
       f('title', 'Position', 'text', 'title', true),
       f('org', 'Organization', 'text', 'subtitle'),
       f('points', 'Responsibilities', 'lines', 'list'),
+      f('logo', 'Company / organization logo', 'image', 'image'),
     ],
     items: [
       {

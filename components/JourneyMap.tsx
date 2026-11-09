@@ -475,7 +475,7 @@ export default function JourneyMap({ stops }: { stops: Stop[] }) {
                     <span className="pop-pill pop-yellow">{s.meta}</span>
                   </div>
                 )}
-                <h3 className="pop-display text-2xl leading-tight md:text-3xl">{s.title}</h3>
+                <h3 className="pop-display t-h2">{s.title}</h3>
                 {s.subtitle && <p className="mt-1 font-medium text-[color:var(--muted)]">{s.subtitle}</p>}
                 {s.body && <p className="mt-4 whitespace-pre-line leading-relaxed">{s.body}</p>}
                 {s.list.length > 0 && (

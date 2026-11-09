@@ -11,7 +11,7 @@ export default function Text({ items, fields }: LayoutProps) {
         const s = readSlots(item, fields)
         return (
           <Reveal key={String(item._id ?? i)}>
-            {s.title && <h3 className="pop-display mb-4 text-2xl">{s.title}</h3>}
+            {s.title && <h3 className="pop-display t-h2 mb-4">{s.title}</h3>}
             {s.subtitle && <p className="pop-label mb-3">{s.subtitle}</p>}
             <Markdown>{s.body}</Markdown>
           </Reveal>

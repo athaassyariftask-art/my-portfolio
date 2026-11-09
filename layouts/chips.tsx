@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Reveal from '@/components/Reveal'
+import TechIcon from '@/components/TechIcon'
 import { popColor } from '@/components/pop/colors'
 import { readSlots } from './slots'
 import type { LayoutProps } from './types'
@@ -23,7 +24,7 @@ export default function Chips({ items, fields, options, detailHref }: LayoutProp
           <Reveal key={String(item._id ?? i)}>
             <div className="pop-card h-full p-5">
               <div className="mb-4 flex items-center gap-2.5">
-                <span className={`h-2.5 w-2.5 rounded-full ${popColor(i)}`} style={{ border: '1px solid rgba(15,27,51,0.2)' }} />
+                <span className={`h-2.5 w-2.5 ${popColor(i)}`} style={{ border: '1px solid rgba(15,27,51,0.2)' }} />
                 <h3 className="pop-display text-lg leading-snug">{s.title}</h3>
               </div>
               {s.body && <p className="mb-3 text-sm leading-relaxed text-[color:var(--muted)]">{s.body}</p>}
@@ -31,8 +32,9 @@ export default function Chips({ items, fields, options, detailHref }: LayoutProp
                 {s.tags.map((t, j) => (
                   <span
                     key={j}
-                    className="cursor-default rounded-full border border-[color:var(--line)] bg-[color:var(--cream)] px-3 py-1 text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 hover:border-[color:var(--accent)] hover:bg-[color:var(--paper)] hover:text-[color:var(--accent)] hover:shadow-[var(--shadow-sm)]"
+                    className="inline-flex cursor-default items-center gap-1.5 rounded-lg border border-[color:var(--line)] bg-[color:var(--cream)] px-3 py-1 text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 hover:border-[color:var(--accent)] hover:bg-[color:var(--paper)] hover:text-[color:var(--accent)] hover:shadow-[var(--shadow-sm)]"
                   >
+                    <TechIcon name={t} size={15} />
                     {t}
                   </span>
                 ))}

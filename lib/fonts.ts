@@ -1,10 +1,10 @@
-import { Fraunces } from 'next/font/google'
+import { Plus_Jakarta_Sans } from 'next/font/google'
 
-// Serif display face for headings only (body text keeps the site font).
+// Soft, friendly sans for headings only (body text keeps the site font).
 // To change it: pick another font from next/font/google and edit it here; the .pop-display class follows.
-export const display = Fraunces({
+export const display = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  style: ['normal', 'italic'],
+  weight: ['500', '600', '700'],
   variable: '--font-display',
   display: 'swap',
 })

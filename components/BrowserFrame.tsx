@@ -148,7 +148,7 @@ export default function BrowserFrame({ src, alt = '', label, href, aspect = 'asp
         {href && (
           <span
             aria-hidden
-            className="pointer-events-none absolute z-10 inline-flex -translate-x-1/2 -translate-y-1/2 items-center gap-1.5 whitespace-nowrap rounded-full bg-[color:var(--ink)] px-3.5 py-1.5 text-xs font-semibold text-white shadow-[var(--shadow-md)] transition-opacity duration-200"
+            className="pointer-events-none absolute z-10 inline-flex -translate-x-1/2 -translate-y-1/2 items-center gap-1.5 whitespace-nowrap rounded-full bg-[color:var(--block)] px-3.5 py-1.5 text-xs font-semibold text-white shadow-[var(--shadow-md)] transition-opacity duration-200"
             style={{ left: 'var(--mx, 50%)', top: 'var(--my, 50%)', opacity: hover ? 1 : 0 }}
           >
             {chip} <ArrowUpRight className="h-3.5 w-3.5" />

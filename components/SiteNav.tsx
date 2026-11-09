@@ -1,7 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
+import { Command as CommandIcon } from 'lucide-react'
+import CommandPalette, { type Command } from '@/components/CommandPalette'
+import ThemeToggle from '@/components/ThemeToggle'
 
 export type NavItem = { id: string; title: string }
 
@@ -10,8 +12,28 @@ export type NavItem = { id: string; title: string }
  * underlined), the About page, and a call-to-action. All sections are always visible on the page;
  * this bar only helps you jump between them.
  */
-export default function SiteNav({ name, items }: { name: string; items: NavItem[] }) {
+export default function SiteNav({
+  name,
+  items,
+  email = '',
+  links = [],
+  cv = '',
+}: {
+  name: string
+  items: NavItem[]
+  email?: string
+  links?: { label: string; href: string }[]
+  cv?: string
+}) {
   const [active, setActive] = useState('')
+  const commands: Command[] = [
+    ...items.map((i): Command => ({ id: `go-${i.id}`, label: i.title, group: 'Go to', href: `/#${i.id}`, hint: `#${i.id}` })),
+    { id: 'go-contact', label: 'Contact', group: 'Go to', href: '/#contact', hint: '#contact' },
+    ...links.map((l, i): Command => ({ id: `link-${i}`, label: l.label, group: 'Links', href: l.href, hint: l.href.replace(/^https?:\/\/(www\.)?/, '') })),
+    ...(cv ? [{ id: 'cv', label: 'Download CV', group: 'Links' as const, href: cv, hint: 'PDF' }] : []),
+    ...(email ? [{ id: 'copy-email', label: 'Copy email address', group: 'Actions' as const, action: 'copy-email' as const, value: email, hint: email }] : []),
+    { id: 'theme', label: 'Toggle light / dark theme', group: 'Actions', action: 'theme', hint: 'theme' },
+  ]
 
   useEffect(() => {
     const els = items.map((i) => document.getElementById(i.id)).filter((el): el is HTMLElement => !!el)
@@ -29,20 +51,20 @@ export default function SiteNav({ name, items }: { name: string; items: NavItem[
 
   return (
     <header
-      className="sticky top-0 z-50 border-b border-[color:var(--line)]"
+      className="sticky top-0 z-50 border-b border-[color:var(--ink)]"
       style={{ backgroundColor: 'color-mix(in srgb, var(--cream) 94%, transparent)' }}
     >
       <div className="pop-wrap flex flex-wrap items-center justify-between gap-x-6 gap-y-1 py-3">
-        <a href="#" className="pop-display text-lg">
+        <a href="#" className="pop-display text-xl">
           {name}
           <span style={{ color: 'var(--accent)' }}>.</span>
         </a>
 
         <nav
           aria-label="Page sections"
-          className="order-3 flex w-full items-center gap-6 overflow-x-auto text-sm font-medium md:order-none md:w-auto"
+          className="order-3 flex w-full items-center gap-6 overflow-x-auto font-mono text-xs uppercase tracking-wider md:order-none md:w-auto"
         >
-          {items.map((i) => (
+          {items.map((i, idx) => (
             <a
               key={i.id}
               href={`#${i.id}`}
@@ -53,20 +75,27 @@ export default function SiteNav({ name, items }: { name: string; items: NavItem[
                   : 'border-transparent text-[color:var(--muted)] hover:text-[color:var(--ink)]'
               }`}
             >
+              <span className="mr-1.5 opacity-50">{String(idx + 1).padStart(2, '0')}</span>
               {i.title}
             </a>
           ))}
-          <Link
-            href="/about"
-            className="shrink-0 border-b-2 border-transparent py-1.5 text-[color:var(--muted)] transition-colors hover:text-[color:var(--ink)]"
-          >
-            About
-          </Link>
         </nav>
 
-        <a href="#contact" className="pop-btn pop-btn-ink !px-4 !py-1.5 text-sm">
-          Get in touch
-        </a>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new Event('open-palette'))}
+            aria-label="Open command palette"
+            className="pop-btn pop-btn-ghost hidden !gap-2 !px-3 !py-1.5 font-mono text-xs sm:inline-flex"
+          >
+            <CommandIcon className="h-3.5 w-3.5" aria-hidden /> K
+          </button>
+          <ThemeToggle />
+          <a href="#contact" className="pop-btn pop-btn-ink !px-4 !py-1.5 text-sm">
+            Get in touch
+          </a>
+        </div>
+        <CommandPalette commands={commands} />
       </div>
     </header>
   )

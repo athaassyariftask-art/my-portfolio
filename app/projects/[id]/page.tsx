@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import ReactMarkdown from 'react-markdown'
 import { ArrowUpRight } from 'lucide-react'
 import BrowserFrame from '@/components/BrowserFrame'
+import TechIcon from '@/components/TechIcon'
 import EditableBlocks from '@/components/EditableBlocks'
 import InlineText from '@/components/InlineText'
 import PageShell, { AsideCard, ContentCard, ReadingGrid, titleClass } from '@/components/PageShell'
@@ -24,7 +25,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
 
   return (
     <PageShell back={{ href: '/#projects', text: 'All projects' }}>
-      <span className="pop-label mb-4 block">Project</span>
+      <span className="pop-label mb-4 block">Case study</span>
 
       <div className="mb-5 max-w-5xl">
         <InlineText endpoint={`projects/${p.id}`} field="title" initial={p.title} canEdit={admin} required as="h1"
@@ -45,7 +46,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
           )}
           {p.repo && (
             <a href={p.repo} target="_blank" rel="noreferrer" className="pop-btn pop-btn-ghost !px-5 !py-2 text-sm">
-              Repo <ArrowUpRight className="h-4 w-4" />
+              Source code <ArrowUpRight className="h-4 w-4" />
             </a>
           )}
         </div>
@@ -78,7 +79,10 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                     <dt className="pop-label mb-2">Built with</dt>
                     <dd className="flex flex-wrap gap-2">
                       {p.tags.map((t) => (
-                        <span key={t} className="pop-pill">{t}</span>
+                        <span key={t} className="pop-pill" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                          <TechIcon name={t} size={14} />
+                          {t}
+                        </span>
                       ))}
                     </dd>
                   </div>
@@ -113,17 +117,17 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
             canEdit={admin}
             seedMarkdown={p.description}
             fallback={
-              <div className="text-slate-700">
+              <div className="text-[color:var(--ink)]">
                 <ReactMarkdown
                   components={{
-                    h2: ({ node, ...props }) => <h2 className="pop-display mb-3 mt-10 text-2xl text-slate-900" {...props} />,
-                    h3: ({ node, ...props }) => <h3 className="pop-display mb-2 mt-8 text-xl text-slate-900" {...props} />,
+                    h2: ({ node, ...props }) => <h2 className="pop-display t-h2 mb-3 mt-10 text-[color:var(--ink)]" {...props} />,
+                    h3: ({ node, ...props }) => <h3 className="pop-display mb-2 mt-8 text-xl text-[color:var(--ink)]" {...props} />,
                     p: ({ node, ...props }) => <p className="mb-4 leading-relaxed" {...props} />,
                     ul: ({ node, ...props }) => <ul className="mb-4 list-disc space-y-1 pl-6" {...props} />,
                     ol: ({ node, ...props }) => <ol className="mb-4 list-decimal space-y-1 pl-6" {...props} />,
                     a: ({ node, ...props }) => <a className="text-[color:var(--accent)] underline" {...props} />,
                     code: ({ node, ...props }) => (
-                      <code className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-sm" {...props} />
+                      <code className="rounded bg-[color:var(--cream)] px-1.5 py-0.5 font-mono text-sm" {...props} />
                     ),
                     img: ({ node, ...props }) => (
                       // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text

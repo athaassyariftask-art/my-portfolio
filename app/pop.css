@@ -1,69 +1,103 @@
-/* Site theme: "warm paper + navy ink".
-   Formal enough for a portfolio, relaxed enough to be pleasant: warm off-white page, white cards with a
-   hairline border and soft shadow, a serif display face, small mono labels, and one marker-yellow highlight.
-   All colors live in :root, so a different palette is a one-place change. Class names keep the old `pop-*`
-   prefix on purpose so every page picks up the new look without touching its components. */
+/* Site theme: "modern editorial".
+   Warm off-white page, near-black ink, ONE electric blue and ONE orange. Softly rounded corners and hairline
+   borders, calm headings, mono labels. All colors live in :root (and the dark block at the end), so a
+   different palette is a one-place change. Class names keep the old `pop-*` prefix on purpose so every page
+   picks up the look without touching its components. */
 :root {
-  --ink: #0f1b33; /* text, dark blocks */
-  --muted: #5b667a; /* secondary text */
-  --cream: #f6f4ee; /* page background (warm paper) */
-  --paper: #ffffff; /* card surface */
-  --line: #ddd8cb; /* hairlines and card borders */
-  --accent: #1f3fa0; /* links, active states, progress bar, timeline dots */
-  --hi: #f6c650; /* marker highlight */
-  --shadow-sm: 0 1px 2px rgba(15, 27, 51, 0.05), 0 6px 18px -10px rgba(15, 27, 51, 0.16);
-  --shadow-md: 0 2px 4px rgba(15, 27, 51, 0.06), 0 16px 32px -14px rgba(15, 27, 51, 0.24);
-  /* soft tints for labels and small color blocks */
-  --pink: #f4dcd6;
-  --orange: #f6e3c4;
-  --teal: #d5e8df;
-  --blue: #d9e3f7;
-  --yellow: #f7e7a8;
+  --ink: #101010; /* text */
+  --block: #101010; /* dark blocks (contact, ID card header, code window) */
+  --muted: #5e5d57; /* secondary text */
+  --cream: #efece4; /* page background */
+  --paper: #f7f5ef; /* card surface (barely lighter than the page) */
+  --line: #bfbbae; /* hairlines */
+  --accent: #4f68d8; /* soft blue: links, buttons */
+  --hi: #8cf5b0; /* soft neon green: highlights, icon squares, markers */
+  --edge: rgba(16, 16, 16, 0.22); /* borders on pills / buttons */
+  --edge-strong: rgba(16, 16, 16, 0.6);
+  --dot: rgba(16, 16, 16, 0.13); /* hero dot grid */
+  --r-card: 14px; /* cards: rounded, not pill-like */
+  --r-ctl: 10px; /* buttons */
+  --r-tag: 8px; /* tags and badges */
+  --lanyard-shadow: drop-shadow(0 24px 26px rgba(16, 16, 16, 0.18)) drop-shadow(0 4px 6px rgba(16, 16, 16, 0.14));
+  --shadow-sm: none;
+  --shadow-md: 0 14px 28px -18px rgba(16, 16, 16, 0.45);
+  /* flat tints for labels and small color blocks */
+  --pink: #f3e3e1;
+  --orange: #d8f6e2;
+  --teal: #dcebe3;
+  --blue: #e0e5fb;
+  --yellow: #d3f7df;
 }
 
+/* ---------- Type and spacing scale: the golden ratio (1.618) ----------
+   body 16px -> H2 ~26px -> H1 ~42px -> display ~68px; small text is 12px (16 / 1.618 would be 10px, which is
+   too small to read comfortably). Body line-height is 1.618, paragraphs stay 50-75 characters wide, and spacing
+   steps follow the Fibonacci numbers 8, 13, 21, 34, 55, 89. */
+:root {
+  --fs-small: 0.75rem; /* 12px */
+  --fs-body: 0.9375rem; /* 15px: body text is a little smaller than the headings' base so it reads calm */
+  --fs-h2: 1.618rem; /* ~26px */
+  --fs-h1: 2.618rem; /* ~42px */
+  --fs-display: 4.236rem; /* ~68px */
+  --sp-1: 8px;
+  --sp-2: 13px;
+  --sp-3: 21px;
+  --sp-4: 34px;
+  --sp-5: 55px;
+  --sp-6: 89px;
+}
 .pop-page {
   background-color: var(--cream);
   color: var(--ink);
+  font-size: var(--fs-body);
+  line-height: 1.65;
 }
+/* Fluid steps: they shrink on small screens and stop at the golden-ratio size on big ones */
+.t-display { font-size: clamp(2.618rem, 6.5vw, var(--fs-display)); line-height: 1.08; }
+.t-h1 { font-size: clamp(1.9rem, 4.2vw, var(--fs-h1)); line-height: 1.15; }
+.t-h2 { font-size: clamp(1.3rem, 2.4vw, var(--fs-h2)); line-height: 1.25; }
+.t-measure { max-width: 65ch; }
+/* Hero name: one step above the display size */
+.t-hero { font-size: clamp(3rem, 8.4vw, 6.5rem); line-height: 1.02; }
 
-/* Serif display face for headings (set in lib/fonts.ts) */
+/* Soft display face for headings (set in lib/fonts.ts) */
 .pop-display {
-  font-family: var(--font-display), Georgia, 'Times New Roman', serif;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.04;
 }
 
 /* Small mono label (eyebrows, indexes, dates) */
 .pop-label {
   font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.75rem;
+  font-size: var(--fs-small);
   font-weight: 500;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
-/* Marker-pen highlight under a word or name */
+/* Highlight bar behind a word or name */
 .pop-mark {
-  background-image: linear-gradient(transparent 62%, var(--hi) 62%, var(--hi) 90%, transparent 90%);
+  background-image: linear-gradient(transparent 58%, var(--hi) 58%, var(--hi) 92%, transparent 92%);
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
-  padding-inline: 0.08em;
+  padding-inline: 0.06em;
 }
 
-/* Faint dotted "graph paper" backdrop that fades out toward the bottom (used on the hero) */
+/* Faint dotted backdrop that fades out toward the bottom (used on the hero) */
 .pop-grid {
-  background-image: radial-gradient(rgba(15, 27, 51, 0.1) 1px, transparent 1px);
+  background-image: radial-gradient(var(--dot) 1px, transparent 1px);
   background-size: 22px 22px;
   -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent);
   mask-image: linear-gradient(to bottom, #000 55%, transparent);
 }
 
-/* Card: hairline border, rounded corners, soft shadow */
+/* Card: flat, hairline border, square corners */
 .pop-card {
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--r-card);
   background-color: var(--paper);
   box-shadow: var(--shadow-sm);
 }
@@ -73,52 +107,50 @@
 .pop-hover:hover {
   transform: translateY(-3px);
   box-shadow: var(--shadow-md);
-  border-color: rgba(15, 27, 51, 0.28);
+  border-color: var(--ink);
 }
 
-/* Small pill label */
+/* Small tag */
 .pop-pill {
   display: inline-block;
-  border: 1px solid rgba(15, 27, 51, 0.14);
-  border-radius: 999px;
-  padding: 0.2rem 0.7rem;
+  border: 1px solid var(--edge);
+  border-radius: var(--r-tag);
+  padding: 0.2rem 0.6rem;
   font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 500;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
   line-height: 1.5;
   color: var(--ink);
   background-color: var(--paper);
 }
 
-/* Buttons */
+/* Buttons: rectangular, mono, uppercase */
 .pop-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
-  border: 1px solid rgba(15, 27, 51, 0.2);
-  border-radius: 999px;
-  padding: 0.7rem 1.35rem;
+  gap: 0.6rem;
+  border: 1px solid var(--ink);
+  border-radius: 0; /* square buttons; use var(--r-ctl) for rounded */
+  padding: 0.75rem 1.3rem;
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.72rem;
   font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
   color: var(--ink);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+  transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
-.pop-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
-}
-.pop-btn:active {
-  transform: none;
-  box-shadow: none;
-}
+.pop-btn:hover { transform: translateY(-1px); }
+.pop-btn:active { transform: none; }
 .pop-btn-ink {
-  background-color: var(--ink);
-  border-color: var(--ink);
+  background-color: var(--accent);
+  border-color: var(--accent);
   color: #fff;
 }
-.pop-btn-ink:hover { background-color: var(--accent); border-color: var(--accent); }
+.pop-btn-ink:hover { background-color: var(--ink); border-color: var(--ink); color: #fff; }
 .pop-btn-ghost { background-color: transparent; }
-.pop-btn-ghost:hover { background-color: var(--paper); }
+.pop-btn-ghost:hover { background-color: var(--ink); color: var(--cream); }
 
 /* Inline text link with an arrow, used for "View details" style actions */
 .pop-link {
@@ -134,15 +166,15 @@
 }
 .pop-link:hover { text-decoration-color: currentColor; }
 
-/* Numbered circle */
+/* Numbered square */
 .pop-badge {
   display: inline-flex;
   height: 2.25rem;
   min-width: 2.25rem;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(15, 27, 51, 0.16);
-  border-radius: 999px;
+  border: 1px solid var(--edge-strong);
+  border-radius: var(--r-tag);
   padding: 0 0.5rem;
   font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.8rem;
@@ -159,7 +191,7 @@
 }
 
 /* Tints. Kept after .pop-card / .pop-pill / .pop-badge on purpose: same specificity, so the later rule wins
-   and `pop-pill pop-yellow` really is yellow. */
+   and `pop-pill pop-yellow` really is tinted. */
 .pop-pink { background-color: var(--pink); }
 .pop-orange { background-color: var(--orange); }
 .pop-teal { background-color: var(--teal); }
@@ -187,3 +219,31 @@
   .pop-caret { animation: none; }
   .pop-hover:hover, .pop-btn:hover { transform: none; }
 }
+
+/* ---------- Dark theme ----------
+   Switched with data-theme="dark" on <html> (set by the inline script in app/layout.tsx and the toggle in the
+   nav). Only the tokens change; components keep using the same variables. */
+:root[data-theme='dark'] {
+  --ink: #efede6;
+  --block: #1a1a1d;
+  --muted: #a3a29a;
+  --cream: #0d0d0f;
+  --paper: #151518;
+  --line: #36363c;
+  --accent: #7f93ff;
+  --hi: #6fe9a0;
+  --edge: rgba(255, 255, 255, 0.18);
+  --edge-strong: rgba(255, 255, 255, 0.5);
+  --dot: rgba(255, 255, 255, 0.09);
+  --shadow-md: 0 14px 28px -18px rgba(0, 0, 0, 0.8);
+  --lanyard-shadow: drop-shadow(0 0 22px rgba(255, 255, 255, 0.16)) drop-shadow(0 14px 22px rgba(0, 0, 0, 0.65));
+  --pink: #342628;
+  --orange: #1f3a2b;
+  --teal: #22302a;
+  --blue: #232a52;
+  --yellow: #1f3a2b;
+}
+:root[data-theme='dark'] .pop-btn { border-color: var(--edge-strong); }
+:root[data-theme='dark'] .pop-btn-ink { border-color: var(--accent); }
+:root[data-theme='dark'] .pop-btn-ink:hover { background-color: var(--hi); border-color: var(--hi); color: #101010; }
+:root[data-theme='dark'] .pop-btn-ghost:hover { background-color: var(--ink); color: #101010; }

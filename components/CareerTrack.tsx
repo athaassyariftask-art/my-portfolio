@@ -17,7 +17,14 @@ export type TrackRole = {
   link: string
   detail: string | null
 }
-export type TrackGroup = { org: string; roles: TrackRole[] }
+export type TrackGroup = { org: string; logo: string; roles: TrackRole[] }
+
+/** Short git-style id (7 hex characters) derived from the role, purely decorative: every role is a "commit". */
+function shortHash(s: string): string {
+  let h = 2166136261
+  for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619) >>> 0
+  return h.toString(16).padStart(8, '0').slice(0, 7)
+}
 
 /** Up to three capital letters of the organisation name, for the round badge. */
 function initials(name: string): string {
@@ -58,7 +65,7 @@ export default function CareerTrack({ groups }: { groups: TrackGroup[] }) {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between gap-4">
+      <div className="mb-4 flex items-center justify-between gap-4">
         <p className="pop-label">
           {all.length} role{all.length > 1 ? 's' : ''} · {groups.filter((g) => g.org).length || groups.length} organization
           {(groups.filter((g) => g.org).length || groups.length) > 1 ? 's' : ''}
@@ -78,15 +85,36 @@ export default function CareerTrack({ groups }: { groups: TrackGroup[] }) {
           <motion.div className="h-full w-full origin-top bg-[color:var(--accent)]" style={{ scaleY: reduce ? 1 : fill }} />
         </div>
 
-        <div className="space-y-12">
+        <div className="space-y-8">
           {groups.map((g, gi) => (
-            <section key={`${g.org}-${gi}`} className="space-y-4">
+            <section key={`${g.org}-${gi}`} className="space-y-2.5">
               {g.org && (
                 <div className="grid grid-cols-[28px_1fr] items-center gap-x-4 md:grid-cols-[44px_1fr] md:gap-x-6">
-                  <span className="relative z-10 flex h-7 w-7 items-center justify-center justify-self-center rounded-full bg-[color:var(--ink)] text-[9px] font-bold tracking-wide text-white md:h-11 md:w-11 md:text-xs">
-                    {initials(g.org)}
-                  </span>
-                  <h3 className="pop-display text-xl leading-tight md:text-3xl">{g.org}</h3>
+                  {g.logo ? (
+                    // With a logo the rail only needs a small marker; the logo itself sits next to the name
+                    <span className="relative z-10 h-3.5 w-3.5 justify-self-center bg-[color:var(--block)]" aria-hidden />
+                  ) : (
+                    <span className="relative z-10 flex h-7 w-7 items-center justify-center justify-self-center rounded-full bg-[color:var(--block)] text-[9px] font-bold tracking-wide text-white md:h-11 md:w-11 md:text-xs">
+                      {initials(g.org)}
+                    </span>
+                  )}
+                  {/* Company banner: a big logo tile with a soft ring and shadow, next to the name */}
+                  <div className="flex min-w-0 items-center gap-4 md:gap-6">
+                    {g.logo && (
+                      <span
+                        className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-[color:var(--line)] bg-white p-2 shadow-[0_8px_20px_-10px_rgba(16,16,16,0.4)] ring-[3px] ring-[color:var(--hi)] md:h-[72px] md:w-[72px] md:p-2.5"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={g.logo} alt={`${g.org} logo`} className="h-full w-full object-contain" />
+                      </span>
+                    )}
+                    <div className="min-w-0">
+                      <h3 className="pop-display min-w-0 text-lg leading-snug md:text-xl">{g.org}</h3>
+                      <p className="pop-label mt-1">
+                        {g.roles.length} role{g.roles.length > 1 ? 's' : ''}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -98,7 +126,7 @@ export default function CareerTrack({ groups }: { groups: TrackGroup[] }) {
                 return (
                   <div key={r.id} className="grid grid-cols-[28px_1fr] gap-x-4 md:grid-cols-[44px_1fr] md:gap-x-6">
                     {/* Node on the rail */}
-                    <span className="relative z-10 mt-7 flex h-3.5 w-3.5 items-center justify-center justify-self-center">
+                    <span className="relative z-10 mt-[22px] flex h-3.5 w-3.5 items-center justify-center justify-self-center">
                       {live && (
                         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[color:var(--accent)] opacity-50 motion-reduce:animate-none" />
                       )}
@@ -111,41 +139,40 @@ export default function CareerTrack({ groups }: { groups: TrackGroup[] }) {
                     <div
                       className={`pop-card min-w-0 ${isOpen ? '' : 'pop-hover'}`}
                       // inline style: .pop-card sets these without a layer, so Tailwind utilities would lose
-                      style={isOpen ? { borderColor: 'var(--ink)', boxShadow: 'var(--shadow-md)' } : undefined}
+                      style={isOpen ? { borderColor: 'var(--ink)', boxShadow: 'inset 3px 0 0 var(--accent), var(--shadow-md)' } : undefined}
                     >
                       <button
                         type="button"
                         onClick={() => toggle(r.id)}
                         aria-expanded={isOpen}
                         aria-controls={`${uid}-${r.id}`}
-                        className="flex w-full items-start gap-4 p-5 text-left md:p-6"
+                        className="flex w-full items-center gap-3 px-4 py-3 text-left md:px-5"
                       >
                         <span className="min-w-0 flex-1">
-                          {(r.meta || dur) && (
-                            <span className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1">
-                              {r.meta && (
-                                <span
-                                  className="pop-pill pop-yellow"
-                                  // inline style because .pop-pill (display: inline-block) beats Tailwind utilities
-                                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
-                                >
-                                  {live && <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[color:var(--accent)]" />}
-                                  {r.meta}
-                                </span>
-                              )}
-                              {dur && <span className="pop-label">{dur}</span>}
-                            </span>
-                          )}
-                          <span className="pop-display block text-xl leading-snug md:text-2xl">{r.title}</span>
+                          <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                            <span className="pop-display text-base leading-snug md:text-[17px]">{r.title}</span>
+                            {r.meta && (
+                              <span
+                                className="pop-pill pop-yellow"
+                                // inline style because .pop-pill (display: inline-block) beats Tailwind utilities
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+                              >
+                                {live && <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[color:var(--accent)]" />}
+                                {r.meta}
+                              </span>
+                            )}
+                            {dur && <span className="pop-label">{dur}</span>}
+                          </span>
                           {!isOpen && preview && (
-                            <span className="mt-2 line-clamp-2 block max-w-4xl text-[15px] leading-relaxed text-[color:var(--muted)]">
-                              {preview}
-                            </span>
+                            <span className="mt-1 line-clamp-1 block text-sm text-[color:var(--muted)]">{preview}</span>
                           )}
+                        </span>
+                        <span className="pop-label hidden !normal-case opacity-50 lg:inline" title="Just for fun: every role is a commit" aria-hidden>
+                          {shortHash(r.id + r.title)}
                         </span>
                         <ChevronDown
                           aria-hidden
-                          className={`mt-1 h-5 w-5 shrink-0 text-[color:var(--muted)] transition-transform duration-300 ${isOpen ? 'rotate-180 text-[color:var(--accent)]' : ''}`}
+                          className={`h-4 w-4 shrink-0 text-[color:var(--muted)] transition-transform duration-300 ${isOpen ? 'rotate-180 text-[color:var(--accent)]' : ''}`}
                         />
                       </button>
 
@@ -161,33 +188,33 @@ export default function CareerTrack({ groups }: { groups: TrackGroup[] }) {
                             transition={{ duration: reduce ? 0 : 0.3, ease: 'easeOut' }}
                             className="overflow-hidden"
                           >
-                            <div className="border-t border-[color:var(--line)] px-5 pb-6 pt-5 md:px-6">
-                              {r.body && <p className="mb-4 max-w-4xl whitespace-pre-line leading-relaxed">{r.body}</p>}
+                            <div className="border-t border-[color:var(--line)] px-4 pb-4 pt-3.5 text-sm md:px-5">
+                              {r.body && <p className="mb-3 max-w-3xl whitespace-pre-line leading-relaxed">{r.body}</p>}
                               {r.list.length > 0 && (
-                                <ul className="max-w-4xl space-y-3">
+                                <ul className="max-w-3xl space-y-2">
                                   {r.list.map((pt, j) => (
                                     <motion.li
                                       key={j}
                                       initial={{ opacity: 0, x: -10 }}
                                       animate={{ opacity: 1, x: 0 }}
                                       transition={{ duration: reduce ? 0 : 0.3, delay: reduce ? 0 : 0.1 + j * 0.07 }}
-                                      className="flex gap-3 leading-relaxed"
+                                      className="flex gap-2.5 leading-relaxed"
                                     >
-                                      <span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[color:var(--accent)]" />
+                                      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[color:var(--accent)]" />
                                       {pt}
                                     </motion.li>
                                   ))}
                                 </ul>
                               )}
                               {r.tags.length > 0 && (
-                                <div className="mt-5 flex flex-wrap gap-2">
+                                <div className="mt-3 flex flex-wrap gap-1.5">
                                   {r.tags.map((t) => (
                                     <span key={t} className="pop-pill">{t}</span>
                                   ))}
                                 </div>
                               )}
                               {(r.detail || r.link) && (
-                                <div className="mt-5 flex flex-wrap gap-4">
+                                <div className="mt-3 flex flex-wrap gap-4">
                                   {r.detail && <Link href={r.detail} className="pop-link text-sm">View details →</Link>}
                                   {r.link && (
                                     <a href={r.link} target="_blank" rel="noreferrer" className="pop-link text-sm">

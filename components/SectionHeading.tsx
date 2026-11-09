@@ -16,15 +16,21 @@ export default function SectionHeading({
 }) {
   return (
     <Reveal>
-      <div className="mb-10 flex items-center gap-4">
-        <span className="pop-badge pop-yellow">{n}</span>
-        <h2 className="pop-display text-3xl md:text-4xl">{label}</h2>
-        <span className="h-px flex-1 bg-[color:var(--line)]" />
-        {editHref && (
-          <Link href={editHref} className="pop-pill pop-yellow">
-            Edit ✎
-          </Link>
-        )}
+      <div className="mb-[34px] border-t border-[color:var(--ink)] pt-4">
+        <div className="flex items-center justify-between gap-4">
+          <span className="pop-label !text-[color:var(--accent)]">/ {n}</span>
+          <span className="flex items-center gap-4">
+            <span className="pop-label hidden !normal-case sm:inline" aria-hidden>
+              ~/{label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}
+            </span>
+            {editHref && (
+              <Link href={editHref} className="pop-pill pop-yellow">
+                Edit ✎
+              </Link>
+            )}
+          </span>
+        </div>
+        <h2 className="pop-display t-h1 mt-3">{label}</h2>
       </div>
     </Reveal>
   )

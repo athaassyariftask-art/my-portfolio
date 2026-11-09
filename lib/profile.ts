@@ -1,7 +1,8 @@
 import { site as defaults } from '@/site.config'
 import { apiGet } from './api'
+import type { HomeContent } from './home'
 
-export type Site = Omit<typeof defaults, 'headline'> & { cv: string } // cv: PDF URL from Admin → Profile (empty = button hidden)
+export type Site = Omit<typeof defaults, 'headline'> & { cv: string; aboutPhoto: string; home: HomeContent } // cv: PDF URL from Admin → Profile (empty = button hidden)
 
 /** Small hash for cache-busting the photo URL. */
 const hash = (s: string) => {
@@ -21,7 +22,7 @@ export async function getProfile(): Promise<Site> {
   if (!d) {
     const { headline: _unused, ...rest } = defaults
     void _unused
-    return { ...rest, cv: '' }
+    return { ...rest, cv: '', aboutPhoto: '', home: {} }
   }
 
   return {
@@ -31,6 +32,8 @@ export async function getProfile(): Promise<Site> {
     email: str(d.email, defaults.email),
     // Photos from Vercel Blob are served via /api/photo (same-origin for the lanyard); if none is uploaded, use site.config.ts
     photo: typeof d.photo === 'string' && d.photo ? `/api/photo?v=${hash(d.photo)}` : defaults.photo,
+    aboutPhoto: typeof d.about_photo === 'string' && d.about_photo ? `/api/photo?which=about&v=${hash(d.about_photo)}` : '',
+    home: d.home && typeof d.home === 'object' && !Array.isArray(d.home) ? (d.home as HomeContent) : {},
     cv: typeof d.cv === 'string' && d.cv.startsWith('https://') ? d.cv : '',
     links: arr(d.links, defaults.links),
     intro: str(d.intro, defaults.intro),

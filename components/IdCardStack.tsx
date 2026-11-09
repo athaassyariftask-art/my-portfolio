@@ -100,7 +100,7 @@ function Signature() {
 function LogoBox({ src, name, size = 84, border }: { src: string; name: string; size?: number; border: string }) {
   return (
     <span
-      className="flex shrink-0 items-center justify-center overflow-hidden rounded-xl border-2 bg-white font-bold text-[color:var(--ink)] shadow-sm"
+      className="flex shrink-0 items-center justify-center overflow-hidden rounded-xl border-2 bg-white font-bold text-[#0f1b33] shadow-sm"
       style={{ width: size, height: size, borderColor: border, fontSize: size * 0.28 }}
     >
       {src ? (
@@ -223,7 +223,7 @@ function StatusStamp({ status }: { status: Status }) {
   }
   if (status?.kind === 'live' || status?.kind === 'progress') {
     return (
-      <span aria-hidden className="absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-[color:var(--hi)] text-[color:var(--ink)]">
+      <span aria-hidden className="absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-[color:var(--hi)] text-[#0f1b33]">
         <Flame className="h-3.5 w-3.5" />
       </span>
     )
@@ -385,7 +385,7 @@ export default function IdCardStack({ entries }: { entries: IdEntry[] }) {
                       <img src={e.image} alt="" aria-hidden className="pointer-events-none absolute -bottom-8 -right-8 h-44 w-44 object-contain opacity-[0.09] grayscale" />
                     )}
 
-                    <span className="relative flex items-center justify-between gap-3 bg-[color:var(--ink)] py-2.5 pl-4 pr-12 text-white">
+                    <span className="relative flex items-center justify-between gap-3 bg-[color:var(--block)] py-2.5 pl-4 pr-12 text-white">
                       <span className="truncate text-[11px] font-semibold uppercase tracking-[0.16em]">Student ID</span>
                       <span className="text-[11px] tabular-nums opacity-80">Lvl {String(levelOf[i]).padStart(2, '0')} / {String(n).padStart(2, '0')}</span>
                     </span>
@@ -413,7 +413,7 @@ export default function IdCardStack({ entries }: { entries: IdEntry[] }) {
 
                   {/* Back face: only meaningful on the front card, but harmless (hidden) on the others */}
                   <div
-                    className="absolute inset-0 flex flex-col justify-between bg-[color:var(--ink)] p-4 text-white"
+                    className="absolute inset-0 flex flex-col justify-between bg-[color:var(--block)] p-4 text-white"
                     style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                   >
                     <span className="flex items-start justify-between">
@@ -488,7 +488,7 @@ export default function IdCardStack({ entries }: { entries: IdEntry[] }) {
               {cur.meta && <span className="pop-pill">{cur.meta}</span>}
               {curStatus?.kind === 'live' && (
                 <span className="pop-label flex items-center gap-1.5">
-                  <Flame className="h-3.5 w-3.5 text-[color:var(--hi)]" aria-hidden /> Currently active
+                  <Flame className="h-3.5 w-3.5 text-[color:var(--accent)]" aria-hidden /> Currently active
                 </span>
               )}
               {curStatus?.kind === 'done' && (
@@ -500,7 +500,7 @@ export default function IdCardStack({ entries }: { entries: IdEntry[] }) {
 
             <div className="mt-4 flex items-center gap-4">
               {cur.image && <LogoBox src={cur.image} name={cur.title} size={64} border="var(--line)" />}
-              <h3 className="pop-display text-3xl leading-tight md:text-5xl">{cur.title}</h3>
+              <h3 className="pop-display t-h1">{cur.title}</h3>
             </div>
             {cur.subtitle && <p className="mt-2 text-lg text-[color:var(--muted)] md:text-xl">{cur.subtitle}</p>}
 

@@ -1,7 +1,7 @@
 import ReactMarkdown from 'react-markdown'
 import Markdown from '@/components/Markdown'
 import { BODY, CALLOUT, CODE, H1, H2, H3, QUOTE } from '@/components/notion/style'
-import { normalize, type Block } from '@/lib/blocks'
+import { normalize, sizeStyle, type Block } from '@/lib/blocks'
 
 /** Hanya izinkan embed dari situs video yang dikenal (jangan iframe sembarang alamat). */
 export function embedSrc(raw?: string): string | null {
@@ -66,14 +66,14 @@ function One({ b, n }: { b: Block; n: number }) {
       return (
         <div className={`${BODY} flex items-start gap-3`}>
           <input type="checkbox" checked={!!b.checked} readOnly className="mt-1.5 h-4 w-4 accent-blue-600" />
-          <span className={b.checked ? 'text-slate-400 line-through' : ''}><Inline>{t}</Inline></span>
+          <span className={b.checked ? 'text-[color:var(--muted)] line-through' : ''}><Inline>{t}</Inline></span>
         </div>
       )
     case 'toggle':
       return (
         <details open={b.open !== false} className="my-1">
           <summary className={`${BODY} cursor-pointer font-semibold`}><Inline>{t}</Inline></summary>
-          <div className="mt-2 border-l border-slate-200 pl-5">
+          <div className="mt-2 border-l border-[color:var(--line)] pl-5">
             <Blocks blocks={b.children ?? []} />
           </div>
         </details>
@@ -89,33 +89,33 @@ function One({ b, n }: { b: Block; n: number }) {
         </pre>
       )
     case 'divider':
-      return <hr className="my-8 border-slate-200" />
+      return <hr className="my-8 border-[color:var(--line)]" />
     case 'image':
       return b.url ? (
-        <figure className="my-6">
-          <img src={b.url} alt={b.caption ?? ''} className="w-full rounded-2xl border border-slate-200" />
-          {b.caption && <figcaption className="mt-2 text-center font-mono text-xs text-slate-500">{b.caption}</figcaption>}
+        <figure className="my-6" style={sizeStyle(b.size)}>
+          <img src={b.url} alt={b.caption ?? ''} className="w-full rounded-2xl border border-[color:var(--line)]" />
+          {b.caption && <figcaption className="mt-2 text-center font-mono text-xs text-[color:var(--muted)]">{b.caption}</figcaption>}
         </figure>
       ) : null
     case 'gallery':
       return b.urls?.length ? (
         <div className="my-6 grid grid-cols-2 gap-3 md:grid-cols-3">
           {b.urls.map((u, i) => (
-            <img key={u + i} src={u} alt="" className="aspect-square w-full rounded-xl border border-slate-200 object-cover" />
+            <img key={u + i} src={u} alt="" className="aspect-square w-full rounded-xl border border-[color:var(--line)] object-cover" />
           ))}
         </div>
       ) : null
     case 'video':
       return b.url ? (
-        <figure className="my-6">
-          <video src={b.url} controls preload="metadata" className="w-full rounded-2xl border border-slate-200 bg-black" />
-          {b.caption && <figcaption className="mt-2 text-center font-mono text-xs text-slate-500">{b.caption}</figcaption>}
+        <figure className="my-6" style={sizeStyle(b.size)}>
+          <video src={b.url} controls preload="metadata" className="w-full rounded-2xl border border-[color:var(--line)] bg-black" />
+          {b.caption && <figcaption className="mt-2 text-center font-mono text-xs text-[color:var(--muted)]">{b.caption}</figcaption>}
         </figure>
       ) : null
     case 'embed': {
       const src = embedSrc(b.url)
       return src ? (
-        <div className="my-6 aspect-video overflow-hidden rounded-2xl border border-slate-200">
+        <div className="my-6 aspect-video overflow-hidden rounded-2xl border border-[color:var(--line)]" style={sizeStyle(b.size)}>
           <iframe src={src} className="h-full w-full" allowFullScreen loading="lazy" title="Embed" />
         </div>
       ) : null

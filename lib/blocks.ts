@@ -17,8 +17,15 @@ export type Block = {
   url?: string // image, embed, video
   urls?: string[] // gallery
   caption?: string // image
+  size?: BlockSize // image, video, embed: how wide it is shown (default full)
   level?: 2 | 3 // legacy heading
 }
+
+export type BlockSize = 'sm' | 'md' | 'lg' | 'full'
+/** Width of an image/video/embed as a share of the text column */
+export const SIZE_PCT: Record<BlockSize, number> = { sm: 45, md: 65, lg: 85, full: 100 }
+export const SIZE_LABEL: Record<BlockSize, string> = { sm: 'S', md: 'M', lg: 'L', full: 'Full' }
+export const sizeStyle = (s?: BlockSize) => ({ width: '100%', maxWidth: `${SIZE_PCT[s ?? 'full'] ?? 100}%`, marginInline: 'auto' as const })
 
 export const uid = () => Math.random().toString(36).slice(2, 10)
 

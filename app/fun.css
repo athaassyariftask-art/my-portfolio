@@ -1,18 +1,18 @@
 /* Small touches: text selection color, focus ring, accent color for form controls, slim scrollbar. */
 ::selection {
-  background: rgba(246, 198, 80, 0.55); /* marker yellow */
-  color: #0f1b33;
+  background: rgba(140, 245, 176, 0.55); /* green */
+  color: #101010;
 }
 
 html {
-  accent-color: #1f3fa0; /* checkboxes and sliders follow the accent */
-  scrollbar-color: #cfc9b8 transparent;
+  accent-color: #4f68d8; /* checkboxes and sliders follow the accent */
+  scrollbar-color: #c4c0b3 transparent;
   scrollbar-width: thin;
   scroll-behavior: smooth;
 }
 
 :focus-visible {
-  outline: 2px solid #1f3fa0;
+  outline: 2px solid #4f68d8;
   outline-offset: 3px;
   border-radius: 6px;
 }
@@ -20,3 +20,6 @@ html {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
+
+html[data-theme='dark'] { scrollbar-color: #3a3a42 transparent; }
+html[data-theme='dark'] :focus-visible { outline-color: #8fa2ff; }

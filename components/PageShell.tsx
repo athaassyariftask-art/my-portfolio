@@ -4,9 +4,10 @@ import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import AdminButton from '@/components/AdminButton'
 import ReadingProgress from '@/components/ReadingProgress'
+import ThemeToggle from '@/components/ThemeToggle'
 
 /** Page title (h1) class so every reading page looks the same. */
-export const titleClass = 'pop-display text-4xl md:text-6xl xl:text-7xl'
+export const titleClass = 'pop-display t-h1'
 
 /**
  * Frame for reading pages (About, item detail, project detail) with the same theme as the home page:
@@ -23,9 +24,12 @@ export default function PageShell({
     <main className="pop-page relative min-h-screen overflow-x-clip">
       <ReadingProgress />
       <div className="pop-wrap relative z-10 pb-24 pt-10">
-        <Link href={back.href} className="pop-link mb-8 text-sm">
-          <ArrowLeft className="h-3.5 w-3.5" /> {back.text}
-        </Link>
+        <div className="mb-8 flex items-center justify-between gap-4">
+          <Link href={back.href} className="pop-link text-sm">
+            <ArrowLeft className="h-3.5 w-3.5" /> {back.text}
+          </Link>
+          <ThemeToggle />
+        </div>
         {children}
       </div>
       <AdminButton />

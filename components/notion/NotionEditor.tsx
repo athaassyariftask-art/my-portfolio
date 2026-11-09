@@ -5,6 +5,9 @@ import { embedSrc } from '@/components/Blocks'
 import {
   cloneDeep, findIn, fixCols, insertAfterIn, isTextual, makeBlock, MENU, moveIn, relocate, removeIn, updateIn,
   type Block, type BlockType,
+  SIZE_LABEL,
+  sizeStyle,
+  type BlockSize,
 } from '@/lib/blocks'
 import { MAX_VIDEO_MB, uploadImage, uploadVideo } from '@/lib/upload'
 import { BODY, CALLOUT, CODE, H1, H2, H3, QUOTE } from './style'
@@ -254,6 +257,28 @@ function Gallery({ b }: { b: Block }) {
   )
 }
 
+/** S / M / L / Full buttons: how wide the image, video or embed is shown on the page. */
+function SizePicker({ b }: { b: Block }) {
+  const ops = useOps()
+  const cur: BlockSize = b.size ?? 'full'
+  return (
+    <div className="mt-2 flex items-center justify-center gap-1.5" role="group" aria-label="Size">
+      <span className="mr-1 text-xs text-slate-400">Size</span>
+      {(Object.keys(SIZE_LABEL) as BlockSize[]).map((k) => (
+        <button
+          key={k}
+          type="button"
+          onClick={() => ops.patch(b.id, { size: k })}
+          aria-pressed={cur === k}
+          className={`rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors ${cur === k ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-300 text-slate-600 hover:border-slate-900'}`}
+        >
+          {SIZE_LABEL[k]}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 function ImageBody({ b }: { b: Block }) {
   const ops = useOps()
   const input = useRef<HTMLInputElement>(null)
@@ -274,7 +299,8 @@ function ImageBody({ b }: { b: Block }) {
   return (
     <div className="my-2">
       {b.url ? (
-        <figure>
+        <>
+        <figure style={sizeStyle(b.size)}>
           <div className="group/img relative">
             <img src={b.url} alt={b.caption ?? ''} className="w-full rounded-2xl border border-slate-200" />
             <button type="button" onClick={() => input.current?.click()} className="absolute right-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-700 opacity-0 shadow transition-opacity group-hover/img:opacity-100">Replace photo</button>
@@ -286,6 +312,8 @@ function ImageBody({ b }: { b: Block }) {
             className="mt-2 w-full bg-transparent text-center font-mono text-xs text-slate-500 outline-none placeholder:text-transparent focus:placeholder:text-slate-300"
           />
         </figure>
+        <SizePicker b={b} />
+        </>
       ) : (
         <button type="button" onClick={() => input.current?.click()} className="flex w-full items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white/60 py-10 text-sm text-slate-500 transition-colors hover:border-blue-600 hover:text-blue-600">
           Click to upload a photo
@@ -320,7 +348,8 @@ function VideoBody({ b }: { b: Block }) {
   return (
     <div className="my-2">
       {b.url ? (
-        <figure>
+        <>
+        <figure style={sizeStyle(b.size)}>
           <div className="group/img relative">
             <video src={b.url} controls preload="metadata" className="w-full rounded-2xl border border-slate-200 bg-black" />
             <button type="button" onClick={() => input.current?.click()} className="absolute right-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-700 opacity-0 shadow transition-opacity group-hover/img:opacity-100">Replace video</button>
@@ -332,6 +361,8 @@ function VideoBody({ b }: { b: Block }) {
             className="mt-2 w-full bg-transparent text-center font-mono text-xs text-slate-500 outline-none placeholder:text-transparent focus:placeholder:text-slate-300"
           />
         </figure>
+        <SizePicker b={b} />
+        </>
       ) : (
         <button type="button" disabled={loading} onClick={() => input.current?.click()} className="flex w-full items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white/60 py-10 text-sm text-slate-500 transition-colors hover:border-blue-600 hover:text-blue-600 disabled:opacity-60">
           {loading ? 'Uploading video…' : `Click to upload a video (MP4 / WebM / MOV, max ${MAX_VIDEO_MB} MB)`}
@@ -356,12 +387,13 @@ function Embed({ b }: { b: Block }) {
         className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm outline-none focus:border-blue-600"
       />
       {src ? (
-        <div className="aspect-video overflow-hidden rounded-2xl border border-slate-200">
+        <div className="aspect-video overflow-hidden rounded-2xl border border-slate-200" style={sizeStyle(b.size)}>
           <iframe src={src} className="h-full w-full" allowFullScreen loading="lazy" title="Embed" />
         </div>
       ) : b.url ? (
-        <p className="text-sm text-amber-700">This link isn't supported yet. Use YouTube or Vimeo (https).</p>
+        <p className="text-sm text-amber-700">This link isn&apos;t supported yet. Use YouTube or Vimeo (https).</p>
       ) : null}
+      {src && <SizePicker b={b} />}
     </div>
   )
 }

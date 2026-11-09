@@ -13,7 +13,22 @@ function sql() {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Row = Record<string, any>
 async function q(text: string, params: unknown[] = []): Promise<Row[]> {
-  return (await (sql() as unknown as { query: (t: string, p: unknown[]) => Promise<Row[]> }).query(text, params)) as Row[]
+  const run = async () =>
+    (await (sql() as unknown as { query: (t: string, p: unknown[]) => Promise<Row[]> }).query(text, params)) as Row[]
+  // A free Neon database "sleeps" and the first request after a pause (or a network hiccup) can fail with
+  // "fetch failed". Reads and table setup are safe to repeat, so they get a second and third try.
+  // Writes are not retried: a lost response could otherwise save the same row twice.
+  if (!/^\s*(select|create)\b/i.test(text)) return run()
+  let lastError: unknown
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      return await run()
+    } catch (e) {
+      lastError = e
+      await new Promise((r) => setTimeout(r, 500 * (attempt + 1)))
+    }
+  }
+  throw lastError
 }
 
 let ready: Promise<void> | null = null
@@ -41,6 +56,8 @@ export function ensureSchema(): Promise<void> {
         `CREATE TABLE IF NOT EXISTS contact_messages (
           id SERIAL PRIMARY KEY, name TEXT NOT NULL, email TEXT NOT NULL, message TEXT NOT NULL,
           ip TEXT NOT NULL DEFAULT '', created_at TIMESTAMPTZ NOT NULL DEFAULT now())`,
+        `ALTER TABLE site_profile ADD COLUMN IF NOT EXISTS about_photo TEXT NOT NULL DEFAULT ''`,
+        `ALTER TABLE site_profile ADD COLUMN IF NOT EXISTS home JSONB NOT NULL DEFAULT '{}'`,
         `INSERT INTO site_profile (id) VALUES (1) ON CONFLICT DO NOTHING`,
       ]
       for (const s of stmts) await q(s)
@@ -114,11 +131,11 @@ export const pgStore: Store = {
   async getProfile() {
     await ensureSchema()
     const r = (await q('SELECT * FROM site_profile WHERE id = 1'))[0]
-    return { name: r.name, role: r.role, affiliation: r.affiliation, email: r.email, intro: r.intro, photo: r.photo, cv: r.cv, links: r.links ?? [] }
+    return { name: r.name, role: r.role, affiliation: r.affiliation, email: r.email, intro: r.intro, photo: r.photo, about_photo: r.about_photo ?? '', cv: r.cv, home: r.home ?? {}, links: r.links ?? [] }
   },
   async saveProfile(patch) {
     await ensureSchema()
-    const s = setClause(patch, ['name', 'role', 'affiliation', 'email', 'intro', 'photo', 'cv', 'links'], ['links'])
+    const s = setClause(patch, ['name', 'role', 'affiliation', 'email', 'intro', 'photo', 'about_photo', 'cv', 'links', 'home'], ['links', 'home'])
     if (s.sql) await q(`UPDATE site_profile SET ${s.sql} WHERE id = 1`, s.vals)
     return this.getProfile()
   },

@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f6f4ee;
-  --foreground: #0f1b33;
+  --background: #efece4;
+  --foreground: #101010;
 }
 
 @theme inline {
@@ -12,9 +12,13 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* The site is a light, paper-toned design; dark mode is intentionally not supported. */
 html {
   color-scheme: light;
+}
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --background: #0d0d0f;
+  --foreground: #efede6;
 }
 
 body {

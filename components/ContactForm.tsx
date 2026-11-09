@@ -35,7 +35,7 @@ export default function ContactForm() {
       <textarea name="message" required rows={4} placeholder="Message" className={field} />
       <button
         disabled={state === 'sending'}
-        className="rounded-full bg-[color:var(--hi)] px-7 py-3 font-semibold text-[color:var(--ink)] transition-colors hover:bg-white disabled:opacity-50"
+        className="rounded-xl bg-[color:var(--hi)] px-7 py-3 font-mono text-sm font-semibold uppercase tracking-wider text-[#101010] transition-colors hover:bg-white disabled:opacity-50"
       >
         {state === 'sending' ? 'Sending…' : 'Send message'}
       </button>

@@ -18,6 +18,8 @@ export default function ProjectsView({ projects }: ProjectsProps) {
     tags: p.tags,
     cover: p.cover ?? null,
     date: p.date,
+    repo: p.repo ?? null,
+    demo: p.demo ?? null,
   }))
   return <ProjectsShowcase projects={list} />
 }

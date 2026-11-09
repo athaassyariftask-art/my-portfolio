@@ -5,8 +5,21 @@ import { useRouter } from 'next/navigation'
 import { MAX_IMAGE_MB, uploadImage } from '@/lib/upload'
 import { btnGhost, label, readError } from './ui'
 
-/** Upload / delete the profile photo (shown on the lanyard card). Saved immediately once a file is chosen. */
-export default function PhotoUpload({ photo }: { photo: string }) {
+/**
+ * Upload / delete a profile photo. `field` picks which one: "photo" (lanyard card, the default) or "about_photo"
+ * (beside the About text). Saved immediately once a file is chosen.
+ */
+export default function PhotoUpload({
+  photo,
+  field = 'photo',
+  title = 'Profile photo (on the lanyard card)',
+  hint = `Portrait, ~4:5 ratio, max ${MAX_IMAGE_MB} MB. Saved automatically.`,
+}: {
+  photo: string
+  field?: 'photo' | 'about_photo'
+  title?: string
+  hint?: string
+}) {
   const router = useRouter()
   const input = useRef<HTMLInputElement>(null)
   const [busy, setBusy] = useState(false)
@@ -22,7 +35,7 @@ export default function PhotoUpload({ photo }: { photo: string }) {
       const res = await fetch('/api/admin/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ photo: url }),
+        body: JSON.stringify({ [field]: url }),
       })
       if (!res.ok) setError(await readError(res))
       else {
@@ -37,13 +50,13 @@ export default function PhotoUpload({ photo }: { photo: string }) {
   }
 
   async function remove() {
-    if (!confirm('Delete the profile photo?')) return
+    if (!confirm('Delete this photo?')) return
     setBusy(true)
     setError('')
     const res = await fetch('/api/admin/profile', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ photo: '' }),
+      body: JSON.stringify({ [field]: '' }),
     })
     if (!res.ok) setError(await readError(res))
     else router.refresh()
@@ -52,7 +65,7 @@ export default function PhotoUpload({ photo }: { photo: string }) {
 
   return (
     <div>
-      <p className={label}>Profile photo (on the lanyard card)</p>
+      <p className={label}>{title}</p>
       <div className="flex items-center gap-5">
         <div className="flex h-32 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 text-xs text-slate-400">
           {photo && !broken ? (
@@ -71,7 +84,7 @@ export default function PhotoUpload({ photo }: { photo: string }) {
             onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])}
             className="block text-sm text-slate-600"
           />
-          <p className="text-xs text-slate-400">Portrait, ~4:5 ratio, max {MAX_IMAGE_MB} MB. Saved automatically.</p>
+          <p className="text-xs text-slate-400">{hint}</p>
           <button type="button" disabled={busy} onClick={remove} className={btnGhost}>Delete photo</button>
         </div>
       </div>

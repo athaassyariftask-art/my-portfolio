@@ -17,6 +17,8 @@ export type Project = {
 }
 export type ProjectInput = Omit<Project, 'id' | 'created_at'>
 
+import type { HomeContent } from '@/lib/home'
+
 export type Profile = {
   name: string
   role: string
@@ -24,7 +26,9 @@ export type Profile = {
   email: string
   intro: string
   photo: string
+  about_photo: string // second photo, shown beside the About text
   cv: string
+  home: HomeContent // editable About / stats / Expertise content ({} = use defaults)
   links: { label: string; href: string }[]
 }
 

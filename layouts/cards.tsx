@@ -39,7 +39,7 @@ export default function Cards({ items, fields, options, detailHref }: LayoutProp
               )}
               <div className="relative flex flex-1 flex-col p-6">
                 {s.meta && <span className={`pop-pill mb-4 self-start ${popColor(i)}`}>{s.meta}</span>}
-                <h3 className="pop-display text-xl leading-snug md:text-2xl">{s.title}</h3>
+                <h3 className="pop-display t-h2">{s.title}</h3>
                 {s.subtitle && <p className="mt-1 text-sm font-medium text-[color:var(--muted)]">{s.subtitle}</p>}
                 {s.body && <p className="mt-3 whitespace-pre-line text-[15px] leading-relaxed">{s.body}</p>}
                 {s.list.length > 0 && (

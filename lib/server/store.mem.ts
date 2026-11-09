@@ -7,7 +7,7 @@ export function memStore(): Store {
   const sections: SectionRow[] = []
   const details = new Map<string, DetailRow>()
   const messages: (Message & { ip: string; at: number })[] = []
-  let profile: Profile = { name: '', role: '', affiliation: '', email: '', intro: '', photo: '', cv: '', links: [] }
+  let profile: Profile = { name: '', role: '', affiliation: '', email: '', intro: '', photo: '', about_photo: '', cv: '', home: {}, links: [] }
   const byOrder = <T extends { order: number; id: number }>(a: T[]) => [...a].sort((x, y) => x.order - y.order || x.id - y.id)
   const pub = ({ ip: _i, at: _a, ...m }: Message & { ip: string; at: number }): Message => (void _i, void _a, m)
 

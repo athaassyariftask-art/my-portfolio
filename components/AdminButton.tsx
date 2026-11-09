@@ -7,7 +7,7 @@ export default async function AdminButton() {
   return (
     <Link
       href="/admin"
-      className="fixed bottom-5 right-5 z-50 rounded-full bg-[color:var(--ink)] px-4 py-2 font-mono text-xs uppercase tracking-widest text-white shadow-lg transition-colors hover:bg-[color:var(--accent)]"
+      className="fixed bottom-5 right-5 z-50 rounded-full bg-[color:var(--block)] px-4 py-2 font-mono text-xs uppercase tracking-widest text-white shadow-lg transition-colors hover:bg-[color:var(--accent)]"
     >
       Admin
     </Link>

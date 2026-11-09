@@ -39,7 +39,7 @@ export default async function SectionRoute({ params }: { params: Promise<{ slug:
           <SectionPage initial={section} projects={projects} detailKeys={detail.keys} />
         ) : (
           <>
-            <h1 className="pop-display mb-10 text-4xl md:text-5xl">{section.title}</h1>
+            <h1 className="pop-display t-h1 mb-10">{section.title}</h1>
             <SectionBody section={section} projects={projects} detailHref={makeDetailHref(detail, section.options)} />
           </>
         )}

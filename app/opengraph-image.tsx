@@ -6,11 +6,11 @@ export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
 // Same palette as app/pop.css (warm paper + navy ink)
-const INK = '#0f1b33'
+const INK = '#101010'
 const MUTED = '#5b667a'
 const PAPER = '#f6f4ee'
-const ACCENT = '#1f3fa0'
-const HIGHLIGHT = '#f6c650'
+const ACCENT = '#4f68d8'
+const HIGHLIGHT = '#8cf5b0'
 
 export default async function OpengraphImage() {
   const site = await getProfile()
@@ -26,7 +26,7 @@ export default async function OpengraphImage() {
           height: '100%',
           padding: '72px',
           backgroundColor: PAPER,
-          backgroundImage: 'radial-gradient(rgba(15,27,51,0.12) 2px, transparent 2px)',
+          backgroundImage: 'radial-gradient(rgba(16,16,16,0.12) 2px, transparent 2px)',
           backgroundSize: '40px 40px',
           color: INK,
         }}

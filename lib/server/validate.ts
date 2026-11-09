@@ -1,5 +1,6 @@
 // Input validation (ported from Django serializers.py). Errors have the shape {field: [message]} so readError() in the admin can still parse them.
 import { FIELD_TYPES, LAYOUTS, SLOTS } from './presets'
+import { ICON_KEYS } from '@/lib/home'
 import type { ProjectInput, Profile, SectionInput, SectionRow } from './types'
 
 export class ApiError extends Error {
@@ -259,6 +260,44 @@ export function validateProject(input: unknown, creating: boolean): Partial<Proj
 }
 
 // ---------- profile ----------
+/** Home page content: tagline, achievement cards and Expertise columns (see lib/home.ts). */
+function validateHome(v: unknown): NonNullable<Profile['home']> {
+  if (!isObj(v)) return fail('home', 'Must be an object.')
+  const out: NonNullable<Profile['home']> = {}
+  const tagline = str(v, 'tagline', 300, { blank: true })
+  if (tagline !== undefined) out.tagline = tagline
+  if (has(v, 'stats')) {
+    const list = v.stats
+    if (!Array.isArray(list) || !list.every(isObj)) return fail('stats', 'Must be a list.')
+    if (list.length > 8) return fail('stats', 'Maximum 8 achievement cards.')
+    out.stats = (list as Obj[]).map((x) => {
+      const mode = x.mode === 'years' || x.mode === 'projects' ? x.mode : 'number'
+      const value = Number(x.value ?? 0)
+      if (!Number.isFinite(value) || value < 0 || value > 1_000_000) return fail('stats', 'A number must be between 0 and 1,000,000.')
+      const since = String(x.since ?? '').trim()
+      if (mode === 'years' && !/^\d{4}-(0?[1-9]|1[0-2])$/.test(since)) return fail('stats', 'Use the format YYYY-MM for "Years since" (for example 2024-11).')
+      return {
+        label: String(x.label ?? '').trim().slice(0, 60),
+        mode,
+        value: Math.round(value),
+        since: mode === 'years' ? since : '',
+        suffix: String(x.suffix ?? '').trim().slice(0, 4),
+      }
+    })
+  }
+  if (has(v, 'expertise')) {
+    const list = v.expertise
+    if (!Array.isArray(list) || !list.every(isObj)) return fail('expertise', 'Must be a list.')
+    if (list.length > 8) return fail('expertise', 'Maximum 8 expertise items.')
+    out.expertise = (list as Obj[]).map((x) => ({
+      icon: (ICON_KEYS as readonly string[]).includes(String(x.icon)) ? (String(x.icon) as (typeof ICON_KEYS)[number]) : 'code',
+      title: String(x.title ?? '').trim().slice(0, 80),
+      text: String(x.text ?? '').trim().slice(0, 300),
+    }))
+  }
+  return out
+}
+
 export function validateProfile(input: unknown): Partial<Profile> {
   if (!isObj(input)) throw new ApiError(400, { detail: 'Body must be a JSON object.' })
   const out: Partial<Profile> = {}
@@ -271,10 +310,11 @@ export function validateProfile(input: unknown): Partial<Profile> {
     if (email && !EMAIL.test(email)) fail('email', 'Enter a valid email address.')
     out.email = email
   }
-  for (const k of ['photo', 'cv'] as const) {
+  for (const k of ['photo', 'about_photo', 'cv'] as const) {
     const v = url(input, k, 500, 'https')
     if (v !== undefined) out[k] = v ?? ''
   }
+  if (has(input, 'home')) out.home = validateHome(input.home)
   if (has(input, 'links')) {
     const l = input.links
     if (!Array.isArray(l) || !l.every(isObj)) fail('links', 'links must be a list of objects.')

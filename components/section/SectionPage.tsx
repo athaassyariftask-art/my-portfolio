@@ -122,7 +122,7 @@ export default function SectionPage({
   return (
     <div>
       <div className="mb-8 flex flex-wrap items-center gap-4">
-        <h1 className="pop-display text-4xl md:text-5xl">{title || 'Untitled'}</h1>
+        <h1 className="pop-display t-h1">{title || 'Untitled'}</h1>
         {!visible && <span className="pop-pill pop-yellow">Hidden</span>}
       </div>
 

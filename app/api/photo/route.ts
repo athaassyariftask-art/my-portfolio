@@ -1,9 +1,10 @@
 import { handle } from '@/lib/server'
 
 // The profile photo is served from the site's own origin (same-origin) so the lanyard's 3D texture isn't blocked by CORS.
-export async function GET() {
+export async function GET(request: Request) {
+  const which = new URL(request.url).searchParams.get('which') === 'about' ? 'about_photo' : 'photo'
   const res = await handle({ method: 'GET', path: 'profile', staff: false })
-  const url = (res.body as { photo?: string } | null)?.photo
+  const url = (res.body as Record<string, string | undefined> | null)?.[which]
   let host = ''
   try {
     host = url ? new URL(url).hostname : ''
