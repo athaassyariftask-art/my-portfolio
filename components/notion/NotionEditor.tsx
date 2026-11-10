@@ -1,10 +1,12 @@
 'use client'
 
 import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { embedSrc } from '@/components/Blocks'
 import {
-  cloneDeep, findIn, fixCols, insertAfterIn, isTextual, makeBlock, MENU, moveIn, relocate, removeIn, updateIn,
-  type Block, type BlockType,
+  addColumn, ALIGN_LABEL, ALIGNABLE, applyMark, cloneDeep, colWidth, findIn, fixCols, insertAfterIn, isTextual,
+  makeBlock, MARKS, MAX_COLS, MENU, MIN_COLS, moveIn, relocate, removeColumn, removeIn, resizeColumns, updateIn,
+  type Align, type Block, type BlockType, type MarkKey,
   SIZE_LABEL,
   sizeStyle,
   type BlockSize,
@@ -93,13 +95,34 @@ function useOutside(active: boolean, close: () => void) {
 }
 
 // ---------------------------------------------------------------- auto-height text field
-function Field({ b, className, placeholder }: { b: Block; className: string; placeholder?: string }) {
+function Field({ b, className, placeholder, style }: { b: Block; className: string; placeholder?: string; style?: React.CSSProperties }) {
   const ops = useOps()
   const ref = useRef<HTMLTextAreaElement>(null)
   const [sel, setSel] = useState(0)
   const [closedAt, setClosedAt] = useState<string | null>(null)
+  const [markSel, setMarkSel] = useState<{ start: number; end: number } | null>(null)
   const text = b.text ?? ''
   const isCode = b.type === 'code'
+  const markable = isTextual(b.type) && !isCode
+
+  // Formatting toolbar: only while the user actually has a range selected in this field.
+  function syncMarkSel() {
+    const el = ref.current
+    if (!el || !markable) return
+    setMarkSel(el.selectionStart !== el.selectionEnd ? { start: el.selectionStart, end: el.selectionEnd } : null)
+  }
+  function applyMarkKey(key: MarkKey) {
+    const el = ref.current
+    if (!el || !markSel) return
+    const m = MARKS[key]
+    const res = applyMark(text, markSel.start, markSel.end, m.prefix, m.suffix)
+    // flushSync forces the textarea's value to update before we touch selectionRange, so the browser
+    // doesn't clamp the new range against the stale (pre-edit) text length.
+    flushSync(() => ops.patch(b.id, { text: res.text }))
+    el.focus()
+    el.setSelectionRange(res.start, res.end)
+    setMarkSel(res.start !== res.end ? { start: res.start, end: res.end } : null)
+  }
 
   useLayoutEffect(() => {
     const el = ref.current
@@ -208,6 +231,11 @@ function Field({ b, className, placeholder }: { b: Block; className: string; pla
         onChange={onChange}
         onKeyDown={onKeyDown}
         onPaste={onPaste}
+        onSelect={syncMarkSel}
+        onMouseUp={syncMarkSel}
+        onKeyUp={syncMarkSel}
+        onBlur={() => setMarkSel(null)}
+        style={style}
         className={`block w-full resize-none overflow-hidden bg-transparent outline-none placeholder:text-transparent focus:placeholder:text-slate-300 ${className}`}
       />
       {open && (
@@ -216,6 +244,44 @@ function Field({ b, className, placeholder }: { b: Block; className: string; pla
           items={matches.map((m) => ({ key: m.type, label: m.label, hint: m.hint, run: () => pick(m.type) }))}
         />
       )}
+      {markable && markSel && <MarkToolbar onPick={applyMarkKey} />}
+    </div>
+  )
+}
+
+/** Small bar of formatting buttons, shown above a field while text in it is selected. */
+function MarkToolbar({ onPick }: { onPick: (key: MarkKey) => void }) {
+  return (
+    <div
+      // mousedown is prevented (not the click) so the textarea never loses focus/selection on the way to onClick
+      onMouseDown={(e) => e.preventDefault()}
+      className="absolute -top-10 left-0 z-20 flex items-center gap-0.5 rounded-xl border border-slate-200 bg-white p-1 shadow-xl"
+    >
+      {(Object.keys(MARKS) as MarkKey[]).map((key) => {
+        const m = MARKS[key]
+        return (
+          <button
+            key={key}
+            type="button"
+            title={m.label}
+            onClick={() => onPick(key)}
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-sm font-bold text-slate-600 hover:bg-slate-100"
+          >
+            {m.swatch ? (
+              <span aria-hidden className="h-3.5 w-3.5 rounded-full border border-black/15" style={{ background: m.swatch }} />
+            ) : key === 'bold' ? (
+              'B'
+            ) : key === 'italic' ? (
+              <span className="italic">i</span>
+            ) : key === 'underline' ? (
+              <span className="underline">U</span>
+            ) : (
+              <span className="rounded px-1 text-[11px]" style={{ background: 'var(--hi)' }}>H</span>
+            )}
+            <span className="sr-only">{m.label}</span>
+          </button>
+        )
+      })}
     </div>
   )
 }
@@ -400,15 +466,16 @@ function Embed({ b }: { b: Block }) {
 
 function Body({ b, index }: { b: Block; index: number }) {
   const ops = useOps()
+  const align: React.CSSProperties | undefined = b.align && b.align !== 'left' ? { textAlign: b.align } : undefined
   switch (b.type) {
     case 'text':
-      return <Field b={b} className={BODY} placeholder="Type “/” for commands…" />
+      return <Field b={b} className={BODY} placeholder="Type “/” for commands…" style={align} />
     case 'h1':
-      return <Field b={b} className={H1} placeholder="Heading 1" />
+      return <Field b={b} className={H1} placeholder="Heading 1" style={align} />
     case 'h2':
-      return <Field b={b} className={H2} placeholder="Heading 2" />
+      return <Field b={b} className={H2} placeholder="Heading 2" style={align} />
     case 'h3':
-      return <Field b={b} className={H3} placeholder="Heading 3" />
+      return <Field b={b} className={H3} placeholder="Heading 3" style={align} />
     case 'bullet':
       return (
         <div className="flex gap-3">
@@ -453,9 +520,9 @@ function Body({ b, index }: { b: Block; index: number }) {
       )
     }
     case 'quote':
-      return <div className={QUOTE}><Field b={b} className="italic" placeholder="Quote" /></div>
+      return <div className={QUOTE}><Field b={b} className="italic" placeholder="Quote" style={align} /></div>
     case 'callout':
-      return <div className={CALLOUT}><Field b={b} className="" placeholder="Important note" /></div>
+      return <div className={CALLOUT}><Field b={b} className="" placeholder="Important note" style={align} /></div>
     case 'code':
       return <div className={CODE}><Field b={b} className="font-mono text-sm" placeholder="Code" /></div>
     case 'divider':
@@ -468,19 +535,83 @@ function Body({ b, index }: { b: Block; index: number }) {
       return <VideoBody b={b} />
     case 'embed':
       return <Embed b={b} />
-    case 'columns': {
-      const cols = b.cols ?? []
-      return (
-        <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${Math.max(cols.length, 1)}, minmax(0, 1fr))` }}>
-          {cols.map((c, i) => (
-            <div key={i} className="min-w-0 rounded-xl border border-dashed border-slate-200 p-2"><BlockList list={c} /></div>
-          ))}
-        </div>
-      )
-    }
+    case 'columns':
+      return <Columns b={b} />
     default:
       return null
   }
+}
+
+/** A 2–4 column row, each column resizable by dragging the thin bar between it and its neighbour. */
+function Columns({ b }: { b: Block }) {
+  const ops = useOps()
+  const cols = b.cols ?? []
+  const n = cols.length
+  const ref = useRef<HTMLDivElement>(null)
+
+  function startResize(i: number) {
+    return (e: React.PointerEvent) => {
+      e.preventDefault()
+      const el = ref.current
+      if (!el) return
+      const rect = el.getBoundingClientRect()
+      const startX = e.clientX
+      const before = ops.get(b.id)
+      ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
+      function onMove(ev: PointerEvent) {
+        const deltaPct = ((ev.clientX - startX) / rect.width) * 100
+        if (before) ops.patch(b.id, resizeColumns(before, i, deltaPct))
+      }
+      function onUp() {
+        window.removeEventListener('pointermove', onMove)
+        window.removeEventListener('pointerup', onUp)
+      }
+      window.addEventListener('pointermove', onMove)
+      window.addEventListener('pointerup', onUp)
+    }
+  }
+
+  return (
+    <div>
+      <div
+        ref={ref}
+        className="grid items-start gap-1"
+        style={{ gridTemplateColumns: cols.map((_, i) => `${colWidth(b, i)}fr`).join(' ') }}
+      >
+        {cols.map((c, i) => (
+          <div key={i} className="relative min-w-0">
+            <div className="group/col min-w-0 rounded-xl border border-dashed border-slate-200 p-2 pr-3">
+              <BlockList list={c} />
+              {n > MIN_COLS && (
+                <button
+                  type="button"
+                  title="Remove this column"
+                  onClick={() => { const cur = ops.get(b.id); if (cur) ops.patch(b.id, removeColumn(cur, i)) }}
+                  className="absolute right-1 top-1 h-5 w-5 rounded text-xs text-slate-300 opacity-0 hover:bg-rose-50 hover:text-rose-600 group-hover/col:opacity-100"
+                >×</button>
+              )}
+            </div>
+            {i < n - 1 && (
+              <div
+                onPointerDown={startResize(i)}
+                title="Drag to resize"
+                className="absolute -right-2 top-0 z-10 h-full w-4 cursor-col-resize touch-none"
+              >
+                <div className="mx-auto h-full w-px bg-slate-200 transition-colors hover:bg-blue-500" />
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+      {n < MAX_COLS && (
+        <button
+          type="button"
+          onClick={() => { const cur = ops.get(b.id); if (cur) ops.patch(b.id, addColumn(cur)) }}
+          className="mt-2 rounded-lg border border-dashed border-slate-300 px-3 py-1 text-xs font-semibold text-slate-500 hover:border-slate-900 hover:text-slate-900"
+        >+ Add column ({n}/{MAX_COLS})</button>
+      )}
+    </div>
+  )
 }
 
 // ---------------------------------------------------------------- one block row (handle + content)
@@ -509,6 +640,15 @@ function Row({ b, index }: { b: Block; index: number }) {
     for (const m of MENU.filter((x) => x.turn)) {
       items.push({ key: 't-' + m.type, label: m.label + (m.type === b.type ? '  ✓' : ''), hint: m.hint, run: close(() => ops.turn(b.id, m.type)) })
     }
+  }
+  if (ALIGNABLE.includes(b.type)) {
+    items.push({ key: 'h-align', label: 'Align', head: true, run: () => {} })
+    for (const a of Object.keys(ALIGN_LABEL) as Align[]) {
+      const on = (b.align ?? 'left') === a
+      items.push({ key: 'a-' + a, label: ALIGN_LABEL[a] + (on ? '  ✓' : ''), run: close(() => ops.patch(b.id, { align: a })) })
+    }
+  }
+  if (isTextual(b.type)) {
     items.push({ key: 'h-act', label: 'Actions', head: true, run: () => {} })
   }
   items.push(

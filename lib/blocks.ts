@@ -14,10 +14,12 @@ export type Block = {
   open?: boolean // toggle
   children?: Block[] // toggle
   cols?: Block[][] // columns
+  colWidths?: number[] // columns: each column's width as a % of the row, same length as cols, sums to ~100
   url?: string // image, embed, video
   urls?: string[] // gallery
   caption?: string // image
   size?: BlockSize // image, video, embed: how wide it is shown (default full)
+  align?: Align // text, h1, h2, h3, quote, callout: paragraph alignment
   level?: 2 | 3 // legacy heading
 }
 
@@ -27,6 +29,51 @@ export const SIZE_PCT: Record<BlockSize, number> = { sm: 45, md: 65, lg: 85, ful
 export const SIZE_LABEL: Record<BlockSize, string> = { sm: 'S', md: 'M', lg: 'L', full: 'Full' }
 export const sizeStyle = (s?: BlockSize) => ({ width: '100%', maxWidth: `${SIZE_PCT[s ?? 'full'] ?? 100}%`, marginInline: 'auto' as const })
 
+export type Align = 'left' | 'center' | 'right'
+export const ALIGN_LABEL: Record<Align, string> = { left: 'Left', center: 'Center', right: 'Right' }
+/** Block types whose Field can be aligned (list/code/toggle keep a fixed layout, so they're left out). */
+export const ALIGNABLE: BlockType[] = ['text', 'h1', 'h2', 'h3', 'quote', 'callout']
+
+export const MIN_COLS = 2
+export const MAX_COLS = 4
+/** Even width (%) for `n` columns, used whenever a column count changes and widths need to be reset. */
+export const evenWidths = (n: number): number[] => Array.from({ length: n }, () => 100 / Math.max(n, 1))
+/** A column's width in %, falling back to an even split if the block predates `colWidths` or the count changed. */
+export const colWidth = (b: Block, i: number): number => {
+  const n = b.cols?.length ?? 1
+  return b.colWidths?.length === n ? b.colWidths[i] : 100 / n
+}
+
+/** Patch to add one more column (up to MAX_COLS), widths reset to an even split. */
+export function addColumn(b: Block): Partial<Block> {
+  const cols = [...(b.cols ?? []), [makeBlock('text')]]
+  if (cols.length > MAX_COLS) return {}
+  return { cols, colWidths: evenWidths(cols.length) }
+}
+
+/** Patch to remove column `i` (stops at MIN_COLS), widths reset to an even split. */
+export function removeColumn(b: Block, i: number): Partial<Block> {
+  const cur = b.cols ?? []
+  if (cur.length <= MIN_COLS) return {}
+  const cols = cur.filter((_, j) => j !== i)
+  return { cols, colWidths: evenWidths(cols.length) }
+}
+
+/**
+ * Patch to resize the border between columns `i` and `i+1` by `deltaPct` (a share of the row, positive = grabbed
+ * width moves from column i+1 into column i). Each column is kept at least 10% so none can be dragged to nothing.
+ */
+export function resizeColumns(b: Block, i: number, deltaPct: number): Partial<Block> {
+  const n = b.cols?.length ?? 0
+  if (n < 2 || i < 0 || i >= n - 1) return {}
+  const widths = [...Array.from({ length: n }, (_, k) => colWidth(b, k))]
+  const min = 10
+  const d = Math.max(min - widths[i], Math.min(widths[i + 1] - min, deltaPct))
+  widths[i] += d
+  widths[i + 1] -= d
+  return { colWidths: widths }
+}
+
 export const uid = () => Math.random().toString(36).slice(2, 10)
 
 export const TEXTUAL: BlockType[] = ['text', 'h1', 'h2', 'h3', 'bullet', 'number', 'todo', 'toggle', 'quote', 'callout', 'code']
@@ -35,7 +82,7 @@ export const isTextual = (t: BlockType) => TEXTUAL.includes(t)
 export function makeBlock(type: BlockType, id: string = uid()): Block {
   switch (type) {
     case 'columns':
-      return { id, type, cols: [[makeBlock('text')], [makeBlock('text')]] }
+      return { id, type, cols: [[makeBlock('text')], [makeBlock('text')]], colWidths: evenWidths(2) }
     case 'toggle':
       return { id, type, text: '', open: true, children: [] }
     case 'todo':
@@ -160,3 +207,47 @@ export function fixCols(blocks: Block[]): Block[] {
 
 /** A plain markdown text block from a string (to pre-fill from an old description). */
 export const textBlock = (text: string): Block => ({ ...makeBlock('text'), text })
+
+// ---- inline formatting ("marks") -------------------------------------------------------------
+// Text is still one plain markdown string per block (see Block.text above) — a mark is just markdown
+// (or, for underline/highlight/color, a small fixed set of HTML tags the renderer allows; see
+// lib/markdownSchema.ts) wrapped around the selected range. There is no separate rich-text data model,
+// which keeps every other block-editing operation (split on Enter, merge on Backspace, "/" shortcuts, …)
+// working exactly as it does today, unchanged.
+export type MarkKey = 'bold' | 'italic' | 'underline' | 'highlight' | 'red' | 'green' | 'purple'
+export const MARKS: Record<MarkKey, { label: string; prefix: string; suffix: string; swatch?: string }> = {
+  bold: { label: 'Bold', prefix: '**', suffix: '**' },
+  italic: { label: 'Italic', prefix: '_', suffix: '_' },
+  underline: { label: 'Underline', prefix: '<u>', suffix: '</u>' },
+  highlight: { label: 'Highlight', prefix: '<mark>', suffix: '</mark>' },
+  red: { label: 'Red', prefix: '<span class="clr-red">', suffix: '</span>', swatch: 'var(--clr-red)' },
+  green: { label: 'Green', prefix: '<span class="clr-green">', suffix: '</span>', swatch: 'var(--clr-green)' },
+  purple: { label: 'Purple', prefix: '<span class="clr-purple">', suffix: '</span>', swatch: 'var(--clr-purple)' },
+}
+
+/**
+ * Wrap (or, if the selection is already wrapped in exactly this mark, unwrap) the selected range of `text`
+ * with `prefix`/`suffix`. With nothing selected, an empty pair is inserted and the cursor parked between
+ * the two halves, ready to type. Returns the new text plus where the selection should land afterwards.
+ */
+export function applyMark(
+  text: string,
+  start: number,
+  end: number,
+  prefix: string,
+  suffix: string,
+): { text: string; start: number; end: number } {
+  if (start === end) {
+    const next = text.slice(0, start) + prefix + suffix + text.slice(start)
+    return { text: next, start: start + prefix.length, end: start + prefix.length }
+  }
+  const before = text.slice(0, start)
+  const sel = text.slice(start, end)
+  const after = text.slice(end)
+  if (before.endsWith(prefix) && after.startsWith(suffix)) {
+    const next = before.slice(0, before.length - prefix.length) + sel + after.slice(suffix.length)
+    return { text: next, start: start - prefix.length, end: end - prefix.length }
+  }
+  const next = before + prefix + sel + suffix + after
+  return { text: next, start: start + prefix.length, end: end + prefix.length }
+}

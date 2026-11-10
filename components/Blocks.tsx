@@ -1,7 +1,10 @@
 import ReactMarkdown from 'react-markdown'
+import rehypeRaw from 'rehype-raw'
+import rehypeSanitize from 'rehype-sanitize'
 import Markdown from '@/components/Markdown'
 import { BODY, CALLOUT, CODE, H1, H2, H3, QUOTE } from '@/components/notion/style'
-import { normalize, sizeStyle, type Block } from '@/lib/blocks'
+import { colWidth, normalize, sizeStyle, type Block } from '@/lib/blocks'
+import { markdownSchema } from '@/lib/markdownSchema'
 
 /** Hanya izinkan embed dari situs video yang dikenal (jangan iframe sembarang alamat). */
 export function embedSrc(raw?: string): string | null {
@@ -27,6 +30,7 @@ export function embedSrc(raw?: string): string | null {
 export function Inline({ children }: { children: string }) {
   return (
     <ReactMarkdown
+      rehypePlugins={[rehypeRaw, [rehypeSanitize, markdownSchema]]}
       components={{
         p: ({ children }) => <>{children}</>,
         a: ({ href, children }) => <a href={href} className="text-blue-600 underline">{children}</a>,
@@ -41,15 +45,17 @@ export function Inline({ children }: { children: string }) {
 /* eslint-disable @next/next/no-img-element */
 function One({ b, n }: { b: Block; n: number }) {
   const t = b.text ?? ''
+  // Alignment only applies to the handful of single-paragraph block types (see ALIGNABLE in lib/blocks.ts)
+  const align: React.CSSProperties | undefined = b.align && b.align !== 'left' ? { textAlign: b.align } : undefined
   switch (b.type) {
     case 'text':
-      return t.trim() ? <Markdown>{t}</Markdown> : null
+      return t.trim() ? <div style={align}><Markdown>{t}</Markdown></div> : null
     case 'h1':
-      return <h2 className={H1}><Inline>{t}</Inline></h2>
+      return <h2 className={H1} style={align}><Inline>{t}</Inline></h2>
     case 'h2':
-      return <h3 className={H2}><Inline>{t}</Inline></h3>
+      return <h3 className={H2} style={align}><Inline>{t}</Inline></h3>
     case 'h3':
-      return <h4 className={H3}><Inline>{t}</Inline></h4>
+      return <h4 className={H3} style={align}><Inline>{t}</Inline></h4>
     case 'bullet':
       return (
         <ul className={`${BODY} list-disc pl-6`}>
@@ -79,9 +85,9 @@ function One({ b, n }: { b: Block; n: number }) {
         </details>
       )
     case 'quote':
-      return <blockquote className={`my-3 ${QUOTE}`}><Inline>{t}</Inline></blockquote>
+      return <blockquote className={`my-3 ${QUOTE}`} style={align}><Inline>{t}</Inline></blockquote>
     case 'callout':
-      return <div className={`my-3 ${CALLOUT}`}><Inline>{t}</Inline></div>
+      return <div className={`my-3 ${CALLOUT}`} style={align}><Inline>{t}</Inline></div>
     case 'code':
       return (
         <pre className={`my-4 overflow-x-auto ${CODE}`}>
@@ -122,11 +128,15 @@ function One({ b, n }: { b: Block; n: number }) {
     }
     case 'columns': {
       const cols = b.cols ?? []
-      const grid = cols.length >= 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'
+      // Stacked on mobile; at md+ the columns sit side by side using each one's own width (defaults to even)
+      const template = cols.map((_, i) => `${colWidth(b, i)}fr`).join(' ')
       return (
-        <div className={`my-4 grid grid-cols-1 gap-6 ${grid}`}>
+        <div
+          className="my-4 grid grid-cols-1 items-start gap-6 md:[grid-template-columns:var(--cols)]"
+          style={{ '--cols': template } as React.CSSProperties}
+        >
           {cols.map((c, i) => (
-            <div key={i}><Blocks blocks={c} /></div>
+            <div key={i} className="min-w-0"><Blocks blocks={c} /></div>
           ))}
         </div>
       )
