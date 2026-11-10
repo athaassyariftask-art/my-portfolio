@@ -2,6 +2,7 @@ import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
 import rehypeSanitize from 'rehype-sanitize'
 import Markdown from '@/components/Markdown'
+import Gallery from '@/components/Gallery'
 import { BODY, CALLOUT, CODE, H1, H2, H3, QUOTE } from '@/components/notion/style'
 import { colWidth, normalize, sizeStyle, type Block } from '@/lib/blocks'
 import { markdownSchema } from '@/lib/markdownSchema'
@@ -99,29 +100,23 @@ function One({ b, n }: { b: Block; n: number }) {
     case 'image':
       return b.url ? (
         <figure className="my-6" style={sizeStyle(b.size)}>
-          <img src={b.url} alt={b.caption ?? ''} className="w-full rounded-2xl border border-[color:var(--line)]" />
+          <img src={b.url} alt={b.caption ?? ''} className="w-full" />
           {b.caption && <figcaption className="mt-2 text-center font-mono text-xs text-[color:var(--muted)]">{b.caption}</figcaption>}
         </figure>
       ) : null
     case 'gallery':
-      return b.urls?.length ? (
-        <div className="my-6 grid grid-cols-2 gap-3 md:grid-cols-3">
-          {b.urls.map((u, i) => (
-            <img key={u + i} src={u} alt="" className="aspect-square w-full rounded-xl border border-[color:var(--line)] object-cover" />
-          ))}
-        </div>
-      ) : null
+      return b.urls?.length ? <Gallery urls={b.urls} /> : null
     case 'video':
       return b.url ? (
         <figure className="my-6" style={sizeStyle(b.size)}>
-          <video src={b.url} controls preload="metadata" className="w-full rounded-2xl border border-[color:var(--line)] bg-black" />
+          <video src={b.url} controls preload="metadata" className="w-full bg-black" />
           {b.caption && <figcaption className="mt-2 text-center font-mono text-xs text-[color:var(--muted)]">{b.caption}</figcaption>}
         </figure>
       ) : null
     case 'embed': {
       const src = embedSrc(b.url)
       return src ? (
-        <div className="my-6 aspect-video overflow-hidden rounded-2xl border border-[color:var(--line)]" style={sizeStyle(b.size)}>
+        <div className="my-6 aspect-video overflow-hidden" style={sizeStyle(b.size)}>
           <iframe src={src} className="h-full w-full" allowFullScreen loading="lazy" title="Embed" />
         </div>
       ) : null

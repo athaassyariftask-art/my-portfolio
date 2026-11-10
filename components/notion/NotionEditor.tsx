@@ -309,7 +309,7 @@ function Gallery({ b }: { b: Block }) {
       <div className="grid grid-cols-3 gap-2 md:grid-cols-4">
         {urls.map((u, i) => (
           <div key={u + i} className="relative">
-            <img src={u} alt="" className="aspect-square w-full rounded-lg object-cover" />
+            <img src={u} alt="" className="aspect-square w-full object-cover" />
             <button type="button" onClick={() => ops.patch(b.id, { urls: urls.filter((_, j) => j !== i) })} className="absolute -right-1.5 -top-1.5 h-5 w-5 rounded-full bg-rose-600 text-xs text-white">×</button>
           </div>
         ))}
@@ -366,7 +366,7 @@ function ImageBody({ b }: { b: Block }) {
         <>
         <figure style={sizeStyle(b.size)}>
           <div className="group/img relative">
-            <img src={b.url} alt={b.caption ?? ''} className="w-full rounded-2xl border border-slate-200" />
+            <img src={b.url} alt={b.caption ?? ''} className="w-full" />
             <button type="button" onClick={() => input.current?.click()} className="absolute right-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-700 opacity-0 shadow transition-opacity group-hover/img:opacity-100">Replace photo</button>
           </div>
           <input
@@ -415,7 +415,7 @@ function VideoBody({ b }: { b: Block }) {
         <>
         <figure style={sizeStyle(b.size)}>
           <div className="group/img relative">
-            <video src={b.url} controls preload="metadata" className="w-full rounded-2xl border border-slate-200 bg-black" />
+            <video src={b.url} controls preload="metadata" className="w-full bg-black" />
             <button type="button" onClick={() => input.current?.click()} className="absolute right-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-700 opacity-0 shadow transition-opacity group-hover/img:opacity-100">Replace video</button>
           </div>
           <input
@@ -451,7 +451,7 @@ function Embed({ b }: { b: Block }) {
         className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm outline-none focus:border-blue-600"
       />
       {src ? (
-        <div className="aspect-video overflow-hidden rounded-2xl border border-slate-200" style={sizeStyle(b.size)}>
+        <div className="aspect-video overflow-hidden" style={sizeStyle(b.size)}>
           <iframe src={src} className="h-full w-full" allowFullScreen loading="lazy" title="Embed" />
         </div>
       ) : b.url ? (
