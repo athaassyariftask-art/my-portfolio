@@ -267,9 +267,7 @@ function MarkToolbar({ onPick }: { onPick: (key: MarkKey) => void }) {
             onClick={() => onPick(key)}
             className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-sm font-bold text-slate-600 hover:bg-slate-100"
           >
-            {m.swatch ? (
-              <span aria-hidden className="h-3.5 w-3.5 rounded-full border border-black/15" style={{ background: m.swatch }} />
-            ) : key === 'bold' ? (
+            {key === 'bold' ? (
               'B'
             ) : key === 'italic' ? (
               <span className="italic">i</span>

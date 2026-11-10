@@ -18,9 +18,6 @@
   --r-card: 14px; /* cards: rounded, not pill-like */
   --r-ctl: 10px; /* buttons */
   --r-tag: 8px; /* tags and badges */
-  --clr-red: #c0392b; /* the editor's fixed text-color options (see MARKS in lib/blocks.ts) */
-  --clr-green: #2f8a5b;
-  --clr-purple: #7c4dc4;
   --lanyard-shadow: drop-shadow(0 24px 26px rgba(16, 16, 16, 0.18)) drop-shadow(0 4px 6px rgba(16, 16, 16, 0.14));
   --shadow-sm: none;
   --shadow-md: 0 14px 28px -18px rgba(16, 16, 16, 0.45);
@@ -177,9 +174,6 @@ mark {
   border-radius: 3px;
 }
 u { text-decoration-thickness: 1.5px; text-underline-offset: 2px; }
-.clr-red { color: var(--clr-red); }
-.clr-green { color: var(--clr-green); }
-.clr-purple { color: var(--clr-purple); }
 
 /* Numbered square */
 .pop-badge {
@@ -257,9 +251,6 @@ u { text-decoration-thickness: 1.5px; text-underline-offset: 2px; }
   --teal: #22302a;
   --blue: #232a52;
   --yellow: #1f3a2b;
-  --clr-red: #ff6b6b;
-  --clr-green: #4ade80;
-  --clr-purple: #b794f6;
 }
 :root[data-theme='dark'] .pop-btn { border-color: var(--edge-strong); }
 :root[data-theme='dark'] .pop-btn-ink { border-color: var(--accent); }

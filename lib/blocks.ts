@@ -210,19 +210,16 @@ export const textBlock = (text: string): Block => ({ ...makeBlock('text'), text 
 
 // ---- inline formatting ("marks") -------------------------------------------------------------
 // Text is still one plain markdown string per block (see Block.text above) — a mark is just markdown
-// (or, for underline/highlight/color, a small fixed set of HTML tags the renderer allows; see
+// (or, for underline/highlight, a small fixed set of HTML tags the renderer allows; see
 // lib/markdownSchema.ts) wrapped around the selected range. There is no separate rich-text data model,
 // which keeps every other block-editing operation (split on Enter, merge on Backspace, "/" shortcuts, …)
 // working exactly as it does today, unchanged.
-export type MarkKey = 'bold' | 'italic' | 'underline' | 'highlight' | 'red' | 'green' | 'purple'
-export const MARKS: Record<MarkKey, { label: string; prefix: string; suffix: string; swatch?: string }> = {
+export type MarkKey = 'bold' | 'italic' | 'underline' | 'highlight'
+export const MARKS: Record<MarkKey, { label: string; prefix: string; suffix: string }> = {
   bold: { label: 'Bold', prefix: '**', suffix: '**' },
   italic: { label: 'Italic', prefix: '_', suffix: '_' },
   underline: { label: 'Underline', prefix: '<u>', suffix: '</u>' },
   highlight: { label: 'Highlight', prefix: '<mark>', suffix: '</mark>' },
-  red: { label: 'Red', prefix: '<span class="clr-red">', suffix: '</span>', swatch: 'var(--clr-red)' },
-  green: { label: 'Green', prefix: '<span class="clr-green">', suffix: '</span>', swatch: 'var(--clr-green)' },
-  purple: { label: 'Purple', prefix: '<span class="clr-purple">', suffix: '</span>', swatch: 'var(--clr-purple)' },
 }
 
 /**

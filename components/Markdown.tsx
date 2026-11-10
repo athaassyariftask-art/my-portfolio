@@ -9,7 +9,7 @@ export default function Markdown({ children }: { children: string }) {
   return (
     <div className="text-[color:var(--ink)]">
       <ReactMarkdown
-        // rehypeRaw turns the <u>/<mark>/<span class="clr-…"> tags the block editor's formatting
+        // rehypeRaw turns the <u>/<mark>/tags the block editor's formatting
         // toolbar writes into real elements; rehypeSanitize (with the narrow schema below) then
         // strips anything else, so no other raw HTML/CSS/JS can ride along.
         rehypePlugins={[rehypeRaw, [rehypeSanitize, markdownSchema]]}
